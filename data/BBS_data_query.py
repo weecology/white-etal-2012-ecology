@@ -40,7 +40,7 @@ cursor.execute("""
                 GROUP BY AOU, TOO;
                 """) 
 
-# 3. To create table with Year - SiteID - Sp - abund:
+# 3. To create table with SiteID - Year - Sp - abund:
     # Link together AOU_TOO and BBS Counts by AOU - 
     # Group By SiteID = state*1000 + route - TOO - Year 
     # Sum SpeciesTotal
