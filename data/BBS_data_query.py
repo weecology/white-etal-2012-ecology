@@ -2,6 +2,7 @@
 
 import MySQLdb as dbapi
 import getpass
+import shutil
 
 # enter MySQL password
 p=getpass.getpass()
@@ -51,11 +52,10 @@ cursor.execute("""
                 SUM(counts.SpeciesTotal) AS AB 
                 FROM BBS.counts INNER JOIN queries.aou_too ON counts.Aou = aou_too.AOU
                 GROUP BY (counts.statenum * 1000) + counts.Route, counts.Year, aou_too.TOO
-                HAVING (((counts.Year) = 2009));
+                HAVING (((counts.Year) = 2009))
+                INTO OUTFILE '/tmp/bbs_too_2009.csv';
                 """)
-
-# I tried to execute the last query as a SELECT....INTO OUTFILE query,
-# but I ran into permissions problems (error code 13). Temporary fix is to use
-# MySQL Workbench to export the results of the query to a csv file. 
                 
 connection.commit()
+
+shutil.copy('/tmp/bbs_too_2009.csv', '/home/kate/data/bbs_too_2009.csv')
