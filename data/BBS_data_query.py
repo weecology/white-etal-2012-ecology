@@ -46,14 +46,15 @@ cursor.execute("""
     # Sum SpeciesTotal
     
 cursor.execute("""
-                CREATE TABLE queries.bbs_too
                 SELECT (counts.statenum * 1000) + counts.Route AS SiteID,
                 counts.Year, aou_too.TOO, 
                 SUM(counts.SpeciesTotal) AS AB 
                 FROM BBS.counts INNER JOIN queries.aou_too ON counts.Aou = aou_too.AOU
                 GROUP BY (counts.statenum * 1000) + counts.Route, counts.Year, aou_too.TOO
                 HAVING (((counts.Year) = 2009))
-                INTO OUTFILE '/tmp/bbs_too_2009.csv';
+                INTO OUTFILE '/tmp/bbs_too_2009.csv'
+                FIELDS TERMINATED BY ',' 
+                LINES TERMINATED BY '\n';
                 """)
                 
 connection.commit()
