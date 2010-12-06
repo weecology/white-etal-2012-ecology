@@ -80,15 +80,23 @@ cursor.execute("""
     # GROUPing BY LOC_ID and SPECIES_CODE and SUMmming over HOW_MANY FROM obs_4
 
 cursor.execute("""
+                CREATE TABLE queries.obs_5                
                 SELECT obs_4.LOC_ID, obs_4.COUNT_YR AS YEAR, obs_4.TOO, 
                 SUM(obs_4.HOW_MANY) AS AB
                 FROM queries.obs_4 
-                GROUP BY obs_4.LOC_ID, obs_4.COUNT_YR, obs_4.TOO
-                INTO OUTFILE '/tmp/cbc_too_1093.csv'
+                GROUP BY obs_4.LOC_ID, obs_4.COUNT_YR, obs_4.TOO;
+                """)
+
+# Step 7. Remove zeroes from data, and save table to file
+
+cursor.execute("""             
+                SELECT * FROM queries.obs_5 
+                WHERE obs_5.AB > 0
+                INTO OUTFILE '/tmp/cbc_too_109.csv'
                 FIELDS TERMINATED BY ',' 
                 LINES TERMINATED BY '\n';
                 """)
                
 connection.commit()
 
-shutil.copy('/tmp/cbc_too_1093.csv', '/home/kate/data/cbc_too_109.csv')
+shutil.copy('/tmp/cbc_too_109.csv', '/home/kate/data/cbc_too_109.csv')
