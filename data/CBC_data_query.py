@@ -63,8 +63,8 @@ cursor.execute("""
                 CREATE TABLE queries.obs_3
                 SELECT obs_2.* 
                 FROM queries.obs_2 INNER JOIN CBC.LOC ON obs_2.LOC_ID = LOC.LOC_ID
-                WHERE LOC.SUBNATIONAL1_CODE != 'US-HI' AND 
-                LOC.COUNTRY_CODE = 'CA' OR 'US' OR 'US-CA';
+                WHERE LOC.COUNTRY_CODE = 'CA' OR LOC.COUNTRY_CODE = 'US' 
+                OR LOC.COUNTRY_CODE = 'US-CA' AND LOC.SUBNATIONAL1_CODE != 'US-HI';
                 """)
 
 # Step 5. CREATE obs_4 by adding sp_too.TOO
