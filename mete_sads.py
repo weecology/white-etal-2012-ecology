@@ -12,6 +12,8 @@ All data queries used can be found in MaxEnt/trunk/data:
 import macroeco_distributions as md
 import mete
 import csv
+from macroeco import plot_bivar_color_by_pt_density_relation as densityplt
+import matplotlib.pyplot as plt
 import numpy as np
 import weestats
 
@@ -63,3 +65,19 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
             results2 = ((np.column_stack((usites[i], S, N, p, weight))))
             f1.writerows(results)
             f2.writerows(results2)
+            
+def plot_pred_obs(input_filename, title = ''): 
+    """use output from run_test to plot observed vs. predicted abundances"""
+    
+    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8", 
+                       names = ['site','obs','pred'], delimiter = ",")
+    
+    pred = ((ifile["pred"]))
+    obs = ((ifile["obs"]))
+    
+    plt.figure()
+    densityplt(pred, obs, 1, loglog=1)
+    plt.title(title)
+    plt.xlabel('Predicted abundances')
+    plt.ylabel('Observed abundances')
+    plt.show()    
