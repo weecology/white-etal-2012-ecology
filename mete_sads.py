@@ -81,3 +81,25 @@ def plot_pred_obs(input_filename, title = ''):
     plt.xlabel('Predicted abundances')
     plt.ylabel('Observed abundances')
     plt.show()    
+    
+def plot_weights(input_filename, title = ''): 
+    """use output from run_test to plot frequency distribution of Akaike weights"""
+    
+    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8,f8,f8", 
+                       names = ['site','S','N','p','weight'], delimiter = ",")
+    
+    weights = ((ifile["weight"]))
+    weights=weights[weights>=0]
+    bins = [0, 0.4, 0.6, 1]
+    cts = np.histogram(weights, bins = bins)
+    left = [0, 0.4, 0.8]
+    height = cts[0]
+    
+    plt.figure()
+    plt.bar(left, height, width = 0.2)
+    plt.title(title)
+    plt.xlabel('Akaike weights')
+    plt.ylabel('Number of sites')
+    # To Do: remove xticks and labels; replace xlabels with 3 separate labels: 
+    # Log-series, Indeterminate, Log-normal
+    plt.show()    
