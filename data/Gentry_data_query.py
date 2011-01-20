@@ -17,10 +17,11 @@ cursor.execute("""CREATE DATABASE queries;""")
 # Group By SITE and SPECIES_ID, COUNT stem_id
 cursor.execute("""
                 CREATE TABLE queries.gentry
-                SELECT Stems.site, Stems.species_id, Stems.Morpho, Stems.id_status, sum(`Stems`.`N(Ind)`) AS ab 
+                SELECT Stems.site, Stems.species_id, Stems.Morpho, 
+                Stems.id_status, sum(`Stems`.`N(Ind)`) AS ab 
                 FROM gentry_glenda.Stems 
                 GROUP BY Stems.site, Stems.species_id 
-                HAVING ((Stems.Morpho = 1 OR Stems.id_status = "species"));
+                HAVING (((ab > 0) AND (Stems.Morpho = 1 OR Stems.id_status = "species")));
                 """)
                 
 cursor.execute("""
