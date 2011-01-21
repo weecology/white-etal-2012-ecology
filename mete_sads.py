@@ -82,7 +82,8 @@ def plot_pred_obs(input_filename, title = ''):
     plt.ylabel('Observed abundances')
     plt.show()    
     
-def plot_weights(input_filename, title = ''): 
+def plot_weights(input_filename, data = 'raw', left = [0, 0.4, 0.8], 
+                 width = 0.2, color = 'b', title = ''): 
     """use output from run_test to plot frequency distribution of Akaike weights"""
     
     ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8,f8,f8", 
@@ -92,14 +93,42 @@ def plot_weights(input_filename, title = ''):
     weights=weights[weights>=0]
     bins = [0, 0.4, 0.6, 1]
     cts = np.histogram(weights, bins = bins)
-    left = [0, 0.4, 0.8]
-    height = cts[0]
     
-    plt.figure()
-    plt.bar(left, height, width = 0.2)
-    plt.title(title)
-    plt.xlabel('Akaike weights')
-    plt.ylabel('Number of sites')
-    # To Do: remove xticks and labels; replace xlabels with 3 separate labels: 
-    # Log-series, Indeterminate, Log-normal
-    plt.show()    
+    if data == 'raw':
+        height = cts[0]  
+    else:
+        height = cts[0] * 100 / sum(cts[0])
+    
+    plot_obj = plt.subplot(111)
+    plot_obj.bar(left, height, width, color = color)
+    plot_obj.set_title(title)
+    plot_obj.set_ylabel('Number of sites') 
+    
+    return plot_obj
+
+def cross_taxa_weight_plot (input_filenames):
+    """Plot histogram of weights across taxa
+    
+    Keyword arguments:
+    input_filenames -- list of file names to be processed
+    
+    """     
+    plt.figure(1) 
+    n = len(input_filenames)
+    colors = ['k', 'r', 'g', 'b']
+    
+    for i in range(0, n):
+        input_filename = input_filenames[i]
+        width = round(1.0/(3 + n * 3), 2)
+        left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 6))]
+        plot_weights(input_filename, data = 'percent', left = left, 
+                     color = colors[i], width = width)
+    
+    plt.ylabel('Percentage of sites')
+    # TO DO: figure out universal means of determining xtick locations
+    plt.xticks(((((3 + n * 3)/4.8) * width), (((3 + n * 3)/1.85) * width), 
+               (((3 + n * 3)/1.14) * width)), 
+               ('Log-normal', 'Indeterminate', 'Log-series') )
+    # TO DO: figure out how to include a color-coded legend: 
+    plt.legend(('CBC', 'BBS', 'Gentry'), loc = 'upper left')
+    plt.show()
