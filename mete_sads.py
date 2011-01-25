@@ -15,6 +15,7 @@ import csv
 from macroeco import plot_bivar_color_by_pt_density_relation as densityplt
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 import weestats
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
@@ -76,7 +77,7 @@ def plot_pred_obs(input_filename, title = ''):
     obs = ((ifile["obs"]))
     
     plt.figure()
-    densityplt(pred, obs, 1, loglog=1)
+    densityplt(pred, obs, 5, loglog=1)
     plt.title(title)
     plt.xlabel('Predicted abundances')
     plt.ylabel('Observed abundances')
@@ -132,3 +133,79 @@ def cross_taxa_weight_plot (input_filenames):
     # TO DO: figure out how to include a color-coded legend: 
     plt.legend(('CBC', 'BBS', 'Gentry'), loc = 'upper left')
     plt.show()
+    
+def rare_sp_count (input_filename, abundance_class):
+    """Count and plot number of species observed and predicted in a given abundance class
+    
+    Keyword arguments:
+    input_filename -- name of file containing observed and predicted abundances 
+    in the format ['site', 'obs', 'pred'], as output from run_test
+    abundance_class -- singleton, doubleton, rare(n <=10), or dominant
+    
+    """
+    
+    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8", 
+                       names = ['site','obs','pred'], delimiter = ",")
+    
+    site = ((ifile["site"]))    
+    usites = list(set(site))  
+    
+    pred_class = []
+    obs_class = []
+    for i in range (0, len(usites)):
+        pred = ifile["pred"][ifile["site"] == usites[i]]
+        obs = ifile["obs"][ifile["site"] == usites[i]]
+        if abundance_class == 'singleton':
+            subpred = len(pred[pred == 1])
+            subobs = len(obs[obs == 1])
+        elif abundance_class == 'doubleton':
+            subpred = len(pred[pred == 2])
+            subobs = len(obs[obs == 2])
+        elif abundance_class == 'dominant':
+            subpred = max(pred)
+            subobs = max(obs)
+        elif abundance_class == 'rare':
+            subpred = len(pred[pred <= 10])
+            subobs = len(obs[obs <= 10])
+        pred_class.append(subpred)
+        obs_class.append(subobs)
+        
+    return(pred_class, obs_class)
+
+def ab_class_test_plot(input_filename):
+    """Regress number of species predicted vs. observed in a given abundance class
+    
+    Keyword arguments:
+    input_filename -- name of file containing observed and predicted abundances 
+    in the format ['site', 'obs', 'pred'], as output from run_test
+    
+    """
+    abundance_classes = ['singleton', 'doubleton', 'rare', 'dominant']
+    
+    regr_results = []
+    for i in range (0, len(abundance_classes)):
+        results = rare_sp_count (input_filename, abundance_classes[i])
+        pred = results[0]
+        obs = results[1] 
+        slope, intercept, r_value, p_value, std_err = stats.linregress(pred, obs)
+        results2 = ((np.column_stack((slope, intercept, r_value, p_value, std_err))))
+        regr_results.append(results2)
+        #plt.subplot(2,2,i+1) had to change macroeco.py to accept i to generate subplots
+        densityplt(np.array(pred), np.array(obs), 1, i)
+        plt.plot([0,max(max(pred),max(obs))+ 1], [0,max(max(pred),max(obs)) + 1])
+        plt.xlim(0, max(max(pred),max(obs)) + 1)
+        plt.ylim(0, max(max(pred),max(obs)) + 1)
+        plt.title(abundance_classes[i])
+        plt.xlabel('Predicted number of species')
+        plt.ylabel('Observed number of species')
+        r2 = ('r2 = ' + str(round(r_value**2, 2)))
+        b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
+        plt.annotate(b, xy=(-10, 10), xycoords='axes points',
+                horizontalalignment='right', verticalalignment='bottom',
+                fontsize=14)
+        plt.annotate(r2, xy=(-10, 30), xycoords='axes points',
+                horizontalalignment='right', verticalalignment='bottom',
+                fontsize=14)
+
+    plt.show()   
+    return(regr_results)
