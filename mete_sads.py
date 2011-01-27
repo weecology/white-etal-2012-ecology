@@ -212,14 +212,14 @@ def ab_class_test_plot(input_filename):
 
 
 def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
-    linestyles = ['k-', 'r-', 'g-', 'b-', 'c-']
+    colors = ['r', 'g', 'b', 'k', 'c']
     plotmax = 0
     for i, filename in enumerate(input_filenames):
         infile = np.genfromtxt(filename, dtype = "S9,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
         hull_points = macroeco.confidence_hull(infile['pred'], infile['obs'], 2,
-                                               logscale=1,
-                                               linestyle=linestyles[i])
+                                               logscale=logscale,
+                                               color=colors[i], alpha=0.75-float(i)/10)
         plotmax = max([plotmax, np.max(hull_points)])
     plt.loglog([0.5, plotmax * 2], [0.5, plotmax * 2], 'k-')
     plt.xlim(.5, plotmax * 2)
