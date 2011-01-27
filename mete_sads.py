@@ -209,3 +209,13 @@ def ab_class_test_plot(input_filename):
 
     plt.show()   
     return(regr_results)
+
+
+def multi_group_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
+    linestyles = ['k-', 'r-', 'g-', 'b-', 'c-']
+    for i, filename in enumerate(input_filenames):
+        infile = np.genfromtxt(filename, dtype = "S9,i8,i8", 
+                       names = ['site','obs','pred'], delimiter = ",")
+        macroeco.confidence_hull(infile['pred'], infile['obs'], 2, logscale=1,
+                                 linestyle=linestyles[i])
+    plt.show()
