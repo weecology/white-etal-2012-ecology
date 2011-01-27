@@ -12,7 +12,7 @@ All data queries used can be found in MaxEnt/trunk/data:
 import macroeco_distributions as md
 import mete
 import csv
-from macroeco import plot_color_by_pt_dens as densityplt
+import macroeco
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
@@ -77,7 +77,7 @@ def plot_pred_obs(input_filename, title = ''):
     obs = ((ifile["obs"]))
     
     plt.figure()
-    densityplt(pred, obs, 5, loglog=1)
+    macroeco.plot_color_by_pt_dens(pred, obs, 5, loglog=1)
     plt.title(title)
     plt.xlabel('Predicted abundances')
     plt.ylabel('Observed abundances')
@@ -191,7 +191,7 @@ def ab_class_test_plot(input_filename):
         results2 = ((np.column_stack((slope, intercept, r_value, p_value, std_err))))
         regr_results.append(results2)
         #plt.subplot(2,2,i+1) had to change macroeco.py to accept i to generate subplots
-        densityplt(np.array(pred), np.array(obs), 1, i)
+        macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, i)
         plt.plot([0,max(max(pred),max(obs))+ 1], [0,max(max(pred),max(obs)) + 1])
         plt.xlim(0, max(max(pred),max(obs)) + 1)
         plt.ylim(0, max(max(pred),max(obs)) + 1)
