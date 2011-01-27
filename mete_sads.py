@@ -12,7 +12,7 @@ All data queries used can be found in MaxEnt/trunk/data:
 import macroeco_distributions as md
 import mete
 import csv
-from macroeco import plot_bivar_color_by_pt_density_relation as densityplt
+from macroeco import plot_color_by_pt_dens as densityplt
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
