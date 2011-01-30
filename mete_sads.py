@@ -212,7 +212,7 @@ def ab_class_test_plot(input_filename):
 
 
 def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
-    colors = ['r', 'g', 'b', 'k', 'c']
+    colors = ['r', 'b', 'k', 'g', 'c']
     plotmax = 0
     for i, filename in enumerate(input_filenames):
         infile = np.genfromtxt(filename, dtype = "S9,i8,i8", 
