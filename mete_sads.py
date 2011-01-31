@@ -28,7 +28,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                         abundances for each site in the input file
     output_filename2 -- file that will store the p-values and weights from 
                         dist_test for each site in the input file
-    cutoff      --  minimum number of species required to run.
+    cutoff      --  minimum number of species required to run - 1.
     
     """
     
@@ -131,7 +131,7 @@ def cross_taxa_weight_plot (input_filenames):
                (((3 + n * 3)/1.14) * width)), 
                ('Log-normal', 'Indeterminate', 'Log-series') )
     # TO DO: figure out how to include a color-coded legend: 
-    plt.legend(('CBC', 'BBS', 'Gentry'), loc = 'upper left')
+    plt.legend(('CBC', 'BBS', 'Gentry', 'MCDB'), loc = 'upper left')
     plt.show()
     
 def rare_sp_count (input_filename, abundance_class):
@@ -181,7 +181,7 @@ def ab_class_test_plot(input_filename):
     
     """
     abundance_classes = ['singleton', 'doubleton', 'rare', 'dominant']
-    
+
     regr_results = []
     for i in range (0, len(abundance_classes)):
         results = rare_sp_count (input_filename, abundance_classes[i])
@@ -190,14 +190,25 @@ def ab_class_test_plot(input_filename):
         slope, intercept, r_value, p_value, std_err = stats.linregress(pred, obs)
         results2 = ((np.column_stack((slope, intercept, r_value, p_value, std_err))))
         regr_results.append(results2)
-        #plt.subplot(2,2,i+1) had to change macroeco.py to accept i to generate subplots
-        macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, i)
-        plt.plot([0,max(max(pred),max(obs))+ 1], [0,max(max(pred),max(obs)) + 1])
-        plt.xlim(0, max(max(pred),max(obs)) + 1)
-        plt.ylim(0, max(max(pred),max(obs)) + 1)
-        plt.title(abundance_classes[i])
-        plt.xlabel('Predicted number of species')
-        plt.ylabel('Observed number of species')
+        # had to change macroeco.py to accept plot_obj to generate subplots   
+        plot_obj = plt.subplot(2,2,i+1)
+        if i < 3:
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, plot_obj, 0)
+            plt.plot([0,max(max(pred),max(obs))+ 1], 
+                     [0,max(max(pred),max(obs)) + 1], 'k-')
+            plt.xlim(0, max(max(pred),max(obs)) + 1)
+            plt.ylim(0, max(max(pred),max(obs)) + 1)
+            plt.title(abundance_classes[i])
+            plt.xlabel('Predicted number of species')
+            plt.ylabel('Observed number of species')
+        else:
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, plot_obj, 1)
+            plt.loglog([1, (max(pred)) * 2], [1, (max(pred)) * 2], 'k-')
+            plt.xlim(1, max(max(pred),max(obs)) * 2)
+            plt.ylim(1, max(max(pred),max(obs)) * 2)
+            plt.title(abundance_classes[i])
+            plt.xlabel('Predicted abundance')
+            plt.ylabel('Observed abundance')
         r2 = ('r2 = ' + str(round(r_value**2, 2)))
         b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
         plt.annotate(b, xy=(-10, 10), xycoords='axes points',
