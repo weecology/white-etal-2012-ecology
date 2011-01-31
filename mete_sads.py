@@ -193,7 +193,7 @@ def ab_class_test_plot(input_filename):
         # had to change macroeco.py to accept plot_obj to generate subplots   
         plot_obj = plt.subplot(2,2,i+1)
         if i < 3:
-            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, plot_obj, 0)
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, 0, plot_obj)
             plt.plot([0,max(max(pred),max(obs))+ 1], 
                      [0,max(max(pred),max(obs)) + 1], 'k-')
             plt.xlim(0, max(max(pred),max(obs)) + 1)
@@ -202,7 +202,7 @@ def ab_class_test_plot(input_filename):
             plt.xlabel('Predicted number of species')
             plt.ylabel('Observed number of species')
         else:
-            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, plot_obj, 1)
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, 1, plot_obj)
             plt.loglog([1, (max(pred)) * 2], [1, (max(pred)) * 2], 'k-')
             plt.xlim(1, max(max(pred),max(obs)) * 2)
             plt.ylim(1, max(max(pred),max(obs)) * 2)
@@ -221,7 +221,6 @@ def ab_class_test_plot(input_filename):
     plt.show()   
     return(regr_results)
 
-
 def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
     colors = ['r', 'b', 'k', 'g', 'c']
     plotmax = 0
@@ -238,3 +237,29 @@ def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
     plt.xlabel('Predicted abundance')
     plt.ylabel('Observed abundance')
     plt.show()
+
+def evar_pred_obs(input_filenames, output_filenames):
+    """Calculate Evar for observed and predicted SADs and save to file
+    
+    Keyword arguments:
+    input_filename -- use file output from run_test (db_obs_pred.csv)
+    output_filename -- name of file in which to store Evar results for all sites
+    
+    """
+    
+    for i in range(0,len(input_filenames)):
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S9,i8,i8", 
+                           names = ['site','obs','pred'], delimiter = ",")
+        
+        site = ((ifile["site"]))    
+        usites = list(set(site))  
+        
+        f1 = csv.writer(open(output_filenames[i],'a'))
+    
+        for i in range (0, len(usites)):
+            pred = ifile["pred"][ifile["site"] == usites[i]]
+            obs = ifile["obs"][ifile["site"] == usites[i]]
+            evar_obs = macroeco.e_var(obs)
+            evar_pred = macroeco.e_var(pred)
+            results = (usites[i], evar_obs, evar_pred)
+            f1.writerow(results)   
