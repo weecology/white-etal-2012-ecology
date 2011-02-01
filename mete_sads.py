@@ -8,7 +8,8 @@ All data queries used can be found in MaxEnt/trunk/data:
     Gentry_data_query
         
 """
-    
+
+from mpl_toolkits.basemap import Basemap
 import macroeco_distributions as md
 import mete
 import csv
@@ -352,3 +353,28 @@ def SN_diff_plot(input_filenames):
         plt.title(titles[i])
         
     plt.show() 
+    
+def map_sites(input_filenames):
+    """Generate a world map with sites color-coded by database"""
+    
+    map = Basemap(projection='merc',llcrnrlat=-50,urcrnrlat=70,\
+                llcrnrlon=-175,urcrnrlon=127,lat_ts=20,resolution='c')
+    
+    map.bluemarble()  
+    
+    # 20 degree graticule.
+    map.drawparallels(np.arange(-80,81,20))
+    map.drawmeridians(np.arange(-180,180,20))
+    
+    colors = ['b', 'r', 'g', 'y', 'c']
+    
+    for i in range(0, len(input_filenames)):
+        ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
+                                   names = ['lat','long'], delimiter = ",")
+        lats = ifile["lat"]
+        longs = ifile["long"]  
+    
+        x,y = map(longs,lats)
+        map.plot(x,y,'o', markerfacecolor = colors[i])
+        
+    plt.show()
