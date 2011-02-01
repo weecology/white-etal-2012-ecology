@@ -262,4 +262,93 @@ def evar_pred_obs(input_filenames, output_filenames):
             evar_obs = macroeco.e_var(obs)
             evar_pred = macroeco.e_var(pred)
             results = (usites[i], evar_obs, evar_pred)
-            f1.writerow(results)   
+            f1.writerow(results)  
+            
+def var_plot(input_filenames, transform='no'):
+
+    titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
+    
+    for i in range(0,len(input_filenames)):
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S9,f8,f8", 
+                           names = ['site','obs','pred'], delimiter = ",")
+    
+        obs = ((ifile["obs"]))    
+        pred = ((ifile["pred"])) 
+        
+        if transform = 'arcsin':
+            slope, intercept, r_value, p_value, std_err = stats.linregress(np.arcsin
+                                                                       (np.sqrt(pred)),
+                                                                       np.arcsin
+                                                                       (np.sqrt(obs)))
+        else:
+            slope, intercept, r_value, p_value, std_err = stats.linregress(pred, obs)
+            
+        plt.subplot(2,2,i+1)
+        macroeco.plot_color_by_pt_dens(pred, obs, 2, loglog=0, 
+                                       plot_obj=plt.subplot(2,2,i+1))        
+        plt.plot([0, 1],[0, 1], 'k-')
+        plt.xlim(0,1)
+        plt.ylim(0,1)
+        if i == 0:
+            plt.ylabel('Observed')
+        elif i == 2:
+            plt.xlabel('Predicted')
+            plt.ylabel('Observed')
+        elif i == 3:        
+            plt.xlabel('Predicted Evar')
+        plt.title(titles[i])
+        r2 = ('r2 = ' + str(round(r_value**2, 2)))
+        b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
+        plt.annotate(b, xy=(-10, 10), xycoords='axes points',
+                horizontalalignment='right', verticalalignment='bottom',
+                fontsize=14)
+        plt.annotate(r2, xy=(-10, 30), xycoords='axes points',
+                horizontalalignment='right', verticalalignment='bottom',
+                fontsize=14)
+        
+    plt.show() 
+    
+def SN_diff_plot(input_filenames):
+
+    titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
+    
+    for i in range(0,len(input_filenames)/2):
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S9,f8,f8", 
+                           names = ['site','obs','pred'], delimiter = ",")
+        
+        ifile2 = np.genfromtxt(input_filenames[i + len(input_filenames)/2], 
+                               dtype = "S9,i8,i8,f8,f8", 
+                               names = ['site','S','N','p','weight'], delimiter = ",")
+        
+        usites = ((ifile["site"]))
+        
+        diffs=[]
+        xvar=[]
+        for a in range(0, len(usites)):
+            pred = ifile["pred"][ifile["site"] == usites[a]]
+            obs = ifile["obs"][ifile["site"] == usites[a]]
+            S = ifile2["S"][ifile2["site"] == usites[a]]
+            N = ifile2["N"][ifile2["site"] == usites[a]]
+            if len(S) > 0:
+                var_diff = pred - obs
+                S_over_N = float(S) / float(N)
+                diffs.append(var_diff)
+                xvar.append(S_over_N)
+        
+        plt.subplot(2,2,i+1)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.scatter(xvar, diffs)        
+        plt.plot([0, 1],[0, 1], 'k-')
+        plt.xlim(min(xvar),10 ** -0.1)
+        plt.ylim(min(diffs),max(diffs))
+        if i == 0:
+            plt.ylabel('Predicted - Observed')
+        elif i == 2:
+            plt.xlabel('S/N')
+            plt.ylabel('Predicted - Observed')
+        elif i == 3:        
+            plt.xlabel('S/N')
+        plt.title(titles[i])
+        
+    plt.show() 
