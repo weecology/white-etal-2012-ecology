@@ -6,6 +6,9 @@ All data queries used can be found in MaxEnt/trunk/data:
     BBS_data_query
     CBC_data_query
     Gentry_data_query
+    
+Requires mpl_toolkits module. Install by following these instructions:
+http://matplotlib.sourceforge.net/basemap/doc/html/users/installing.html
         
 """
 
