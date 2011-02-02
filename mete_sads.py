@@ -279,7 +279,7 @@ def var_plot(input_filenames, transform='no'):
         obs = ((ifile["obs"]))    
         pred = ((ifile["pred"])) 
         
-        if transform = 'arcsin':
+        if transform == 'arcsin':
             slope, intercept, r_value, p_value, std_err = stats.linregress(np.arcsin
                                                                        (np.sqrt(pred)),
                                                                        np.arcsin
