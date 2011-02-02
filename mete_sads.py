@@ -304,7 +304,7 @@ def var_plot(input_filenames, radius=2, transform='no'):
                                                                        obs_trans)
             
         plt.subplot(2,2,i+1)
-        macroeco.plot_color_by_pt_dens(pred, obs, 2, loglog=axis_scale, 
+        macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
                                        plot_obj=plt.subplot(2,2,i+1))        
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
