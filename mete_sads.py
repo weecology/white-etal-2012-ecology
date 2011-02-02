@@ -231,7 +231,7 @@ def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
     for i, filename in enumerate(input_filenames):
         infile = np.genfromtxt(filename, dtype = "S9,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
-        hull_points = macroeco.confidence_hull(infile['pred'], infile['obs'], 2,
+        hull_points = macroeco.confidence_hull(infile['pred'], infile['obs'], radius,
                                                logscale=logscale,
                                                color=colors[i], alpha=0.75-float(i)/10)
         plotmax = max([plotmax, np.max(hull_points)])
