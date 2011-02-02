@@ -269,7 +269,9 @@ def evar_pred_obs(input_filenames, output_filenames):
             f1.writerow(results)  
             
 def var_plot(input_filenames, transform='no'):
-
+    """Multiple obs-predicted plotter"""
+    #TODO Cleanup transformations using dictionary based approach and error
+    #     checking for cases where a provided transformation is undefined
     titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
     
     for i in range(0,len(input_filenames)):
@@ -284,6 +286,9 @@ def var_plot(input_filenames, transform='no'):
                                                                        (np.sqrt(pred)),
                                                                        np.arcsin
                                                                        (np.sqrt(obs)))
+        elif transform == 'log10':
+            slope, intercept, r_value, p_value, std_err = stats.linregress(np.log10(pred),
+                                                                       np.log10(obs))
         else:
             slope, intercept, r_value, p_value, std_err = stats.linregress(pred, obs)
             
