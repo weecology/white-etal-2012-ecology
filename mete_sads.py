@@ -272,6 +272,7 @@ def var_plot(input_filenames, transform='no'):
     """Multiple obs-predicted plotter"""
     #TODO Cleanup transformations using dictionary based approach and error
     #     checking for cases where a provided transformation is undefined
+    #TODO Generalize to different numbers of subplots
     titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
     
     for i in range(0,len(input_filenames)):
@@ -282,22 +283,32 @@ def var_plot(input_filenames, transform='no'):
         pred = ((ifile["pred"])) 
         
         if transform == 'arcsin':
-            slope, intercept, r_value, p_value, std_err = stats.linregress(np.arcsin
-                                                                       (np.sqrt(pred)),
-                                                                       np.arcsin
-                                                                       (np.sqrt(obs)))
+            obs_trans = np.arcsin(np.sqrt(obs))
+            pred_trans = np.arcsin(np.sqrt(pred))
+            axis_min = 0
+            axis_max = 1
+            axis_scale = 0
         elif transform == 'log10':
-            slope, intercept, r_value, p_value, std_err = stats.linregress(np.log10(pred),
-                                                                       np.log10(obs))
+            obs_trans = np.log10(obs)
+            pred_trans = np.log10(pred)
+            axis_min = 0.5 * min(obs)
+            axis_max = 2 * max(obs)
+            axis_scale = 1
         else:
-            slope, intercept, r_value, p_value, std_err = stats.linregress(pred, obs)
+            obs_trans = obs
+            pred_trans = pred
+            axis_min = min(obs) - 1
+            axis_max = max(obs) + 1
+            axis_scale = 0
+        slope, intercept, r_value, p_value, std_err = stats.linregress(pred_trans,
+                                                                       obs_trans)
             
         plt.subplot(2,2,i+1)
-        macroeco.plot_color_by_pt_dens(pred, obs, 2, loglog=0, 
+        macroeco.plot_color_by_pt_dens(pred, obs, 2, loglog=axis_scale, 
                                        plot_obj=plt.subplot(2,2,i+1))        
-        plt.plot([0, 1],[0, 1], 'k-')
-        plt.xlim(0,1)
-        plt.ylim(0,1)
+        plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
+        plt.xlim(axis_min, axis_max)
+        plt.ylim(axis_min, axis_max)
         if i == 0:
             plt.ylabel('Observed')
         elif i == 2:
