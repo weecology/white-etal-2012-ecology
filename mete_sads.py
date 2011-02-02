@@ -268,7 +268,7 @@ def evar_pred_obs(input_filenames, output_filenames):
             results = (usites[i], evar_obs, evar_pred)
             f1.writerow(results)  
             
-def var_plot(input_filenames, transform='no'):
+def var_plot(input_filenames, radius=2, transform='no'):
     """Multiple obs-predicted plotter"""
     #TODO Cleanup transformations using dictionary based approach and error
     #     checking for cases where a provided transformation is undefined
