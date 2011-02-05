@@ -402,5 +402,8 @@ def sim_null(S0, N0):
     """Compare simulated abundances with METE predictions"""
     N_sim = sorted(np.random.random_integers(1, N0, S0), reverse = True)
     N_pred = mete.get_mete_sad(S0, sum(N_sim))[0]
-    r = stats.linregress(N_sim, N_pred)
-    return r
+    r = stats.linregress(N_sim, N_pred)[2]
+    return r**2
+
+def (input_filename, iter):
+    
