@@ -399,11 +399,42 @@ def map_sites(input_filenames):
     plt.show()
     
 def sim_null(S0, N0):
-    """Compare simulated abundances with METE predictions"""
+    """R^2 between simulated abundances and METE predictions"""
     N_sim = sorted(np.random.random_integers(1, N0, S0), reverse = True)
     N_pred = mete.get_mete_sad(S0, sum(N_sim))[0]
-    r = stats.linregress(N_sim, N_pred)[2]
-    return r**2
+    r2 = macroeco.obs_pred_rsquare(np.array(N_sim), np.array(N_pred))
+    return r2
 
-def (input_filename, iter):
+def compare_null(obs, pred, Niter):
+    """Compare R^2 of observed and simulated abundances"""
+    r2_sim = []
+    i = 0
+    while i < Niter:
+        r2_sim.append(sim_null(len(obs), sum(obs)))
+        i += 1
+    r2_sim_avg = sum(r2_sim) / len(r2_sim)
+    r2_obs = macroeco.obs_pred_rsquare(obs, pred)
+    return r2_sim_avg, r2_obs
+
+def compare_null_dataset(input_filename, output_filename, Niter):
+    """Compare R^2 of observed and simulated abundances for a dataset.
     
+    iter: number of simulations
+    input_filename: same format as output_filename1 from run_test
+    output_filename: 3 columns - site, R^2 for simulated data, R^2 for observed data
+    
+    """
+    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8", 
+                       names = ['site','obs','pred'], delimiter = ",")  
+    site = sorted(list(set(ifile['site'])))
+    site=site[0:2]
+    result = open(output_filename, 'ab')
+    out = csv.writer(result, dialect = 'excel')
+    for isite in site:
+        idata = ifile[ifile['site'] == isite]
+        iobs = idata['obs']
+        ipred = idata['pred']
+        icomp = list(compare_null(iobs, ipred, Niter))
+        icomp.insert(0, isite)
+        out.writerow(icomp)
+    result.close()
