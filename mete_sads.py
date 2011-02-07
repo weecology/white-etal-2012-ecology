@@ -451,7 +451,7 @@ def map_sites(input_filenames):
     plt.show()
     
 def sim_null(S0, N0):
-    """R^2 between simulated abundances and METE predictions"""
+    """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, N0, S0), reverse = True)
     N_pred = mete.get_mete_sad(S0, sum(N_sim))[0]
     return N_sim, N_pred
