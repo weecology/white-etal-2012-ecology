@@ -36,7 +36,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     
     """
     
-    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,S9,i8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,S9,i8", 
                        names = ['site','year','sp','ab'], delimiter = ",")
     
     usites = np.sort(list(set(ifile["site"])))
@@ -74,7 +74,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
 def plot_pred_obs(input_filename, title = ''): 
     """use output from run_test to plot observed vs. predicted abundances"""
     
-    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
     
     pred = ((ifile["pred"]))
@@ -91,7 +91,7 @@ def plot_weights(input_filename, data = 'raw', left = [0, 0.4, 0.8],
                  width = 0.2, color = 'b', title = ''): 
     """use output from run_test to plot frequency distribution of Akaike weights"""
     
-    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8,f8,f8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,f8,f8", 
                        names = ['site','S','N','p','weight'], delimiter = ",")
     
     weights = ((ifile["weight"]))
@@ -148,7 +148,7 @@ def rare_sp_count (input_filename, abundance_class):
     
     """
     
-    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
     
     site = ((ifile["site"]))    
@@ -229,7 +229,7 @@ def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
     colors = ['r', 'b', 'k', 'g', 'c']
     plotmax = 0
     for i, filename in enumerate(input_filenames):
-        infile = np.genfromtxt(filename, dtype = "S9,i8,i8", 
+        infile = np.genfromtxt(filename, dtype = "S15,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
         hull_points = macroeco.confidence_hull(infile['pred'], infile['obs'], radius,
                                                logscale=logscale,
@@ -252,7 +252,7 @@ def evar_pred_obs(input_filenames, output_filenames):
     """
     
     for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S9,i8,i8", 
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8", 
                            names = ['site','obs','pred'], delimiter = ",")
         
         site = ((ifile["site"]))    
@@ -276,7 +276,7 @@ def var_plot(input_filenames, radius=2, transform='no'):
     titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
     
     for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S9,f8,f8", 
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
                            names = ['site','obs','pred'], delimiter = ",")
     
         obs = ((ifile["obs"]))    
@@ -333,11 +333,11 @@ def SN_diff_plot(input_filenames):
     titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
     
     for i in range(0,len(input_filenames)/2):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S9,f8,f8", 
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
                            names = ['site','obs','pred'], delimiter = ",")
         
         ifile2 = np.genfromtxt(input_filenames[i + len(input_filenames)/2], 
-                               dtype = "S9,i8,i8,f8,f8", 
+                               dtype = "S15,i8,i8,f8,f8", 
                                names = ['site','S','N','p','weight'], delimiter = ",")
         
         usites = ((ifile["site"]))
@@ -424,7 +424,7 @@ def compare_null_dataset(input_filename, output_filename, Niter):
     output_filename: 3 columns - site, R^2 for simulated data, R^2 for observed data
     
     """
-    ifile = np.genfromtxt(input_filename, dtype = "S9,i8,i8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")  
     site = sorted(list(set(ifile['site'])))
     site=site[0:2]
