@@ -120,22 +120,25 @@ def cross_taxa_weight_plot (input_filenames):
     """     
     plt.figure(1) 
     n = len(input_filenames)
-    colors = ['k', 'r', 'g', 'b']
+    colors = ['b', 'r', 'k', 'g', '0.75']
     
     for i in range(0, n):
         input_filename = input_filenames[i]
         width = round(1.0/(3 + n * 3), 2)
-        left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 6))]
+        left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 8))]
         plot_weights(input_filename, data = 'percent', left = left, 
                      color = colors[i], width = width)
     
     plt.ylabel('Percentage of sites')
     # TO DO: figure out universal means of determining xtick locations
-    plt.xticks(((((3 + n * 3)/4.8) * width), (((3 + n * 3)/1.85) * width), 
-               (((3 + n * 3)/1.14) * width)), 
+    plt.xlim((width/2), (width*(3.5 + n * 3)))
+    plt.xticks((((n/2 + 1) * width), (((3 + n * 3)/2 + 0.75) * width),
+                (((n * 3) + 0.5) * width)), 
                ('Log-normal', 'Indeterminate', 'Log-series') )
+    #plt.xticks(((width * (n/2)), (width * (n/2) + 3.5), (width * (n/2) + 11)),
+    #           ('Log-normal', 'Indeterminate', 'Log-series'))
     # TO DO: figure out how to include a color-coded legend: 
-    plt.legend(('CBC', 'BBS', 'Gentry', 'MCDB'), loc = 'upper left')
+    plt.legend(('CBC', 'BBS', 'MCDB', 'FIA', 'Gentry'), loc = 'upper left')
     plt.show()
     
 def rare_sp_count (input_filename, abundance_class):
