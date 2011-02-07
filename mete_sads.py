@@ -41,8 +41,8 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     
     usites = np.sort(list(set(ifile["site"])))
     
-    f1 = csv.writer(open(output_filename1,'a'))
-    f2 = csv.writer(open(output_filename2,'a'))
+    f1 = csv.writer(open(output_filename1,'ab'))
+    f2 = csv.writer(open(output_filename2,'ab'))
     
     for i in range(0, len(usites)):
         subsites = ifile["site"][ifile["site"] == usites[i]]
