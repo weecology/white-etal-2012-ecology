@@ -402,8 +402,7 @@ def sim_null(S0, N0):
     """R^2 between simulated abundances and METE predictions"""
     N_sim = sorted(np.random.random_integers(1, N0, S0), reverse = True)
     N_pred = mete.get_mete_sad(S0, sum(N_sim))[0]
-    r2 = macroeco.obs_pred_rsquare(np.array(N_sim), np.array(N_pred))
-    return r2
+    return N_sim, N_pred
 
 def compare_null(obs, pred, Niter):
     """Compare R^2 of observed and simulated abundances"""
