@@ -415,25 +415,33 @@ def compare_null(obs, pred, Niter):
     r2_obs = macroeco.obs_pred_rsquare(obs, pred)
     return r2_sim_avg, r2_obs
 
-def compare_null_dataset(input_filename, output_filename, Niter):
-    """Compare R^2 of observed and simulated abundances for a dataset.
+def create_null_dataset(input_filename, output_filename, Niter):
+    """Create list of R^2 values for simulated observed vs. predicted 
+    abundance relationships for a dataset.
     
     iter: number of simulations
-    input_filename: same format as output_filename1 from run_test
-    output_filename: 3 columns - site, R^2 for simulated data, R^2 for observed data
+    input_filename: same format as output_filename2 from run_test
+    output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
     ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
-                       names = ['site','obs','pred'], delimiter = ",")  
+                       names = ['site','S','N'], delimiter = ",")  
     site = sorted(list(set(ifile['site'])))
-    site=site[0:2]
     result = open(output_filename, 'ab')
     out = csv.writer(result, dialect = 'excel')
-    for isite in site:
-        idata = ifile[ifile['site'] == isite]
-        iobs = idata['obs']
-        ipred = idata['pred']
-        icomp = list(compare_null(iobs, ipred, Niter))
-        icomp.insert(0, isite)
-        out.writerow(icomp)
+    i = 0
+    while i < Niter:
+        sim_obs = list()
+        sim_pred = list()        
+        for isite in site:
+            idata = ifile[ifile['site'] == isite]
+            iS = idata['S']
+            iN = idata['N']
+            ires = sim_null(iS, iN)
+            sim_obs.extend((ires[0]))
+            sim_pred.extend((ires[1]))            
+        r2 = macroeco.obs_pred_rsquare(np.array(sim_obs), np.array(sim_pred))
+        results = ((np.column_stack((i, r2))))
+        out.writerows(results)
+        i += 1      
     result.close()
