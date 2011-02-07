@@ -50,7 +50,7 @@ cursor.execute("""
                 counts.Year, aou_too.TOO, 
                 SUM(counts.SpeciesTotal) AS AB 
                 FROM BBS.counts INNER JOIN queries.aou_too ON counts.Aou = aou_too.AOU
-                GROUP BY (counts.statenum * 1000) + counts.Route, counts.Year, aou_too.TOO
+                GROUP BY SiteID, counts.Year, aou_too.TOO
                 HAVING (((counts.Year) = 2009))
                 INTO OUTFILE '/tmp/bbs_too_2009.csv'
                 FIELDS TERMINATED BY ',' 
