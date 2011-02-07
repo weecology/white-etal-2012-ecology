@@ -431,7 +431,11 @@ def map_sites(input_filenames):
     map = Basemap(projection='merc',llcrnrlat=-50,urcrnrlat=70,\
                 llcrnrlon=-175,urcrnrlon=127,lat_ts=20,resolution='c')
     
-    map.bluemarble()  
+    # bluemarble(ax=None, scale=None, **kwargs) display blue marble image 
+    # (from http://visibleearth.nasa.gov) as map background. Default image size is 
+    # 5400x2700, which can be quite slow and use quite a bit of memory. The scale 
+    # keyword can be used to downsample the image (scale=0.5 downsamples to 2700x1350).
+    map.bluemarble(scale=0.5)    
     
     # 20 degree graticule.
     map.drawparallels(np.arange(-80,81,20))
