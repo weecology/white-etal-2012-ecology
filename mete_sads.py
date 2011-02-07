@@ -425,23 +425,22 @@ def SN_diff_plot(input_filenames):
         
     plt.show() 
     
-def map_sites(input_filenames):
+def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c'],
+              markersizes=3):
     """Generate a world map with sites color-coded by database"""
     
     map = Basemap(projection='merc',llcrnrlat=-50,urcrnrlat=70,\
-                llcrnrlon=-175,urcrnrlon=127,lat_ts=20,resolution='c')
+                llcrnrlon=-175,urcrnrlon=175,lat_ts=20,resolution='c')
     
     # bluemarble(ax=None, scale=None, **kwargs) display blue marble image 
     # (from http://visibleearth.nasa.gov) as map background. Default image size is 
     # 5400x2700, which can be quite slow and use quite a bit of memory. The scale 
     # keyword can be used to downsample the image (scale=0.5 downsamples to 2700x1350).
-    map.bluemarble(scale=0.5)    
+    map.bluemarble(scale=0.75)    
     
     # 20 degree graticule.
-    map.drawparallels(np.arange(-80,81,20))
-    map.drawmeridians(np.arange(-180,180,20))
-    
-    colors = ['b', 'r', 'g', 'y', 'c']
+    map.drawparallels(np.arange(-80,81,20), linewidth = 0.25)
+    map.drawmeridians(np.arange(-180,180,20), linewidth = 0.25)       
     
     for i in range(0, len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
@@ -450,9 +449,10 @@ def map_sites(input_filenames):
         longs = ifile["long"]  
     
         x,y = map(longs,lats)
-        map.plot(x,y,'o', markerfacecolor = colors[i])
-        
-    plt.show()
+        map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
+                 markeredgewidth = 0.25, markersize = markersizes)
+    
+    plt.savefig('map.png', dpi=400, edgecolor='k', bbox_inches = 'tight', pad_inches=0)
     
 def sim_null(S0, N0):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
