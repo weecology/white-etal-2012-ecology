@@ -176,6 +176,55 @@ def rare_sp_count (input_filename, abundance_class):
         
     return(pred_class, obs_class)
 
+def multi_taxa_rare_sp_plot(input_filenames):
+    """Generate 2 x 2 paneled figure of pred vs obs numbers of rare species 
+    for all 5 databases
+    
+    """
+    titles = ('Mammals', 'FIA Trees', 'Gentry Trees')
+    for i, filename in enumerate(input_filenames):
+        results = rare_sp_count (input_filenames[i], 'rare')
+        pred = results[0]
+        obs = results[1]       
+        if i < 2:
+            plot_obj = plt.subplot(2,2,1)
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 2, 0, plot_obj)
+            plotmax = max(max(pred),max(obs)) + 5;
+            plt.plot([0, plotmax], [0, plotmax], 'k-')
+            plt.xlim(0, plotmax)
+            plt.ylim(0, plotmax)
+            plt.title('Birds')
+            plt.ylabel('Observed number of species')            
+        elif i == 2:
+            plot_obj = plt.subplot(2,2,i)
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 2, 0, plot_obj)
+            plotmax = max(max(pred),max(obs)) + 5;
+            plt.plot([0, plotmax], [0, plotmax], 'k-')
+            plt.xlim(0, plotmax)
+            plt.ylim(0, plotmax)
+            plt.title(titles[i-2])
+        elif i == 3:
+            plot_obj = plt.subplot(2,2,i)
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 2, 0, plot_obj)
+            plotmax = max(max(pred),max(obs)) + 5;
+            plt.plot([0, plotmax], [0, plotmax], 'k-')
+            plt.xlim(0, plotmax)
+            plt.ylim(0, plotmax)
+            plt.title(titles[i-2])
+            plt.xlabel('Predicted number of species')
+            plt.ylabel('Observed number of species')            
+        else:
+            plot_obj = plt.subplot(2,2,i)
+            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 2, 0, plot_obj)
+            plotmax = max(max(pred),max(obs)) + 5;
+            plt.plot([0, plotmax], [0, plotmax], 'k-')
+            plt.xlim(0, plotmax)
+            plt.ylim(0, plotmax)
+            plt.title(titles[i-2])
+            plt.xlabel('Predicted number of species')            
+
+    plt.show()
+
 def ab_class_test_plot(input_filename):
     """Regress number of species predicted vs. observed in a given abundance class
     
