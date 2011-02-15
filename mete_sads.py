@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 import weestats
+import pickle
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
@@ -432,10 +433,13 @@ def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c
     
     plt.savefig('map.png', dpi=400, edgecolor='k', bbox_inches = 'tight', pad_inches=0)
     
-def sim_null(S0, N0):
+def sim_null(S0, N0, lib_lambda):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, (2 * N0 - S0) / S0, S0), reverse = True)
-    N_pred = mete.get_mete_sad(S0, sum(N_sim))[0]
+    NS_ratio = round(sum(N_sim) / S0, 4) 
+    if NS_ratio not in lib_lambda:
+        lib_lambda[NS_ratio] = mete.get_lambda_sad(S0, sum(N_sim))
+    N_pred = mete.get_mete_sad(S0, sum(N_sim), lib_lambda[NS_ratio])[0]     
     return N_sim, N_pred
 
 def compare_null(obs, pred, Niter):
@@ -449,7 +453,7 @@ def compare_null(obs, pred, Niter):
     r2_obs = macroeco.obs_pred_rsquare(obs, pred)
     return r2_sim_avg, r2_obs
 
-def create_null_dataset(input_filename, output_filename, Niter):
+def create_null_dataset(input_filename, output_filename, lib_filename, Niter):
     """Create list of R^2 values for simulated observed vs. predicted 
     abundance relationships for a dataset.
     
@@ -463,6 +467,9 @@ def create_null_dataset(input_filename, output_filename, Niter):
     site = sorted(list(set(ifile['site'])))
     result = open(output_filename, 'ab')
     out = csv.writer(result, dialect = 'excel')
+    lib_file = open(lib_filename, 'r')
+    lib_lambda = pickle.load(lib_file)
+    lib_file.close()
     i = 0
     while i < Niter:
         sim_obs = list()
@@ -471,11 +478,14 @@ def create_null_dataset(input_filename, output_filename, Niter):
             idata = ifile[ifile['site'] == isite]
             iS = idata['S']
             iN = idata['N']
-            ires = sim_null(iS, iN)
+            ires = sim_null(iS, iN, lib_lambda)
             sim_obs.extend((ires[0]))
-            sim_pred.extend((ires[1]))            
+            sim_pred.extend((ires[1]))
         r2 = macroeco.obs_pred_rsquare(np.array(sim_obs), np.array(sim_pred))
         results = ((np.column_stack((i, r2))))
         out.writerows(results)
-        i += 1      
+        i += 1
+    lib_output = open(lib_filename, 'w')
+    pickle.dump(lib_lambda, lib_output)
+    lib_output.close()
     result.close()
