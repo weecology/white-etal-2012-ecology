@@ -439,7 +439,8 @@ def sim_null(S0, N0, dic_lambda):
     NS_ratio = round(sum(N_sim) / S0, 4) 
     if NS_ratio not in dic_lambda:
         dic_lambda[NS_ratio] = mete.get_lambda_sad(S0, sum(N_sim))
-    N_pred = mete.get_mete_sad(S0, sum(N_sim), dic_lambda[NS_ratio])[0]     
+    N_pred = mete.get_mete_sad(S0, sum(N_sim), dic_lambda[NS_ratio])[0] 
+    np.random.seed()
     return N_sim, N_pred
 
 def compare_null(obs, pred, Niter):
