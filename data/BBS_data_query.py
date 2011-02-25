@@ -40,18 +40,36 @@ cursor.execute("""
                 GROUP BY AOU, TOO;
                 """) 
 
-# 3. To create table with SiteID - Year - Sp - abund:
+# 3. To create table with SiteID - Year - RunType = 1:
+    # from weather table
+    
+cursor.execute("""
+                CREATE TABLE queries.weather_subquery
+                SELECT (weather.statenum*1000+ weather.Route) AS SiteID, weather.Year, weather.RunType
+                FROM BBS.weather
+                WHERE weather.RunType = 1;
+                """)
+                 
+# 4. To create table with SiteID - Year - Sp - abund:
     # Link together AOU_TOO and BBS Counts by AOU - 
     # Group By SiteID = state*1000 + route - TOO - Year 
     # Sum SpeciesTotal
     
 cursor.execute("""
+                CREATE TABLE queries.counts_too
                 SELECT (counts.statenum * 1000) + counts.Route AS SiteID,
                 counts.Year, aou_too.TOO, 
                 SUM(counts.SpeciesTotal) AS AB 
                 FROM BBS.counts INNER JOIN queries.aou_too ON counts.Aou = aou_too.AOU
                 GROUP BY SiteID, counts.Year, aou_too.TOO
-                HAVING (((counts.Year) = 2009))
+                HAVING (((counts.Year = 2009) AND (counts.RPID = 101)));
+                """)
+                
+cursor.execute("""
+                SELECT counts_too.SiteID, counts_too.Year, counts_too.TOO, counts_too.AB
+                FROM queries.counts_too INNER JOIN queries.weather_subquery
+                ON counts_too.SiteID = weather_subquery.SiteID 
+                AND counts_too.Year = weather_subquery.Year
                 INTO OUTFILE '/tmp/bbs_too_2009.csv'
                 FIELDS TERMINATED BY ',' 
                 LINES TERMINATED BY '\n';
