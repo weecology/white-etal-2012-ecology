@@ -289,7 +289,7 @@ def evar_pred_obs(input_filenames, output_filenames):
         site = ((ifile["site"]))    
         usites = list(set(site))  
         
-        f1 = csv.writer(open(output_filenames[i],'a'))
+        f1 = csv.writer(open(output_filenames[i],'ab'))
     
         for i in range (0, len(usites)):
             pred = ifile["pred"][ifile["site"] == usites[i]]
@@ -304,7 +304,7 @@ def var_plot(input_filenames, radius=2, transform='no'):
     #TODO Cleanup transformations using dictionary based approach and error
     #     checking for cases where a provided transformation is undefined
     #TODO Generalize to different numbers of subplots
-    titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
+    titles = ('CBC', 'BBS', 'MCDB', 'Gentry',' FIA', 'All')
     
     for i in range(0,len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
@@ -328,27 +328,28 @@ def var_plot(input_filenames, radius=2, transform='no'):
         else:
             obs_trans = obs
             pred_trans = pred
-            axis_min = min(obs) - 1
-            axis_max = max(obs) + 1
+            axis_min = 0 #min(obs) - 1
+            axis_max = 1 #max(obs) + 1
             axis_scale = 0
         slope, intercept, r_value, p_value, std_err = stats.linregress(pred_trans,
                                                                        obs_trans)
+        r_squared = macroeco.obs_pred_rsquare(obs_trans, pred_trans)
             
-        plt.subplot(2,2,i+1)
+        plt.subplot(3,2,i+1)
         macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
-                                       plot_obj=plt.subplot(2,2,i+1))        
+                                       plot_obj=plt.subplot(3,2,i+1))        
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
         plt.ylim(axis_min, axis_max)
-        if i == 0:
+        if i == 0 or i == 2:
             plt.ylabel('Observed')
-        elif i == 2:
+        elif i == 4:
             plt.xlabel('Predicted')
             plt.ylabel('Observed')
-        elif i == 3:        
+        elif i == 5:        
             plt.xlabel('Predicted Evar')
         plt.title(titles[i])
-        r2 = ('r2 = ' + str(round(r_value**2, 2)))
+        r2 = ('r2 = ' + str(round(r_squared, 2)))
         b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
         plt.annotate(b, xy=(-10, 10), xycoords='axes points',
                 horizontalalignment='right', verticalalignment='bottom',
