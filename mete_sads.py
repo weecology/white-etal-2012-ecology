@@ -12,7 +12,7 @@ http://matplotlib.sourceforge.net/basemap/doc/html/users/installing.html
         
 """
 
-from mpl_toolkits.basemap import Basemap
+#from mpl_toolkits.basemap import Basemap
 import macroeco_distributions as md
 import mete
 import csv
@@ -45,32 +45,38 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     f1 = csv.writer(open(output_filename1,'ab'))
     f2 = csv.writer(open(output_filename2,'ab'))
     
-    for i in range(0, len(usites)):
-        subsites = ifile["site"][ifile["site"] == usites[i]]
-        S = len(subsites)
-        subab = np.sort(ifile["ab"][ifile["site"] == usites[i]])
-        N = sum(subab)
-        if S > cutoff:
-            # Generate predicted values and p (e ** -lambda_sad) based on METE:
-            mete_pred = mete.get_mete_sad(int(S),int(N))
-            pred = np.array(mete_pred[0])
-            p = mete_pred[1]
-            subab = np.sort(subab)[::-1]
-            # Calculate Akaike weight of log-series:
-            L_logser = md.logser_ll(subab, p)        
-            mu = np.mean(np.log(subab))
-            sigma = np.std(np.log(subab))
-            L_pln = md.pln_ll(mu,sigma,subab)        
-            k1 = 1
-            k2 = 2    
-            AICc_logser = weestats.AICc(k1, L_logser, S)
-            AICc_pln = weestats.AICc(k2, L_pln, S)
-            weight = weestats.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4) 
-            #save results to a csv file:
-            results = ((np.column_stack((subsites, subab, pred))))
-            results2 = ((np.column_stack((usites[i], S, N, p, weight))))
-            f1.writerows(results)
-            f2.writerows(results2)
+    for i in range(0, 100):
+        subsites = ifile["site"][ifile["site"] == usites[i]]        
+        subab = ifile["ab"][ifile["site"] == usites[i]]
+        subyr = ifile["year"][ifile["site"] == usites[i]]
+        uyr = np.sort(list(set(subyr)))
+        for a in range(0, len(uyr)):
+            subsubsites = subsites[subyr == uyr[a]]
+            subsubab = subab[subyr == uyr[a]]
+            subsubyr = subyr[subyr == uyr[a]]
+            N = sum(subsubab)
+            S = len(subsubsites)
+            if S > cutoff:
+                # Generate predicted values and p (e ** -lambda_sad) based on METE:
+                mete_pred = mete.get_mete_sad(int(S),int(N))
+                pred = np.array(mete_pred[0])
+                p = mete_pred[1]
+                subab3 = np.sort(subsubab)[::-1]
+                # Calculate Akaike weight of log-series:
+                L_logser = md.logser_ll(subab3, p)        
+                mu = np.mean(np.log(subab3))
+                sigma = np.std(np.log(subab3))
+                L_pln = md.pln_ll(mu,sigma,subab3)        
+                k1 = 1
+                k2 = 2    
+                AICc_logser = weestats.AICc(k1, L_logser, S)
+                AICc_pln = weestats.AICc(k2, L_pln, S)
+                weight = weestats.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4) 
+                #save results to a csv file:
+                results = ((np.column_stack((subsubsites, subsubyr, subab3, pred))))
+                results2 = ((np.column_stack((usites[i], uyr[a], S, N, p, weight))))
+                f1.writerows(results)
+                f2.writerows(results2)
             
 def plot_pred_obs(input_filename, title = ''): 
     """use output from run_test to plot observed vs. predicted abundances"""
