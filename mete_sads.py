@@ -37,7 +37,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     
     """
     
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,S9,i8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,f9,i8", 
                        names = ['site','year','sp','ab'], delimiter = ",")
     
     usites = np.sort(list(set(ifile["site"])))
@@ -497,26 +497,3 @@ def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
     cPickle.dump(dic_lambda, dic_output)
     dic_output.close()
     result.close()
-
-def calc_comp_eds(input_filename, output_filename, cutoff = 9):
-    """Calculate Euclidean distances in species composition & save to file"""
-    
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,f8,i8", 
-                      names = ['site','year','species','ab'], 
-                      delimiter = ",")
-
-    usites = np.sort(list(set(ifile["site"]))) 
-    f1 = csv.writer(open(output_filename,'ab'))
-    
-    for i in range (0,len(usites)-1):       
-        spdata1 = ifile["species"][ifile["site"] == usites[i]]
-        abdata1 = ifile["ab"][ifile["site"] == usites[i]]
-        
-        for a in range (i+1,len(usites)):  
-            spdata2 = ifile["species"][ifile["site"] == usites[a]]
-            abdata2 = ifile["ab"][ifile["site"] == usites[a]]   
-            
-            if len(spdata1) > cutoff and len(spdata2) > cutoff:
-                ed = macroeco.comp_ed (spdata1,abdata1,spdata2,abdata2)
-                results = np.column_stack((usites[i], usites[i+1], ed))
-                f1.writerows(results)
