@@ -47,7 +47,7 @@ cursor.execute("""
                 CREATE TABLE queries.weather_subquery
                 SELECT (weather.statenum*1000+ weather.Route) AS SiteID, weather.Year, weather.RunType
                 FROM BBS.weather
-                WHERE weather.RunType = 1;
+                WHERE weather.RunType = 1 AND weather.RPID = 101;
                 """)
                  
 # 4. To create table with SiteID - Year - Sp - abund:
@@ -61,7 +61,7 @@ cursor.execute("""
                 counts.Year, aou_too.TOO, 
                 SUM(counts.SpeciesTotal) AS AB 
                 FROM BBS.counts INNER JOIN queries.aou_too ON counts.Aou = aou_too.AOU
-                GROUP BY SiteID, counts.Year, aou_too.TOO
+                GROUP BY SiteID, counts.Year, aou_too.TOO, counts.RPID
                 HAVING (((counts.Year = 2009) AND (counts.RPID = 101)));
                 """)
                 
