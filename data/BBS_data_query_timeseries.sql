@@ -15,7 +15,7 @@ GROUP BY AOU, TOO;
 CREATE TABLE queries.weather_subquery
 SELECT (weather.statenum*1000+ weather.Route) AS SiteID, weather.Year, weather.RunType
 FROM BBS.weather
-WHERE weather.RunType = 1;
+WHERE weather.RunType = 1 AND weather.RPID = 101;
 
 CREATE TABLE queries.bbs_site_yr
 SELECT (counts.statenum * 1000) + counts.Route AS SiteID,
@@ -33,7 +33,7 @@ SELECT (counts.statenum * 1000) + counts.Route AS SiteID,
 counts.Year, aou_too.TOO, counts.RPID,
 SUM(counts.SpeciesTotal) AS AB 
 FROM BBS.counts INNER JOIN queries.aou_too ON counts.Aou = aou_too.AOU
-GROUP BY SiteID, counts.Year, aou_too.TOO
+GROUP BY SiteID, counts.Year, aou_too.TOO, counts.RPID
 HAVING (((counts.RPID = 101)));
 
 CREATE TABLE queries.counts_ts_final
