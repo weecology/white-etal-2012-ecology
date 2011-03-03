@@ -497,3 +497,34 @@ def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
     cPickle.dump(dic_lambda, dic_output)
     dic_output.close()
     result.close()
+    
+def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
+    """Plot Preston SADs for both observed and predicted SADs for a subset of sites (num_sites)"""
+    
+    usites = sorted(list(set(sites)))
+    step = len(usites)/(num_sites)
+    a = 1
+    for i in range (0, len(usites), step):
+        if a <= num_sites:
+            iobs = obs_ab[sites == usites[i]]
+            ipred = pred_ab[sites == usites[i]]
+            sad_obs = macroeco.preston_sad(iobs)
+            sad_pred = macroeco.preston_sad(ipred)
+            
+            plot_obj = plt.subplot(5,5,a)
+            height_obs = sad_obs[0]
+            height_pred = sad_pred[0]
+            left_obs = range(1,len(height_obs)+ 1)  
+            left_pred = range(1,len(height_pred)+ 1)  
+            plt.bar(left_obs, height_obs, width = 0.4, color = 'b')
+            plt.bar((np.array(left_pred) + 0.4), height_pred, width = 0.4, color = 'r')
+            
+            plot_obj.set_title(usites[i])
+            plot_obj.set_ylabel('Number of species') 
+            plot_obj.set_xlim(0.5, max(max(left_obs),max(left_pred)) + 1)
+            plot_obj.set_xticks(np.array(left_obs) + 0.4)
+            plot_obj.set_xticklabels(np.array(sad_obs[1][0:len(height_obs)], dtype = int))
+            plot_obj.set_ylim(0, (max(max(height_obs),max(height_pred)) + 1))
+            
+            a += 1
+    plt.show()
