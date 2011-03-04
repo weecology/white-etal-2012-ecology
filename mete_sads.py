@@ -508,8 +508,8 @@ def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
         if a <= num_sites:
             iobs = obs_ab[sites == usites[i]]
             ipred = pred_ab[sites == usites[i]]
-            sad_obs = macroeco.preston_sad(iobs)
-            sad_pred = macroeco.preston_sad(ipred)
+            sad_obs = macroeco.preston_sad(iobs, normalized = 'yes')
+            sad_pred = macroeco.preston_sad(ipred, normalized = 'yes')
             
             plot_obj = plt.subplot(5,5,a)
             height_obs = sad_obs[0]
