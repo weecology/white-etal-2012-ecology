@@ -12,7 +12,7 @@ http://matplotlib.sourceforge.net/basemap/doc/html/users/installing.html
         
 """
 
-#from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap
 import macroeco_distributions as md
 import mete
 import csv
@@ -415,14 +415,17 @@ def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c
               markersizes=3):
     """Generate a world map with sites color-coded by database"""
     
-    map = Basemap(projection='merc',llcrnrlat=-50,urcrnrlat=70,\
-                llcrnrlon=-175,urcrnrlon=175,lat_ts=20,resolution='c')
+    map = Basemap(projection='merc',llcrnrlat=-57,urcrnrlat=71,\
+                llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='c')
+    
+    map.drawcoastlines(linewidth=1.5)
+    map.fillcontinents(color='w',lake_color='w')
     
     # bluemarble(ax=None, scale=None, **kwargs) display blue marble image 
     # (from http://visibleearth.nasa.gov) as map background. Default image size is 
     # 5400x2700, which can be quite slow and use quite a bit of memory. The scale 
     # keyword can be used to downsample the image (scale=0.5 downsamples to 2700x1350).
-    map.bluemarble(scale=0.75)    
+    #map.bluemarble(scale=0.75)    
     
     # 20 degree graticule.
     map.drawparallels(np.arange(-80,81,20), linewidth = 0.25)
@@ -515,7 +518,7 @@ def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
             height_obs = sad_obs[0]
             height_pred = sad_pred[0]
             left_obs = range(1,len(height_obs)+ 1)  
-            left_pred = range(1,len(height_pred)+ 1)  
+            left_pred = range(1,len(height_pred)+ 1)
             plt.bar(left_obs, height_obs, width = 0.4, color = 'b')
             plt.bar((np.array(left_pred) + 0.4), height_pred, width = 0.4, color = 'r')
             
@@ -526,5 +529,173 @@ def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
             plot_obj.set_xticklabels(np.array(sad_obs[1][0:len(height_obs)], dtype = int))
             plot_obj.set_ylim(0, (max(max(height_obs),max(height_pred)) + 1))
             
+            a += 1
+    plt.show()
+    
+def dev_per_x(input_filenames):
+    
+    titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
+    
+    for i in range(0,len(input_filenames)/2):
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
+                               names = ['site','obs','pred'], delimiter = ",")
+            
+        ifile2 = np.genfromtxt(input_filenames[i + len(input_filenames)/2], 
+                               dtype = "S15,i8,i8,f8,f8", 
+                               names = ['site','S','N','p','weight'], delimiter = ",")
+        
+        usites = ((ifile["site"]))
+        S = ifile2["S"]
+        max_site = ifile2["site"][ifile2["S"] == max(S)]
+        max_N = max(max(ifile["obs"]), max(ifile["pred"]))
+        mete_pred = mete.get_mete_sad(int(max(S)),int(ifile2["N"][ifile2["site"] == max_site]))
+        p = mete_pred[1]
+        hist_ab = np.histogram(pred, bins = range(1,max_N,1))
+        plt.bar(hist_ab[1][0:len(hist_ab[0])],hist_ab[0], width = 1)
+        mu = np.mean(hist_ab[0])
+        sigma = np.std(hist_ab[0])
+        L = md.pln_lik(mu, sigma, hist_ab[0])
+        plt.plot((stats.lognorm.pdf(hist_ab[0], mu, sigma)))
+        log(stats.logser.pmf(x, p))
+        
+        diffs=[]
+        xvar=[]
+        for a in range(0, len(usites)):
+            pred = ifile["pred"][ifile["site"] == usites[a]]
+            obs = ifile["obs"][ifile["site"] == usites[a]]
+
+            if len(S) > 0:
+                var_diff = pred - obs
+                S_over_N = float(S) / float(N)
+                diffs.append(var_diff)
+                xvar.append(S_over_N)
+        
+        plt.subplot(2,2,i+1)
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.scatter(xvar, diffs)        
+        plt.plot([0, 1],[0, 1], 'k-')
+        plt.xlim(min(xvar),10 ** -0.1)
+        plt.ylim(min(diffs),max(diffs))
+        if i == 0:
+            plt.ylabel('Predicted - Observed')
+        elif i == 2:
+            plt.xlabel('S/N')
+            plt.ylabel('Predicted - Observed')
+        elif i == 3:        
+            plt.xlabel('S/N')
+        plt.title(titles[i])
+        
+    plt.show() 
+    
+def dev_per_x(input_filenames):
+    
+    titles = ('CBC', 'BBS','MCDB', 'Trees')
+    z = 1
+    for ifin in input_filenames:        
+        
+        ifile = np.genfromtxt(ifin, dtype = "S15,i8,i8", 
+                               names = ['site','obs','pred'], delimiter = ",")
+        
+        usites = sorted(list(set(ifile["site"])))
+        max_N = max(max(ifile["obs"]), max(ifile["pred"]))
+        max_site = ifile["site"][[ifile["obs"] == max_N] or [ifile["obs"] == max_N]]
+        #if max_N > 10000:
+            #max_N = 10000
+        q = np.exp2(list(range(0, 25)))    
+        b = q [(q <= max_N*2)]
+        
+        dev_per_x = []
+        n_values = []
+        for i in range(0, len(usites)):
+            pred = ifile["obs"][ifile["site"] == '203']#usites[i]]
+            obs = ifile["obs"][ifile["site"] == usites[i]]
+            bins = range(1, max_N)
+            hist_pred = macroeco.preston_sad(pred, b = b, normalized = 'no')
+            hist_obs = macroeco.preston_sad(obs, b = b, normalized = 'no')
+            dev = hist_obs[0] - hist_pred[0]
+            dev_per_x.extend((dev))
+            n_values.extend((b[0:len(hist_obs[0])]))
+    
+        n_val = np.array(n_values)
+        dev_x = np.array(dev_per_x)
+        un = sorted(list(set(n_values)))
+        plt.subplot(len(input_filenames)/2, 2, z)
+        for inval in un:
+            all_dev = dev_x[n_val == inval]
+            avg_dev = np.mean(all_dev)
+            std_dev = np.std(all_dev)
+            plt.errorbar(np.log(inval), avg_dev, yerr=std_dev, xerr=None, fmt='ob', ecolor = 'b')
+            plt.xlim(-0.5, np.log(max_N) + 0.5)
+            plt.ylim(-6, 6)            
+            
+        plt.title(titles[z-1])
+        z += 1
+    plt.show() 
+
+#def plot_logseries():
+    
+    
+def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln', 
+                 normalized = 'yes', num_sites = 25):
+    """Plot pmfs of fits of observed abundances"""
+    
+    usites = sorted(list(set(sites)))
+    step = len(usites)/(num_sites)
+    a = 1
+    for i in range (0, len(usites), step):
+        if a <= num_sites:
+            iobs = obs_ab[sites == usites[i]]
+            ipred = pred_ab[sites == usites[i]]
+            sad_obs = macroeco.preston_sad(iobs, normalized = normalized)
+            sad_pred = macroeco.preston_sad(ipred, normalized = normalized)
+            
+            ipr = pr[sites2 == usites[i]]
+            
+            plot_obj = plt.subplot(5,5,a)
+            plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, 
+                                wspace=0.55, hspace=0.33)
+            height_obs = sad_obs[0]
+            height_pred = sad_pred[0]
+            left_obs = range(1,len(height_obs)+ 1)  
+            left_pred = range(1,len(height_pred)+ 1)
+            plt.bar(left_obs, height_obs, width = 0.3, color = 'b')
+            plt.bar((np.array(left_pred) + 0.3), height_pred, width = 0.3, color = 'r')
+            
+            if dist == 'logser':                
+                L = stats.logser.pmf(np.sort(iobs),ipr)
+            if dist == 'pln':
+                mu = np.mean(np.log(iobs))
+                sigma = np.std(np.log(iobs))
+                L = md.pln_lik(mu,sigma,np.sort(iobs),approx_cut = 10)  
+                L = md.pln_lik(mu,sigma,range(1, max(iobs)+1),approx_cut = 10)
+            L_scaled = L * len(iobs)
+            q = np.exp2(list(range(0, 25)))    
+            b = q [(q <= max(iobs)*2)]
+            height_dist=[]
+            for c in range(0,len(b)-1):
+                count = float(sum(L_scaled[b[c]-1:b[c+1]-1]))
+                binwidth = b[c+1]-b[c]
+                height_dist.append(count/binwidth)                
+            left_dist = range(1,len(height_dist)+ 1)            
+            plt.bar((np.array(left_dist) + 0.6), height_dist, width = 0.3, color = 'k')
+                        
+            plot_obj.set_title(usites[i]) 
+            plot_obj.set_xlim(0.5, max(max(left_obs),max(left_pred), max(left_dist)) + 1)
+            plot_obj.set_xticks(np.array(left_obs) + 0.4)
+            plot_obj.set_xticklabels(np.array(sad_obs[1][0:len(height_obs)], dtype = int))
+            plot_obj.set_ylim(0, (max(max(height_obs),max(height_pred), max(height_dist)) + 0.5))
+            if a == 1 or a == 6 or a == 11 or a == 16 or a == 21:
+                plot_obj.set_ylabel('Number of species')
+            if max(max(height_obs), max(height_pred), max(height_dist)) > 59:
+                tk = 20
+            elif max(max(height_obs), max(height_pred), max(height_dist)) > 19:
+                tk = 5
+            elif max(max(height_obs), max(height_pred), max(height_dist)) > 10:
+                tk = 2
+            else:
+                tk = 1
+            plot_obj.set_yticks(range(tk,max(max(height_obs),max(height_pred)) + 1,tk))     
+            print a
             a += 1
     plt.show()
