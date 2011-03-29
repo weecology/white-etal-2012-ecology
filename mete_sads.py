@@ -22,7 +22,6 @@ import numpy as np
 from scipy import stats
 import weestats
 import cPickle
-
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
     
@@ -310,7 +309,7 @@ def var_plot(input_filenames, radius=2, transform='no'):
     #TODO Cleanup transformations using dictionary based approach and error
     #     checking for cases where a provided transformation is undefined
     #TODO Generalize to different numbers of subplots
-    titles = ('CBC', 'BBS', 'MCDB', 'Gentry',' FIA', 'All')
+    titles = ('BBS', 'CBC','FIA','Gentry','MCDB','NABC')
     
     for i in range(0,len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
@@ -337,9 +336,9 @@ def var_plot(input_filenames, radius=2, transform='no'):
             axis_min = 0 #min(obs) - 1
             axis_max = 1 #max(obs) + 1
             axis_scale = 0
-        slope, intercept, r_value, p_value, std_err = stats.linregress(pred_trans,
-                                                                       obs_trans)
-        r_squared = macroeco.obs_pred_rsquare(obs_trans, pred_trans)
+        #slope, intercept, r_value, p_value, std_err = stats.linregress(pred_trans,
+        #                                                               obs_trans)
+        #r_squared = macroeco.obs_pred_rsquare(obs_trans, pred_trans)
             
         plt.subplot(3,2,i+1)
         macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
@@ -347,22 +346,21 @@ def var_plot(input_filenames, radius=2, transform='no'):
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
         plt.ylim(axis_min, axis_max)
-        if i == 0 or i == 2:
-            plt.ylabel('Observed')
+        if i == 2:
+            plt.ylabel('Observed Abundance')
         elif i == 4:
-            plt.xlabel('Predicted')
-            plt.ylabel('Observed')
+            plt.xlabel('Predicted Abundance')
         elif i == 5:        
             plt.xlabel('Predicted Evar')
         plt.title(titles[i])
-        r2 = ('r2 = ' + str(round(r_squared, 2)))
-        b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
-        plt.annotate(b, xy=(-10, 10), xycoords='axes points',
-                horizontalalignment='right', verticalalignment='bottom',
-                fontsize=14)
-        plt.annotate(r2, xy=(-10, 30), xycoords='axes points',
-                horizontalalignment='right', verticalalignment='bottom',
-                fontsize=14)
+        #r2 = ('r2 = ' + str(round(r_squared, 2)))
+        #b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
+        #plt.annotate(b, xy=(-10, 10), xycoords='axes points',
+                #horizontalalignment='right', verticalalignment='bottom',
+                #fontsize=14)
+        #plt.annotate(r2, xy=(-10, 30), xycoords='axes points',
+                #horizontalalignment='right', verticalalignment='bottom',
+                #fontsize=14)
         
     plt.show() 
     
@@ -588,54 +586,100 @@ def dev_per_x(input_filenames):
         
     plt.show() 
     
-def dev_per_x(input_filenames):
-    
-    titles = ('CBC', 'BBS','MCDB', 'Trees')
-    z = 1
-    for ifin in input_filenames:        
-        
-        ifile = np.genfromtxt(ifin, dtype = "S15,i8,i8", 
-                               names = ['site','obs','pred'], delimiter = ",")
-        
-        usites = sorted(list(set(ifile["site"])))
-        max_N = max(max(ifile["obs"]), max(ifile["pred"]))
-        max_site = ifile["site"][[ifile["obs"] == max_N] or [ifile["obs"] == max_N]]
-        #if max_N > 10000:
-            #max_N = 10000
-        q = np.exp2(list(range(0, 25)))    
-        b = q [(q <= max_N*2)]
-        
-        dev_per_x = []
-        n_values = []
-        for i in range(0, len(usites)):
-            pred = ifile["obs"][ifile["site"] == '203']#usites[i]]
-            obs = ifile["obs"][ifile["site"] == usites[i]]
-            bins = range(1, max_N)
-            hist_pred = macroeco.preston_sad(pred, b = b, normalized = 'no')
-            hist_obs = macroeco.preston_sad(obs, b = b, normalized = 'no')
-            dev = hist_obs[0] - hist_pred[0]
-            dev_per_x.extend((dev))
-            n_values.extend((b[0:len(hist_obs[0])]))
-    
-        n_val = np.array(n_values)
-        dev_x = np.array(dev_per_x)
-        un = sorted(list(set(n_values)))
-        plt.subplot(len(input_filenames)/2, 2, z)
-        for inval in un:
-            all_dev = dev_x[n_val == inval]
-            avg_dev = np.mean(all_dev)
-            std_dev = np.std(all_dev)
-            plt.errorbar(np.log(inval), avg_dev, yerr=std_dev, xerr=None, fmt='ob', ecolor = 'b')
-            plt.xlim(-0.5, np.log(max_N) + 0.5)
-            plt.ylim(-6, 6)            
-            
-        plt.title(titles[z-1])
-        z += 1
-    plt.show() 
+def dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = ''):
 
-#def plot_logseries():
+    usites = sorted(list(set(sites)))
+    max_N = max(max(obs_ab), max(pred_ab))
+    max_S = max(S)
+    max_site = sites2[S == max_S]
+    if len(max_site) > 1:
+        max_site = max_site[0]
+    #max_site1 = sites[obs_ab == max_N]
+    #max_site2 = sites[pred_ab == max_N]
+    #if len(max_site1) > 0:
+        #max_site = max_site1
+    #elif len(max_site2) > 0:
+        #max_site = max_site2
+    max_obs = obs_ab[sites == max_site]
+    max_pr = pr[sites2 == max_site]
+    L = stats.logser.pmf(range(1, max_N+1),max_pr)
+    L_scaled = L * len(max_obs)
+    q = np.exp2(list(range(0, 25)))    
+    b = q [(q <= max_N*2)]
+    height_dist=[]
+    for c in range(0,len(b)-1):
+        count = float(sum(L_scaled[b[c]-1:b[c+1]-1]))
+        binwidth = b[c+1]-b[c]
+        height_dist.append(count/binwidth)                
+    left_dist = range(1,len(height_dist)+ 1) 
     
+    dev_per_x = []
+    n_values = []
+    for i in range(0, len(usites)):
+        pred = pred_ab[sites == usites[i]]
+        obs = obs_ab[sites == usites[i]]
+        hist_pred = macroeco.preston_sad(pred, b = b, normalized = 'yes')
+        hist_obs = macroeco.preston_sad(obs, b = b, normalized = 'yes')
+        dev = hist_obs[0] - hist_pred[0]
+        dev_per_x.extend((dev))
+        n_values.extend((b[0:len(hist_obs[0])]))
     
+    n_val = np.array(n_values)
+    dev_x = np.array(dev_per_x)
+    un = sorted(list(set(n_values)))
+    #plt.subplot(len(input_filenames)/2, 2, z)
+    max_h = 0
+    max_dev = 0
+    for i in range(0, len(un)):
+        all_dev = dev_x[n_val == un[i]]
+        avg_dev = np.mean(all_dev)
+        std_dev = np.std(all_dev)
+        plt.errorbar(np.log(un[i]), avg_dev + height_dist[i], yerr=std_dev, xerr=None, fmt='ob', ecolor = 'b')
+        plt.plot(height_dist)
+        plt.xlim(-0.5, np.log(max_N) + 0.5)
+        plt.title(title)
+        if height_dist[i] > max_h:
+            max_h = height_dist[i]
+        if avg_dev > max_dev:
+            max_dev = avg_dev
+        plt.ylim(-1, max_h + max_dev + 1) 
+        #plt.xticks(range(0, len(un)+1),(b[0:len(un)]))
+        
+def dev_per_x3(sites, obs_ab, pred_ab, title = ''):
+
+    usites = sorted(list(set(sites)))
+    max_N = max(max(obs_ab), max(pred_ab))
+    q = 10 **((np.arange(0, 8, 0.5)))    
+    b = q [(q <= max_N*2)]
+    
+    dev_per_x = []
+    n_values = []
+    for i in range(0, len(usites)):
+        pred = pred_ab[sites == usites[i]]
+        obs = obs_ab[sites == usites[i]]
+        hist_pred = macroeco.preston_sad(pred, b = b, normalized = 'no')
+        hist_obs = macroeco.preston_sad(obs, b = b, normalized = 'no')
+        dev = hist_obs[0] - hist_pred[0]
+        dev_per_x.extend((dev))
+        n_values.extend((b[0:len(hist_obs[0])]))
+    
+    n_val = np.array(n_values)
+    dev_x = np.array(dev_per_x)
+    un = sorted(list(set(n_values)))
+
+    max_dev = 0
+    for i in range(0, len(un)):
+        all_dev = dev_x[n_val == un[i]]
+        avg_dev = np.mean(all_dev)
+        std_dev = np.std(all_dev)
+        plt.errorbar(np.log(un[i]), avg_dev, yerr=std_dev, xerr=None, fmt='ob', ecolor = 'b')
+        plt.xlim(-0.5, np.log(max_N) + 0.5)
+        plt.title(title)
+        if avg_dev > max_dev:
+            max_dev = avg_dev
+        plt.ylim(-6, 6) 
+        #plt.xticks(range(0, len(un)+1),(b[0:len(un)]))
+        
 def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln', 
                  normalized = 'yes', num_sites = 25):
     """Plot pmfs of fits of observed abundances"""
@@ -643,11 +687,11 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
     usites = sorted(list(set(sites)))
     step = len(usites)/(num_sites)
     a = 1
-    for i in range (0, len(usites), step):
+    for i in range (1, len(usites), step):
         if a <= num_sites:
             iobs = obs_ab[sites == usites[i]]
             ipred = pred_ab[sites == usites[i]]
-            sad_obs = macroeco.preston_sad(iobs, normalized = normalized)
+            sad_obs = macroeco.preston_sad(iobs, normalized = 'yes')
             sad_pred = macroeco.preston_sad(ipred, normalized = normalized)
             
             ipr = pr[sites2 == usites[i]]
@@ -663,7 +707,7 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
             plt.bar((np.array(left_pred) + 0.3), height_pred, width = 0.3, color = 'r')
             
             if dist == 'logser':                
-                L = stats.logser.pmf(np.sort(iobs),ipr)
+                L = stats.logser.pmf(range(1, max(iobs)+1),ipr)
             if dist == 'pln':
                 mu = np.mean(np.log(iobs))
                 sigma = np.std(np.log(iobs))
