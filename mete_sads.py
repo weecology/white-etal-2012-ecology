@@ -36,7 +36,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     
     """
     
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,f9,i8", 
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,S10,i8", 
                        names = ['site','year','sp','ab'], delimiter = ",")
     
     usites = np.sort(list(set(ifile["site"])))
@@ -62,9 +62,8 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                 p = mete_pred[1]
                 subab3 = np.sort(subsubab)[::-1]
                 # Calculate Akaike weight of log-series:
-                L_logser = md.logser_ll(subab3, p)        
-                mu = np.mean(np.log(subab3))
-                sigma = np.std(np.log(subab3))
+                L_logser = md.logser_ll(subab3, p)
+                mu, sigma = md.pln_solver(subab3)
                 L_pln = md.pln_ll(mu,sigma,subab3)        
                 k1 = 1
                 k2 = 2    
