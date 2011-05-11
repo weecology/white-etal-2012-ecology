@@ -96,9 +96,9 @@ def plot_weights(input_filename, data = 'raw', left = [0, 0.4, 0.8],
                  width = 0.2, color = 'b', title = ''): 
     """use output from run_test to plot frequency distribution of Akaike weights"""
     
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,f8,f8", 
-                       names = ['site','S','N','p','weight'], delimiter = ",")
-    
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8", 
+                       names = ['site', 'year', 'S', 'N', 'p', 'weight'],
+                       delimiter = ",")
     weights = ((ifile["weight"]))
     weights = weights[weights >= 0]
     bins = [0, 0.4, 0.6, 1]
