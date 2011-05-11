@@ -6,26 +6,28 @@ import macroeco
 import matplotlib.pyplot as plt
 import numpy as np
 
-input_filenames = ('D:/My Dropbox/Code/MaxEnt/trunk/data/bbs_obs_pred.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/cbc_obs_pred.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/fia_obs_pred.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/gentry_obs_pred.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/mcdb_obs_pred.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/naba_obs_pred.csv')
+workdir = '/home/ethan/Dropbox/MaxEnt/Code/data/'
 
-input_filenames1 = ('D:/My Dropbox/Code/MaxEnt/trunk/data/bbs_dist_test.csv', 
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/cbc_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/fia_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/gentry_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/mcdb_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/naba_dist_test.csv')
+input_filenames = (workdir + 'bbs_obs_pred.csv',
+                   workdir + 'cbc_obs_pred.csv',
+                   workdir + 'fia_obs_pred.csv',
+                   workdir + 'gentry_obs_pred.csv',
+                   workdir + 'mcdb_obs_pred.csv',
+                   workdir + 'naba_obs_pred.csv')
 
-input_filenames2 = ('D:/My Dropbox/Code/MaxEnt/trunk/data/bbs_lat_long.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/cbc_lat_long.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/fia_lat_long.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/gentry_lat_long.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/mcdb_lat_long.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/naba_lat_long.csv')
+input_filenames1 = (workdir + 'bbs_dist_test.csv', 
+                   workdir + 'cbc_dist_test.csv',
+                   workdir + 'fia_dist_test.csv',
+                   workdir + 'gentry_dist_test.csv',
+                   workdir + 'mcdb_dist_test.csv',
+                   workdir + 'naba_dist_test.csv')
+
+input_filenames2 = (workdir + 'bbs_lat_long.csv',
+                   workdir + 'cbc_lat_long.csv',
+                   workdir + 'fia_lat_long.csv',
+                   workdir + 'gentry_lat_long.csv',
+                   workdir + 'mcdb_lat_long.csv',
+                   workdir + 'naba_lat_long.csv')
 
 #figure 1a
 ##aea383 - brown - cdaa7d - 7c5e4e - #d5a76b - #325582 - dark blue
@@ -177,12 +179,12 @@ def var_plot(input_filenames, radius=2):
 var_plot(input_filenames, radius = 3)
 
 #figure 3
-input_filenames = ('D:/My Dropbox/Code/MaxEnt/trunk/data/bbs_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/cbc_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/fia_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/gentry_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/mcdb_dist_test.csv',
-                   'D:/My Dropbox/Code/MaxEnt/trunk/data/naba_dist_test.csv')
+input_filenames = (workdir + 'bbs_dist_test.csv',
+                   workdir + 'cbc_dist_test.csv',
+                   workdir + 'fia_dist_test.csv',
+                   workdir + 'gentry_dist_test.csv',
+                   workdir + 'mcdb_dist_test.csv',
+                   workdir + 'naba_dist_test.csv')
 
 def cross_taxa_weight_plot (input_filenames):
     """Plot histogram of weights across taxa
