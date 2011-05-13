@@ -22,6 +22,7 @@ import numpy as np
 from scipy import stats
 import weestats
 import cPickle
+
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
     
@@ -41,8 +42,8 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     
     usites = np.sort(list(set(ifile["site"])))
     
-    f1 = csv.writer(open(output_filename1,'ab'))
-    f2 = csv.writer(open(output_filename2,'ab'))
+    f1 = csv.writer(open(output_filename1,'wb'))
+    f2 = csv.writer(open(output_filename2,'wb'))
     
     for i in range(0, len(usites)):
         subsites = ifile["site"][ifile["site"] == usites[i]]        
