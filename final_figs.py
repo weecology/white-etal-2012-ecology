@@ -6,7 +6,7 @@ import macroeco
 import matplotlib.pyplot as plt
 import numpy as np
 
-workdir = '/home/ethan/Dropbox/MaxEnt/Code/data/'
+workdir = raw_input('Enter the directory where the data files are located:\n')
 
 input_filenames = (workdir + 'bbs_obs_pred.csv',
                    workdir + 'cbc_obs_pred.csv',
