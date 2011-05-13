@@ -22,6 +22,7 @@ import numpy as np
 from scipy import stats
 import weestats
 import cPickle
+import re
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
@@ -743,3 +744,18 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
             print a
             a += 1
     plt.show()
+    
+if __name__ == '__main__':
+    """If module is executed on it's own run run_test on all listed datasets"""
+    workdir = raw_input('What is the path to the data directory:\n')
+    input_filenames = (workdir + 'bbs_too_2009.csv',
+                       workdir + 'cbc_too_109.csv',
+                       workdir + 'fia_plots.csv',
+                       workdir + 'gentry_spab.csv',
+                       workdir + 'mcdb_spab.csv',
+                       workdir + 'naba_sp_ab_2009.csv')
+    for current_file in input_filenames:
+        match = re.search('/([a-z]*)_', current_file)
+        data_id = match.group(1)
+        run_test(current_file, workdir + data_id + '_obs_pred.csv',
+                 workdir + data_id + '_dist_test.csv')
