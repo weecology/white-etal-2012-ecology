@@ -80,6 +80,6 @@ GROUP BY fia_plot4.STATECD, fia_plot4.UNITCD, fia_plot4.COUNTYCD,
 fia_plot4.PLOT, fia_plot4.INVYR, fia_plot4.LAT, fia_plot4.LON;
 
 SELECT * FROM queries.fia_plot5
-INTO OUTFILE '/tmp/fia_plots.csv'
+INTO OUTFILE '/tmp/fia_spab.csv'
 FIELDS TERMINATED BY ',' 
 LINES TERMINATED BY '\n';

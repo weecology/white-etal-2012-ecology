@@ -750,7 +750,7 @@ if __name__ == '__main__':
     workdir = raw_input('What is the path to the data directory:\n')
     input_filenames = (workdir + 'bbs_too_2009.csv',
                        workdir + 'cbc_too_109.csv',
-                       workdir + 'fia_plots.csv',
+                       workdir + 'fia_spab.csv',
                        workdir + 'gentry_spab.csv',
                        workdir + 'mcdb_spab.csv',
                        workdir + 'naba_sp_ab_2009.csv')
