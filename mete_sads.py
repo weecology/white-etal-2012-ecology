@@ -74,7 +74,8 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                 weight = weestats.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4) 
                 #save results to a csv file:
                 results = ((np.column_stack((subsubsites, subsubyr, subab3, pred))))
-                results2 = ((np.column_stack((usites[i], uyr[a], S, N, p, weight))))
+                results2 = ((np.column_stack((np.array(usites[i], dtype='S20'),
+                                                       uyr[a], S, N, p, weight))))
                 f1.writerows(results)
                 f2.writerows(results2)
             
