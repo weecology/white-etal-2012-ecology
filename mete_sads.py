@@ -6,13 +6,9 @@ All data queries used can be found in MaxEnt/trunk/data:
     BBS_data_query
     CBC_data_query
     Gentry_data_query
-    
-Requires mpl_toolkits module. Install by following these instructions:
-http://matplotlib.sourceforge.net/basemap/doc/html/users/installing.html
-        
+           
 """
 
-from mpl_toolkits.basemap import Basemap
 import macroeco_distributions as md
 import mete
 import csv
@@ -410,38 +406,6 @@ def SN_diff_plot(input_filenames):
         plt.title(titles[i])
         
     plt.show() 
-    
-def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c'],
-              markersizes=3):
-    """Generate a world map with sites color-coded by database"""
-    
-    map = Basemap(projection='merc',llcrnrlat=-57,urcrnrlat=71,\
-                llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='c')
-    
-    map.drawcoastlines(linewidth=1.5)
-    map.fillcontinents(color='w',lake_color='w')
-    
-    # bluemarble(ax=None, scale=None, **kwargs) display blue marble image 
-    # (from http://visibleearth.nasa.gov) as map background. Default image size is 
-    # 5400x2700, which can be quite slow and use quite a bit of memory. The scale 
-    # keyword can be used to downsample the image (scale=0.5 downsamples to 2700x1350).
-    #map.bluemarble(scale=0.75)    
-    
-    # 20 degree graticule.
-    map.drawparallels(np.arange(-80,81,20), linewidth = 0.25)
-    map.drawmeridians(np.arange(-180,180,20), linewidth = 0.25)       
-    
-    for i in range(0, len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
-                                   names = ['lat','long'], delimiter = ",")
-        lats = ifile["lat"]
-        longs = ifile["long"]  
-    
-        x,y = map(longs,lats)
-        map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
-                 markeredgewidth = 0.25, markersize = markersizes)
-    
-    plt.savefig('map.png', dpi=400, edgecolor='k', bbox_inches = 'tight', pad_inches=0)
     
 def sim_null(S0, N0, dic_lambda):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
