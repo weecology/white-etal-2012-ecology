@@ -712,7 +712,10 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
     
 if __name__ == '__main__':
     """If module is executed on it's own run run_test on all listed datasets"""
-    workdir = raw_input('What is the path to the data directory:\n')
+    if len(sys.argv) < 2:
+        workdir = raw_input('What is the path to the data directory:\n')
+    else:
+        workdir = sys.argv[1]
     input_filenames = (workdir + 'bbs_too_2009.csv',
                        workdir + 'cbc_too_109.csv',
                        workdir + 'fia_spab.csv',
