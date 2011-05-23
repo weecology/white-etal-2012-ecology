@@ -101,7 +101,7 @@ def plot_weights(input_filename, data = 'raw', left = [0, 0.4, 0.8],
                        delimiter = ",")
     weights = ((ifile["weight"]))
     weights = weights[weights >= 0]
-    bins = [0, 0.4, 0.6, 1]
+    bins = [0, 0.33333, 0.66667, 1]
     cts = np.histogram(weights, bins = bins)
     
     if data == 'raw':
