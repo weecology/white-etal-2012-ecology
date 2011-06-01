@@ -212,6 +212,22 @@ def cross_taxa_weight_plot (input_filenames):
     
 cross_taxa_weight_plot (input_filenames)
 
+#Text results associated with Figure 3
+total_logser_count_onethird = 0
+total_logser_count_twothird = 0
+total_count = 0
+for filename in input_filenames1:
+    ifile = np.genfromtxt(filename, dtype = "S15,i8,i8,i8,f8,f8", 
+                       names = ['site', 'year', 'S', 'N', 'p', 'weight'],
+                       delimiter = ",")
+    weights = ((ifile["weight"]))
+    total_logser_count_onethird += len(weights[weights >= 0.333333])
+    total_logser_count_twothird += len(weights[weights >= 0.666667])
+    total_count += len(weights)    
+total_logser_prop_better = float(total_logser_count_twothird) / total_count
+total_logser_prop_equiv = float(total_logser_count_onethird) / total_count
+print total_logser_prop_better, total_logser_prop_equiv
+
 #figure 4
 titles = ('CBC', 'BBS', 'MCDB', 'FIA', 'Gentry', 'NABC')
 for i in range(0,6):
