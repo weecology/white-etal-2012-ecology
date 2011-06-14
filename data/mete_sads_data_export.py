@@ -282,11 +282,11 @@ cursor.execute("""
 # Select out raw abundance data
 cursor.execute("""
                 CREATE TABLE queries.mcdb1
-                SELECT community_data.Site_ID AS site,
-                community_data.Initial_year AS year,
-                community_data.Species_ID AS sp, community_data.Abundance AS ab,
+                SELECT communities.Site_ID AS site,
+                communities.Initial_year AS year,
+                communities.Species_ID AS sp, communities.Abundance AS ab,
                 sites.Abundance_data_format AS format 
-                FROM MCDB.community_data
+                FROM MCDB.communities
                 INNER JOIN MCDB.sites USING (Site_ID)
                 HAVING (((ab > 0) AND (format = 'raw')));
                 """)
@@ -359,6 +359,14 @@ cursor.execute("""
                 NABA_species.Scientific_Name = nabc_sp_ab_2009a.Scientific_Name 
                 GROUP BY nabc_sp_ab_2009a.SiteID, NABA_species.Genus, 
                 NABA_species.Species;
+                """)
+
+# Dump into csv file
+cursor.execute("""
+                SELECT nabc_sp_ab_2009.* FROM queries.nabc_sp_ab_2009
+                INTO OUTFILE '/tmp/nabc_spab.csv'
+                FIELDS TERMINATED BY ',' 
+                LINES TERMINATED BY '\n';
                 """)
 
 connection.commit()
