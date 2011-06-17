@@ -361,9 +361,12 @@ cursor.execute("""
                 NABA_species.Species;
                 """)
 
-# Dump into csv file
+# Dump into csv file, removing two sites that include significant 
+# outliers in abundance, one being the NABA Butterfly park
 cursor.execute("""
                 SELECT nabc_sp_ab_2009.* FROM queries.nabc_sp_ab_2009
+                WHERE nabc_sp_ab_2009.SiteID != "TX_NABA _ Park" AND 
+                nabc_sp_ab_2009.SiteID != "MN_Bear _ction"
                 INTO OUTFILE '/tmp/nabc_spab.csv'
                 FIELDS TERMINATED BY ',' 
                 LINES TERMINATED BY '\n';
