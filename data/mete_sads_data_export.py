@@ -271,7 +271,7 @@ cursor.execute("""
                 """)
                 
 cursor.execute("""
-                SELECT gentry.site, gentry.species_id, gentry.ab 
+                SELECT gentry.site, '' AS year, gentry.species_id, gentry.ab 
                 FROM queries.gentry
                 INTO OUTFILE '/tmp/gentry_spab.csv'
                 FIELDS TERMINATED BY ',' 
