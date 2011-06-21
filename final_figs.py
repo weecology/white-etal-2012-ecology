@@ -229,7 +229,7 @@ total_logser_prop_equiv = float(total_logser_count_onethird) / total_count
 print total_logser_prop_better, total_logser_prop_equiv
 
 #figure 4
-titles = ('CBC', 'BBS', 'MCDB', 'FIA', 'Gentry', 'NABC')
+titles = ('Birds', 'Trees', 'Mammals', 'Butterflies')
 for i in range(0,6):
     ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
@@ -245,5 +245,14 @@ for i in range(0,6):
     sites2 = ifile2["site"]
     obs_ab = ifile["obs"]
     pred_ab = ifile["pred"]
-    plt.subplot(3,2,i+1)
-    mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[i])
+    if i < 2: 
+        plt.subplot(3,2,1)
+        mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[0])
+    elif i < 4:
+        plt.subplot(3,2,2)
+        mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[1])
+    else:
+        plt.subplot(3,2,i+1)
+        mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[i-2])
+    plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, 
+                        top=0.92, wspace=0.29,hspace=0.21)
