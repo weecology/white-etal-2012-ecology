@@ -513,15 +513,17 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
     #     the discritized number that using the predicted abundance values produces
     usites = np.unique(sites)
     max_N = max(max(obs_ab), max(pred_ab))
-    bins = np.exp2(range(0, np.ceil(np.log2(max_N) * 2)))
-    deviations = np.zeros((len(usites), len(bins)-1))
+    max_integer_logN = int(np.ceil(np.log2(max_N) * 2))
+    log_bin_edges = range(0, max_integer_logN)
+    bin_edges = np.exp2(log_bin_edges)
+    deviations = np.zeros((len(usites), len(bin_edges)-1))
     for i, site in enumerate(usites):
-        obs_sad = macroeco.preston_sad(obs_ab[sites == site], b=bins)
-        pred_sad = macroeco.preston_sad(pred_ab[sites == site], b=bins)
+        obs_sad = macroeco.preston_sad(obs_ab[sites == site], b=bin_edges)
+        pred_sad = macroeco.preston_sad(pred_ab[sites == site], b=bin_edges)
         #deviation_from_predicted = (obs_sad[0] - pred_sad[0]) / pred_sad[0]
         deviation_from_predicted = (obs_sad[0] - pred_sad[0])
         deviations[i,:] = deviation_from_predicted
-    bin_numbers = range(1, np.ceil(np.log2(max_N) * 2))
+    bin_numbers = range(1, max_integer_logN)
     plt.plot(bin_numbers, np.mean(deviations, axis=0), 'b-')
     plt.show()
     
