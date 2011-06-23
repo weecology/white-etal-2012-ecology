@@ -104,13 +104,13 @@ def example_plot(input_filenames):
         pred = ifile["pred"] 
         S = ifile2["S"]
         site2 = ifile2["site"]
-        max_site = site2[S == 89]#max(S)][0]
+        max_site = site2[S == max(S)][0]
         min_site = site2[S == min(S)][0]
         max_obs = obs[site == max_site]
         max_pred = pred[site == max_site]
         min_obs = obs[site == min_site]
         min_pred = pred[site == min_site]
-        x1 = range(1,90)#max(S) + 1)
+        x1 = range(1,max(S) + 1)
         x2 = range(1,min(S) + 1)
         plt.figure()#facecolor='#d7dfff')
         #plt.subplot(111, axisbg='#d7dfff')
