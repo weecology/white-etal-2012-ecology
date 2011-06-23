@@ -9,6 +9,7 @@ All data queries used can be found in MaxEnt/trunk/data:
            
 """
 
+from __future__ import division
 import macroeco_distributions as md
 import mete
 import csv
@@ -495,6 +496,34 @@ def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
             plot_obj.set_ylim(0, (max(max(height_obs),max(height_pred)) + 1))
             
             a += 1
+    plt.show()
+    
+def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
+    """Plot a figure showing deviations from the log-series as a function of ab
+    
+    Takes the obs-pred data for individual sites, groups them into Preston bins,
+    stores the difference between observed and predicted data within each bin
+    for each site, and then plots the average deviation against the center of
+    the bin. Deviations are calculated as the percentage deviation within each
+    bin, so if there is a difference of one species in a bin with 10 predicted
+    species the deviation = 0.1.
+    
+    """
+    #TODO use pmf to get predicted values of number of species rather than
+    #     the discritized number that using the predicted abundance values produces
+    usites = np.unique(sites)
+    max_N = max(max(obs_ab), max(pred_ab))
+    bins = np.exp2(range(0, np.ceil(np.log2(max_N) * 2)))
+    deviations = np.zeros((len(usites), len(bins)-1))
+    for i, site in enumerate(usites):
+        obs_sad = macroeco.preston_sad(obs_ab[sites == site], b=bins)
+        pred_sad = macroeco.preston_sad(pred_ab[sites == site], b=bins)
+        #deviation_from_predicted = (obs_sad[0] - pred_sad[0]) / pred_sad[0]
+        deviation_from_predicted = (obs_sad[0] - pred_sad[0])
+        deviations[i,:] = deviation_from_predicted
+    bin_centers = np.exp2(np.array(range(0, np.ceil(np.log2(max_N) * 2))) + 0.5)
+    bin_centers = bin_centers[0:len(bin_centers) - 1]
+    plt.plot(np.log2(bin_centers), np.mean(deviations, axis=0), 'b-')
     plt.show()
     
 def dev_per_x(input_filenames):
