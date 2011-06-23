@@ -126,9 +126,6 @@ def example_plot(input_filenames):
         plt.xticks(fontsize = '20')
         plt.yticks(fontsize = '20')
         plt.ylabel('log(Abundance)', fontsize ='22')
-        figtitle = 'BUTTERFLIES'
-        plt.text(max(S)- 22, np.log(max(max(max_obs), max(max_pred), max(min_pred), max(min_pred)))-0.5, figtitle,
-               horizontalalignment='center', fontsize=24)
         plt.savefig(titles[i] + '_example.png', dpi=400, facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
 
