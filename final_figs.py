@@ -6,7 +6,8 @@ import macroeco
 import matplotlib.pyplot as plt
 import numpy as np
 
-workdir = raw_input('Enter the directory where the data files are located:\n')
+#workdir = raw_input('Enter the directory where the data files are located:\n')
+workdir = '/home/ethan/Dropbox/Research/MaxEnt/Code/data/'
 
 input_filenames = (workdir + 'bbs_obs_pred.csv',
                    workdir + 'cbc_obs_pred.csv',
@@ -39,13 +40,8 @@ def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c
                 llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='l')
     
     map.drawcoastlines(linewidth = 1.25)
-    map.fillcontinents(color = '#f7ebd3',lake_color='#d7dfff')
-    map.drawmapboundary(fill_color='#d7dfff')
-    
-    # 20 degree graticule.
-    #map.drawparallels(np.arange(-80,81,20), linewidth = 0.25)
-    #map.drawmeridians(np.arange(-180,180,20), linewidth = 0.25)       
-    
+    map.drawmapboundary()
+
     for i in range(0, len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
                                    names = ['lat','long'], delimiter = ",")
@@ -72,11 +68,7 @@ def map_sites_inset(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', '
     
     map.drawcoastlines(linewidth=1.5)
     map.drawcountries(linewidth=1.5)
-    map.fillcontinents(color = '#f7ebd3',lake_color='#d7dfff')
-    map.drawmapboundary(fill_color='#d7dfff')
-    # 5 degree graticule.
-    #map.drawparallels(np.arange(-20,55,5), linewidth = 0.25)
-    #map.drawmeridians(np.arange(-130,-60,5), linewidth = 0.25)       
+    map.drawmapboundary()     
     
     for i in range(0, len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
@@ -139,7 +131,9 @@ def example_plot(input_filenames):
                horizontalalignment='center', fontsize=24)
         plt.savefig('example.png', dpi=400, facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
-        
+
+example_plot(input_filenames)
+
 #figure 2
 def var_plot(input_filenames, radius=2):
     """Multiple obs-predicted plotter"""
