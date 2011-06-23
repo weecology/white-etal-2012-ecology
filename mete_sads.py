@@ -521,9 +521,8 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
         #deviation_from_predicted = (obs_sad[0] - pred_sad[0]) / pred_sad[0]
         deviation_from_predicted = (obs_sad[0] - pred_sad[0])
         deviations[i,:] = deviation_from_predicted
-    bin_centers = np.exp2(np.array(range(0, np.ceil(np.log2(max_N) * 2))) + 0.5)
-    bin_centers = bin_centers[0:len(bin_centers) - 1]
-    plt.plot(np.log2(bin_centers), np.mean(deviations, axis=0), 'b-')
+    bin_numbers = range(1, np.ceil(np.log2(max_N) * 2))
+    plt.plot(bin_numbers, np.mean(deviations, axis=0), 'b-')
     plt.show()
     
 def dev_per_x(input_filenames):
