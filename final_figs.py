@@ -91,11 +91,11 @@ def example_plot(input_filenames):
     titles = ('BBS', 'CBC','FIA','Gentry','MCDB','NABC')
     
     for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
-                           names = ['site','obs','pred'], delimiter = ",")
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,f8,f8", 
+                           names = ['site','year','obs','pred'], delimiter = ",")
         
-        ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,f8,f8", 
-                           names = ['site','S','N','p','weight'], delimiter = ",")
+        ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
+                           names = ['site','year','S','N','p','weight'], delimiter = ",")
         
         colors1 = [ '#0033cc', '#339900','#ff6600', '#990000']
         colors2 = [ '#87a4ef', '#97ca82','#ff8c3f', '#b25353']
