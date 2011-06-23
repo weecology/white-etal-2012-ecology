@@ -129,7 +129,7 @@ def example_plot(input_filenames):
         figtitle = 'BUTTERFLIES'
         plt.text(max(S)- 22, np.log(max(max(max_obs), max(max_pred), max(min_pred), max(min_pred)))-0.5, figtitle,
                horizontalalignment='center', fontsize=24)
-        plt.savefig('example.png', dpi=400, facecolor='w', edgecolor='w', 
+        plt.savefig(titles[i] + '_example.png', dpi=400, facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
 
 example_plot(input_filenames)
