@@ -140,7 +140,7 @@ def var_plot(input_filenames, radius=2):
     titles = ('BBS', 'CBC','FIA','Gentry','MCDB','NABA')
     
     for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,f8,f8", 
                            names = ['site','year', 'obs','pred'], delimiter = ",")
         site = ((ifile["site"]))
         obs = ((ifile["obs"]))    
@@ -220,14 +220,12 @@ total_logser_prop_equiv = float(total_logser_count_onethird) / total_count
 print total_logser_prop_better, total_logser_prop_equiv
 
 #figure 4
-titles = ('Birds', 'Trees', 'Mammals', 'Butterflies')
-for i in range(0,6):
-    ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8", 
+for i in range(0,1):
+    ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8,i8", 
                        names = ['site', 'year', 'obs','pred'], delimiter = ",")
-    
-    ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,f8,f8", 
-                           names = ['site','year','S','N','p','weight'], delimiter = ",")
-        
+    ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
+                           names = ['site','year','S','N','p','weight'],
+                           delimiter = ",")
     pr = (ifile2["p"])
     S = ifile2["S"]
     usites = list(set(ifile["site"]))
@@ -236,14 +234,9 @@ for i in range(0,6):
     sites2 = ifile2["site"]
     obs_ab = ifile["obs"]
     pred_ab = ifile["pred"]
-    if i < 2: 
-        plt.subplot(3,2,1)
-        mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[0])
-    elif i < 4:
-        plt.subplot(3,2,2)
-        mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[1])
-    else:
-        plt.subplot(3,2,i+1)
-        mete_sads.dev_per_x2(sites, obs_ab, pred_ab, sites2, pr, S, title = titles[i-2])
+
+    plt.subplot(3,2,i+1)
+    mete_sads.plot_avg_deviation_from_logseries(ifile['site'], ifile['obs'],
+                                                ifile['pred'])
     plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, 
                         top=0.92, wspace=0.29,hspace=0.21)
