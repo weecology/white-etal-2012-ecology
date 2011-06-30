@@ -40,7 +40,6 @@ def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c
                 llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='l')
     
     map.drawcoastlines(linewidth = 1.25)
-    map.drawmapboundary()
 
     for i in range(0, len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
@@ -59,12 +58,12 @@ map_sites(input_filenames2, markers = ['o','o','s','s','D','v'], markersizes = 4
                     colors = [ '#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000'])
 
 #figure 1b    
-def map_sites_inset(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c'],
-              markersizes=3):
-    """Generate a world map with sites color-coded by database"""
+def map_sites_inset(input_filenames, markers = ['o'],
+                    colors = ['b', 'r', 'g', 'y', 'c'], markersizes=4):
+    """Generate a US map with sites color-coded by database"""
     
-    map = Basemap(projection='merc',llcrnrlat=23.5,urcrnrlat=55,\
-                llcrnrlon=-135,urcrnrlon=-58,lat_ts=50,resolution='l')
+    map = Basemap(projection='merc',llcrnrlat=24.5,urcrnrlat=49,\
+                llcrnrlon=-125,urcrnrlon=-69,lat_ts=50,resolution='l')
     
     map.drawcoastlines(linewidth=1.5)
     map.drawcountries(linewidth=1.5)
@@ -83,8 +82,9 @@ def map_sites_inset(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', '
     plt.savefig('map_inset.png', dpi=400, facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
     
-map_sites_inset(input_filenames2, markers = ['o','o','s','s','D','v'], markersizes = 4,
-                    colors = [ '#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600','#990000'])
+map_sites_inset(input_filenames2, markers = ['o','o','s','s','D','v'], markersizes = 5,
+                    colors = [ '#87a4ef', '#0033cc', '#97ca82',
+                               '#339900','#ff6600', '#990000'])
 
 #figure 1c
 def example_plot(input_filenames):
@@ -97,8 +97,8 @@ def example_plot(input_filenames):
         ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
                            names = ['site','year','S','N','p','weight'], delimiter = ",")
         
-        colors1 = [ '#0033cc', '#339900','#ff6600', '#990000']
-        colors2 = [ '#87a4ef', '#97ca82','#ff8c3f', '#b25353']
+        colors1 = [ '#0033cc', '#0033cc', '#339900', '#339900', '#ff6600', '#990000']
+        colors2 = [ '#87a4ef', '#87a4ef', '#97ca82', '#97ca82', '#ff8c3f', '#b25353']
         site = ifile["site"]
         obs = ifile["obs"]   
         pred = ifile["pred"] 
@@ -114,11 +114,11 @@ def example_plot(input_filenames):
         x2 = range(1,min(S) + 1)
         plt.figure()#facecolor='#d7dfff')
         #plt.subplot(111, axisbg='#d7dfff')
-        plt.plot(x1, np.log(max_pred), '-', color = colors1[i-2], linewidth = 2)
+        plt.plot(x1, np.log(max_pred), '-', color = colors1[i], linewidth = 2)
         plt.plot(x1, np.log(max_obs), 'ow', markersize = 10, 
-                 markeredgecolor = colors1[i-2], markeredgewidth = 2)        
-        plt.plot(x2, np.log(min_pred), '-', color = colors2[i-2], linewidth = 2)
-        plt.plot(x2, np.log(min_obs), 'ow', markeredgecolor = colors2[i-2], 
+                 markeredgecolor = colors1[i], markeredgewidth = 2)        
+        plt.plot(x2, np.log(min_pred), '-', color = colors2[i], linewidth = 2)
+        plt.plot(x2, np.log(min_obs), 'ow', markeredgecolor = colors2[i], 
                  markersize = 10, markeredgewidth = 2)
         plt.xlim(-1.25, max(x1) + 2)
         plt.ylim(-0.15, np.log(max(max(max_obs), max(max_pred), max(min_pred), max(min_pred)))+ 0.25)
@@ -141,7 +141,7 @@ def var_plot(input_filenames, radius=2):
     
     for i in range(0,len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
-                           names = ['site','obs','pred'], delimiter = ",")
+                           names = ['site','year', 'obs','pred'], delimiter = ",")
         site = ((ifile["site"]))
         obs = ((ifile["obs"]))    
         pred = ((ifile["pred"])) 
@@ -223,10 +223,10 @@ print total_logser_prop_better, total_logser_prop_equiv
 titles = ('Birds', 'Trees', 'Mammals', 'Butterflies')
 for i in range(0,6):
     ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8", 
-                       names = ['site','obs','pred'], delimiter = ",")
+                       names = ['site', 'year', 'obs','pred'], delimiter = ",")
     
     ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,f8,f8", 
-                           names = ['site','S','N','p','weight'], delimiter = ",")
+                           names = ['site','year','S','N','p','weight'], delimiter = ",")
         
     pr = (ifile2["p"])
     S = ifile2["S"]
