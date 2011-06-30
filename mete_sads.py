@@ -57,7 +57,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
             S = len(subsubsites)
             if S > cutoff:
                 # Generate predicted values and p (e ** -lambda_sad) based on METE:
-                mete_pred = mete.get_mete_sad(int(S),int(N))
+                mete_pred = mete.get_mete_rad(int(S),int(N))
                 pred = np.array(mete_pred[0])
                 p = mete_pred[1]
                 subab3 = np.sort(subsubab)[::-1]
@@ -415,7 +415,7 @@ def sim_null(S0, N0, dic_lambda):
     NS_ratio = round(sum(N_sim) / S0, 4) 
     if NS_ratio not in dic_lambda:
         dic_lambda[NS_ratio] = mete.get_lambda_sad(S0, sum(N_sim))
-    N_pred = mete.get_mete_sad(S0, sum(N_sim), dic_lambda[NS_ratio])[0] 
+    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_lambda[NS_ratio])[0] 
     np.random.seed()
     return N_sim, N_pred
 
@@ -520,8 +520,8 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
     for i, site in enumerate(usites):
         obs_sad = macroeco.preston_sad(obs_ab[sites == site], b=bin_edges)
         pred_sad = macroeco.preston_sad(pred_ab[sites == site], b=bin_edges)
-        #deviation_from_predicted = (obs_sad[0] - pred_sad[0]) / pred_sad[0]
-        deviation_from_predicted = (obs_sad[0] - pred_sad[0])
+        deviation_from_predicted = (obs_sad[0] - pred_sad[0]) / pred_sad[0]
+        #deviation_from_predicted = (obs_sad[0] - pred_sad[0])
         deviations[i,:] = deviation_from_predicted
     bin_numbers = range(1, max_integer_logN)
     mean_deviations = np.mean(deviations, axis=0)
