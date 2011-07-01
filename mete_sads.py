@@ -528,7 +528,6 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None):
             pred_sad = mete.get_mete_sad(S, N, lambda_sad=lambda_sad,
                                          bin_edges=bin_edges)
         deviation_from_predicted = (obs_sad[0] - pred_sad)
-        #deviation_from_predicted = (obs_sad[0] - pred_sad) / pred_sad
         deviations[i,:] = deviation_from_predicted
     bin_numbers = range(1, max_integer_logN)
     mean_deviations = stats.nanmean(deviations)
