@@ -226,17 +226,16 @@ for i in range(0,6):
     ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
                            names = ['site','year','S','N','p','weight'],
                            delimiter = ",")
-    pr = (ifile2["p"])
+    pr = ifile2["p"]
     S = ifile2["S"]
     usites = list(set(ifile["site"]))
     
     sites = ifile["site"]
-    sites2 = ifile2["site"]
+    sites_for_p = ifile2["site"]
     obs_ab = ifile["obs"]
-    pred_ab = ifile["pred"]
 
     plt.subplot(3,2,i+1)
     mete_sads.plot_avg_deviation_from_logseries(ifile['site'], ifile['obs'],
-                                                ifile['pred'])
+                                                pr, sites_for_p)
     plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, 
                         top=0.92, wspace=0.29,hspace=0.21)

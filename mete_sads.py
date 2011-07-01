@@ -21,6 +21,7 @@ import weestats
 import cPickle
 import re
 import sys
+from math import log
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
@@ -498,7 +499,7 @@ def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
             a += 1
     plt.show()
     
-def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
+def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None):
     """Plot a figure showing deviations from the log-series as a function of ab
     
     Takes the obs-pred data for individual sites, groups them into Preston bins,
@@ -509,10 +510,8 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
     species the deviation = 0.1.
     
     """
-    #TODO use pmf to get predicted values of number of species rather than
-    #     the discritized number that using the predicted abundance values produces
     usites = np.unique(sites)
-    max_N = max(max(obs_ab), max(pred_ab))
+    max_N = max(obs_ab)
     max_integer_logN = int(np.ceil(np.log2(max_N)) + 1)
     log_bin_edges = range(0, max_integer_logN)
     bin_edges = np.exp2(log_bin_edges)
@@ -522,7 +521,12 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
         S = len(site_abundances)
         N = sum(site_abundances)
         obs_sad = macroeco.preston_sad(site_abundances, b=bin_edges)
-        pred_sad = mete.get_mete_sad(S, N, bin_edges=bin_edges)
+        if p==None:
+            pred_sad = mete.get_mete_sad(S, N, bin_edges=bin_edges)
+        else:
+            lambda_sad = -log(p[sites_for_p==site])
+            pred_sad = mete.get_mete_sad(S, N, lambda_sad=lambda_sad,
+                                         bin_edges=bin_edges)
         deviation_from_predicted = (obs_sad[0] - pred_sad) / pred_sad
         deviations[i,:] = deviation_from_predicted
     bin_numbers = range(1, max_integer_logN)
