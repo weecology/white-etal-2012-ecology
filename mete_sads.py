@@ -518,13 +518,15 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, pred_ab):
     bin_edges = np.exp2(log_bin_edges)
     deviations = np.zeros((len(usites), len(bin_edges)-1))
     for i, site in enumerate(usites):
-        obs_sad = macroeco.preston_sad(obs_ab[sites == site], b=bin_edges)
-        pred_sad = macroeco.preston_sad(pred_ab[sites == site], b=bin_edges)
-        deviation_from_predicted = (obs_sad[0] - pred_sad[0]) / pred_sad[0]
-        #deviation_from_predicted = (obs_sad[0] - pred_sad[0])
+        site_abundances = obs_ab[sites == site]
+        S = len(site_abundances)
+        N = sum(site_abundances)
+        obs_sad = macroeco.preston_sad(site_abundances, b=bin_edges)
+        pred_sad = mete.get_mete_sad(S, N, bin_edges=bin_edges)
+        deviation_from_predicted = (obs_sad[0] - pred_sad) / pred_sad
         deviations[i,:] = deviation_from_predicted
     bin_numbers = range(1, max_integer_logN)
-    mean_deviations = np.mean(deviations, axis=0)
+    mean_deviations = stats.nanmean(deviations)
     plt.plot(bin_numbers, mean_deviations, 'b-')
     plt.show()
         

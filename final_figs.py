@@ -220,7 +220,7 @@ total_logser_prop_equiv = float(total_logser_count_onethird) / total_count
 print total_logser_prop_better, total_logser_prop_equiv
 
 #figure 4
-for i in range(0,1):
+for i in range(0,6):
     ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8,i8", 
                        names = ['site', 'year', 'obs','pred'], delimiter = ",")
     ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
