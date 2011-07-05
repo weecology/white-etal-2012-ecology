@@ -499,7 +499,8 @@ def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
             a += 1
     plt.show()
     
-def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None):
+def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
+                                      error_bars=0, color='b'):
     """Plot a figure showing deviations from the log-series as a function of ab
     
     Takes the obs-pred data for individual sites, groups them into Preston bins,
@@ -513,7 +514,7 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None):
     usites = np.unique(sites)
     max_N = max(obs_ab)
     max_integer_logN = int(np.ceil(np.log2(max_N)) + 1)
-    log_bin_edges = range(0, max_integer_logN)
+    log_bin_edges = np.array(range(0, max_integer_logN))
     bin_edges = np.exp2(log_bin_edges)
     deviations = np.zeros((len(usites), len(bin_edges)-1))
     for i, site in enumerate(usites):
@@ -527,12 +528,15 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None):
             lambda_sad = -log(p[sites_for_p==site])
             pred_sad = mete.get_mete_sad(S, N, lambda_sad=lambda_sad,
                                          bin_edges=bin_edges)
-        deviation_from_predicted = (obs_sad[0] - pred_sad)
+        deviation_from_predicted = (obs_sad[0] - pred_sad) / S * 100
         deviations[i,:] = deviation_from_predicted
     bin_numbers = range(1, max_integer_logN)
     mean_deviations = stats.nanmean(deviations)
-    std_deviations = stats.nanstd(deviations)
-    plt.errorbar(bin_numbers, mean_deviations, yerr=std_deviations, fmt='b-')
+    if error_bars == 1:
+        std_deviations = stats.nanstd(deviations)
+        plt.errorbar(bin_numbers, mean_deviations, yerr=std_deviations, fmt='b-')
+    else:
+        plt.plot(bin_numbers, mean_deviations, color=color, linewidth=2)
     plt.show()
         
 def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln', 

@@ -30,6 +30,7 @@ input_filenames2 = (workdir + 'bbs_lat_long.csv',
                    workdir + 'mcdb_lat_long.csv',
                    workdir + 'naba_lat_long.csv')
 
+colors = [ '#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
 #figure 1a
 ##aea383 - brown - cdaa7d - 7c5e4e - #d5a76b - #325582 - dark blue
 def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c'],
@@ -186,8 +187,6 @@ def cross_taxa_weight_plot (input_filenames):
     """     
     plt.figure(1) 
     n = len(input_filenames)
-    colors = [ '1.0', '0.8', '0.6', '0.4','0.2', '0']
-    titles = ['BBS', 'CBC', 'FIA', 'Gentry', 'MCDB', 'NABC']
     for i in range(0, n):
         input_filename = input_filenames[i]
         width = round(1.0/(3 + n * 3), 2)
@@ -229,13 +228,12 @@ for i in range(0,6):
     pr = ifile2["p"]
     S = ifile2["S"]
     usites = list(set(ifile["site"]))
-    
     sites = ifile["site"]
     sites_for_p = ifile2["site"]
     obs_ab = ifile["obs"]
-
-    plt.subplot(3,2,i+1)
     mete_sads.plot_avg_deviation_from_logseries(ifile['site'], ifile['obs'],
-                                                pr, sites_for_p)
-    plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, 
-                        top=0.92, wspace=0.29,hspace=0.21)
+                                                pr, sites_for_p, color=colors[i])
+plt.xlabel('Preston Bin', fontsize=18)
+plt.ylabel('Deviation (% of site richness)', fontsize=18)
+plt.axis([0.1, 17, -8, 3.5])
+plt.legend(('BBS','CBC','FIA','Gentry','MCDB','NABC'), 'lower right')
