@@ -109,7 +109,7 @@ def example_plot(workdir, dataset_code, site_id, color, axis_limits):
     plt.xticks(fontsize = '10')
     plt.yticks(fontsize = '10')
     plt.savefig(dataset_code + '_example.png', dpi=400, facecolor='w', edgecolor='w', 
-            bbox_inches = 'tight', pad_inches=0.1)
+            bbox_inches = 'tight', pad_inches=0.2)
 
 dataset_codes = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
 site_ids = ['17220', 'L13428', '211131000022', '84', '1353', 'TX_Still_ollow']
@@ -171,21 +171,33 @@ def cross_taxa_weight_plot (input_filenames):
     Keyword arguments:
     input_filenames -- list of file names to be processed
     
-    """     
-    plt.figure(1) 
+    """
     n = len(input_filenames)
-    for i in range(0, n):
-        input_filename = input_filenames[i]
+    indiv_dataset_bars = []
+    fig = plt.figure()
+    plot_obj = fig.add_subplot(111)
+    for i, input_filename in enumerate(input_filenames):
         width = round(1.0/(3 + n * 3), 2)
         left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 9))]
-        mete_sads.plot_weights(input_filename, data = 'percent', left = left, 
-                     color = colors[i], width = width)
-    
+        ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8", 
+                              names = ['site', 'year', 'S', 'N', 'p', 'weight'],
+                              delimiter = ",")
+        weights = ((ifile["weight"]))
+        bins = [0, 0.33333, 0.66667, 1]
+        cts = np.histogram(weights, bins = bins)
+        height = cts[0] * 100 / sum(cts[0])
+        indiv_dataset_bars.append(plot_obj.bar(left, height, width,
+                                               color=colors[i]))
     plt.ylabel('Percentage of sites')
     plt.xlim((width/2), (width*(3.5 + n * 3)))
     plt.xticks((((n/2 + 1) * width), (11 * width),(18 * width)), 
-               ('Log-normal', 'Indeterminate', 'Log-series') )
-    plt.legend(('BBS', 'CBC', 'FIA', 'Gentry', 'MCDB', 'NABC'), loc = 'upper left')
+               ('Log-normal', 'Indeterminate', 'Log-series'))
+    plt.legend((indiv_dataset_bars[0][0], indiv_dataset_bars[1][0], 
+                indiv_dataset_bars[2][0], indiv_dataset_bars[3][0], 
+                indiv_dataset_bars[4][0], indiv_dataset_bars[5][0]),
+                ('BBS', 'CBC', 'FIA', 'Gentry', 'MCDB', 'NABC'),
+                loc = 'upper left')
+    plt.show()
     
 cross_taxa_weight_plot (input_filenames)
 
