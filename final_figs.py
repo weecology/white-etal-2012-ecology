@@ -31,6 +31,7 @@ input_filenames2 = (workdir + 'bbs_lat_long.csv',
                    workdir + 'naba_lat_long.csv')
 
 colors = [ '#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
+
 #figure 1a
 ##aea383 - brown - cdaa7d - 7c5e4e - #d5a76b - #325582 - dark blue
 def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c'],
@@ -88,49 +89,35 @@ map_sites_inset(input_filenames2, markers = ['o','o','s','s','D','v'], markersiz
                                '#339900','#ff6600', '#990000'])
 
 #figure 1c
-def example_plot(input_filenames):
-    titles = ('BBS', 'CBC','FIA','Gentry','MCDB','NABC')
-    
-    for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,f8,f8", 
-                           names = ['site','year','obs','pred'], delimiter = ",")
-        
-        ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
-                           names = ['site','year','S','N','p','weight'], delimiter = ",")
-        
-        colors1 = [ '#0033cc', '#0033cc', '#339900', '#339900', '#ff6600', '#990000']
-        colors2 = [ '#87a4ef', '#87a4ef', '#97ca82', '#97ca82', '#ff8c3f', '#b25353']
-        site = ifile["site"]
-        obs = ifile["obs"]   
-        pred = ifile["pred"] 
-        S = ifile2["S"]
-        site2 = ifile2["site"]
-        max_site = site2[S == max(S)][0]
-        min_site = site2[S == min(S)][0]
-        max_obs = obs[site == max_site]
-        max_pred = pred[site == max_site]
-        min_obs = obs[site == min_site]
-        min_pred = pred[site == min_site]
-        x1 = range(1,max(S) + 1)
-        x2 = range(1,min(S) + 1)
-        plt.figure()#facecolor='#d7dfff')
-        #plt.subplot(111, axisbg='#d7dfff')
-        plt.plot(x1, np.log(max_pred), '-', color = colors1[i], linewidth = 2)
-        plt.plot(x1, np.log(max_obs), 'ow', markersize = 10, 
-                 markeredgecolor = colors1[i], markeredgewidth = 2)        
-        plt.plot(x2, np.log(min_pred), '-', color = colors2[i], linewidth = 2)
-        plt.plot(x2, np.log(min_obs), 'ow', markeredgecolor = colors2[i], 
-                 markersize = 10, markeredgewidth = 2)
-        plt.xlim(-1.25, max(x1) + 2)
-        plt.ylim(-0.15, np.log(max(max(max_obs), max(max_pred), max(min_pred), max(min_pred)))+ 0.25)
-        plt.xlabel('Rank', fontsize = '22')
-        plt.xticks(fontsize = '20')
-        plt.yticks(fontsize = '20')
-        plt.ylabel('log(Abundance)', fontsize ='22')
-        plt.savefig(titles[i] + '_example.png', dpi=400, facecolor='w', edgecolor='w', 
-                bbox_inches = 'tight', pad_inches=0)
+def example_plot(workdir, dataset_code, site_id, color, axis_limits):
+    """Generate an example SAD plot for the map figure"""    
+    obs_pred_data = np.genfromtxt(workdir + dataset_code + '_obs_pred.csv',
+                          dtype = "S15,i8,f8,f8",
+                          names = ['site','year','obs','pred'], delimiter = ",")    
+    site = obs_pred_data["site"]
+    obs = obs_pred_data["obs"]   
+    pred = obs_pred_data["pred"]
+    site_obs_ab = obs[site==site_id]
+    site_pred_ab = pred[site==site_id]
+    rank_obs, relab_obs = macroeco.get_rad_data(site_obs_ab)
+    rank_pred, relab_pred = macroeco.get_rad_data(site_pred_ab)
+    plt.figure(figsize=(2,2))
+    plt.semilogy(rank_obs, relab_obs, 'o', markerfacecolor='none', markersize=8, 
+             markeredgecolor=color, markeredgewidth=1.5)
+    plt.semilogy(rank_pred, relab_pred, '-', color='black', linewidth=2)
+    plt.axis(axis_limits)
+    plt.xticks(fontsize = '10')
+    plt.yticks(fontsize = '10')
+    plt.savefig(dataset_code + '_example.png', dpi=400, facecolor='w', edgecolor='w', 
+            bbox_inches = 'tight', pad_inches=0.1)
 
-example_plot(input_filenames)
+dataset_codes = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
+site_ids = ['17220', 'L13428', '211131000022', '84', '1353', 'TX_Still_ollow']
+axis_limits = [[0, 16, 10 ** -4, 1], [-5, 115, 10 ** -5, 1],
+               [0, 15, 10 ** -2, 1], [-10, 225, 10 ** -3, 1], 
+               [0, 11, 10 ** -2, 1], [-2, 44, 10 ** -3, 1]]
+for i, dataset in enumerate(dataset_codes):
+    example_plot(workdir, dataset, site_ids[i], colors[i], axis_limits[i])
 
 #figure 2
 def var_plot(input_filenames, radius=2):
