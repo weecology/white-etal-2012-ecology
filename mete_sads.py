@@ -148,6 +148,19 @@ def cross_taxa_weight_plot (input_filenames):
     plt.legend(('CBC', 'BBS', 'MCDB', 'FIA', 'Gentry'), loc = 'upper left')
     plt.show()
     
+def kde_mete_r2(sites, obs, pred):
+    """Generate a kernel density estimate of the r^2 values for obs-pred plots"""
+    r2s = []
+    for site in sites:
+        obs_site = obs[sites==site]
+        pred_site = pred[sites==site]
+        r2 = macroeco.obs_pred_rsquare(obs_site, pred_site)
+        r2s.append(r2)
+    density_estimate = stats.kde.gaussian_kde(r2s)
+    xvals = np.arange(0, 1, 0.01)
+    yvals = density_estimate.evaluate(xvals)
+    plt.plot(xvals, yvals, 'k-', linewidth=2)
+    
 def rare_sp_count (input_filename, abundance_class):
     """Count and plot number of species observed and predicted in a given abundance class
     
