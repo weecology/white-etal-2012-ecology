@@ -550,7 +550,7 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         std_deviations = stats.nanstd(deviations)
         plt.errorbar(bin_numbers, mean_deviations, yerr=std_deviations, fmt='b-')
     else:
-        plt.plot(bin_numbers, mean_deviations, color=color, linewidth=2)
+        plt.plot(bin_numbers, mean_deviations, color=color, linewidth=3)
     plt.show()
         
 def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln', 
