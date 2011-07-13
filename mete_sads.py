@@ -160,6 +160,7 @@ def kde_mete_r2(sites, obs, pred):
     xvals = np.arange(0, 1, 0.01)
     yvals = density_estimate.evaluate(xvals)
     plt.plot(xvals, yvals, 'k-', linewidth=2)
+    plt.axis([0, 1, 0, 1.1 * max(yvals)])
     
 def rare_sp_count (input_filename, abundance_class):
     """Count and plot number of species observed and predicted in a given abundance class

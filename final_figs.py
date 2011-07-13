@@ -138,7 +138,6 @@ def var_plot(input_filenames, radius=2):
         axis_min = 0.5 * min(obs)
         axis_max = 2 * max(obs)
         axis_scale = 1
-        
         ax = fig.add_subplot(3,2,i+1)
         macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
                                        plot_obj=plt.subplot(3,2,i+1))        
@@ -149,13 +148,13 @@ def var_plot(input_filenames, radius=2):
                                 wspace=0.29, hspace=0.21)  
         
         # Create inset for histogram of site level r^2 values
-        axins = inset_axes(ax, width="30%", height="30%", loc=2)
+        axins = inset_axes(ax, width="30%", height="30%", loc=4)
         mete_sads.kde_mete_r2(site, obs, pred)
         plt.setp(axins, xticks=[], yticks=[])
         
     plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0) 
     
-var_plot([input_filenames[4], input_filenames[5]], radius = 3)
+var_plot(input_filenames, radius = 3)
 
 #figure 3
 input_filenames = (workdir + 'bbs_dist_test.csv',
