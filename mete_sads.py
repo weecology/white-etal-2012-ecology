@@ -61,20 +61,27 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                 mete_pred = mete.get_mete_rad(int(S),int(N))
                 pred = np.array(mete_pred[0])
                 p = mete_pred[1]
+                p_untruncated = mete.get_lambda_sad(S, N, version='2008')
                 subab3 = np.sort(subsubab)[::-1]
                 # Calculate Akaike weight of log-series:
                 L_logser = md.logser_ll(subab3, p)
+                L_logser_untruncated = md.logser_ll(subab3, p_untruncated)
                 mu, sigma = md.pln_solver(subab3)
                 L_pln = md.pln_ll(mu,sigma,subab3)        
                 k1 = 1
                 k2 = 2    
                 AICc_logser = weestats.AICc(k1, L_logser, S)
+                AICc_logser_untruncated = weestats.AICc(k1, L_logser_untruncated, S)
                 AICc_pln = weestats.AICc(k2, L_pln, S)
-                weight = weestats.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4) 
+                weight = weestats.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
+                weight_untruncated = weestats.aic_weight(AICc_logser_untruncated,
+                                                         AICc_pln, S, cutoff = 4)
                 #save results to a csv file:
                 results = ((np.column_stack((subsubsites, subsubyr, subab3, pred))))
                 results2 = ((np.column_stack((np.array(usites[i], dtype='S20'),
-                                                       uyr[a], S, N, p, weight))))
+                                                       uyr[a], S, N, p, weight,
+                                                       p_untruncated,
+                                                       weight_untruncated))))
                 f1.writerows(results)
                 f2.writerows(results2)
             
