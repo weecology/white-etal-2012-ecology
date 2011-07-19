@@ -29,7 +29,7 @@ import weestats
 import cPickle
 import re
 import sys
-from math import log
+from math import log, exp
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
@@ -69,7 +69,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                 mete_pred = mete.get_mete_rad(int(S),int(N))
                 pred = np.array(mete_pred[0])
                 p = mete_pred[1]
-                p_untruncated = mete.get_lambda_sad(S, N, version='2008')
+                p_untruncated = exp(-mete.get_lambda_sad(S, N, version='2008'))
                 subab3 = np.sort(subsubab)[::-1]
                 # Calculate Akaike weight of log-series:
                 L_logser = md.logser_ll(subab3, p)
