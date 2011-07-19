@@ -1,6 +1,14 @@
 """Project-specific Code for Testing METE's SAD Predictions
 
-Required input = Abundances per species per site for one sampling period
+Command line usage:
+python mete_sads.py /path/to/data/ args
+
+args:
+empir - generate empirical fits, obs-pred data, and compare to log-normal
+sims - generate simulated datasets and compare to empirical results
+
+The main data required is abundances of each species at each site for one 
+sampling period
     
 All data queries used can be found in MaxEnt/trunk/data:
     BBS_data_query
@@ -608,19 +616,23 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
     plt.show()
     
 if __name__ == '__main__':
-    """If module is executed on it's own run run_test on all listed datasets"""
-    if len(sys.argv) < 2:
-        workdir = raw_input('What is the path to the data directory:\n')
-    else:
-        workdir = sys.argv[1]
-    input_filenames = (workdir + 'bbs_too_2009.csv',
+    assert len(sys.argv) == 3, """You must provide two arguments, a path to the
+    where the data is or will be stored, and an argument for the type of 
+    analysis to be conducted"""
+    workdir = sys.argv[1]
+    if sys.argv[2] == 'empir':
+        input_filenames = (workdir + 'bbs_too_2009.csv',
                        workdir + 'cbc_too_109.csv',
                        workdir + 'fia_spab.csv',
                        workdir + 'gentry_spab.csv',
                        workdir + 'mcdb_spab.csv',
                        workdir + 'naba_sp_ab_2009.csv')
-    for current_file in input_filenames:
-        match = re.search('/([a-z]*)_', current_file)
-        data_id = match.group(1)
-        run_test(current_file, workdir + data_id + '_obs_pred.csv',
+        for current_file in input_filenames:
+            match = re.search('/([a-z]*)_', current_file)
+            data_id = match.group(1)
+            run_test(current_file, workdir + data_id + '_obs_pred.csv',
                  workdir + data_id + '_dist_test.csv')
+    elif sys.argv[2] == 'sim':
+        print "Soon this will conduct simulations, but now I have get River up"
+    else:
+        print "The second argument should be either empir or sim. See the docs"
