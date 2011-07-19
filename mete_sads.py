@@ -283,23 +283,6 @@ def ab_class_test_plot(input_filename):
     plt.show()   
     return(regr_results)
 
-def multi_taxa_conf_hulls(input_filenames, radius, conf_interval, logscale=0):
-    colors = ['r', 'b', 'k', 'g', 'c']
-    plotmax = 0
-    for i, filename in enumerate(input_filenames):
-        infile = np.genfromtxt(filename, dtype = "S15,i8,i8", 
-                       names = ['site','obs','pred'], delimiter = ",")
-        hull_points = macroeco.confidence_hull(infile['pred'], infile['obs'], radius,
-                                               logscale=logscale,
-                                               color=colors[i], alpha=0.75-float(i)/10)
-        plotmax = max([plotmax, np.max(hull_points)])
-    plt.loglog([0.5, plotmax * 2], [0.5, plotmax * 2], 'k-')
-    plt.xlim(.5, plotmax * 2)
-    plt.ylim(.5, plotmax * 2)
-    plt.xlabel('Predicted abundance')
-    plt.ylabel('Observed abundance')
-    plt.show()
-
 def evar_pred_obs(input_filenames, output_filenames):
     """Calculate Evar for observed and predicted SADs and save to file
     
