@@ -448,7 +448,7 @@ def compare_null(obs, pred, Niter):
     return r2_sim_avg, r2_obs
 
 def create_null_dataset(input_filename, output_filename, Niter,
-                        dic_filename='lambda_library.pck'):
+                        dic_filename='lambda_library.pck', return_obs_pred=0):
     """Create list of R^2 values for simulated observed vs. predicted 
     abundance relationships for a dataset.
     
@@ -479,6 +479,8 @@ def create_null_dataset(input_filename, output_filename, Niter,
     cPickle.dump(dic_lambda, dic_output)
     dic_output.close()
     resultfile.close()
+    if return_obs_pred == 1:
+        return sim_obs, sim_pred
     
 def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
     """Plot Preston SADs for both observed and predicted SADs for a subset of sites (num_sites)"""
