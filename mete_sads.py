@@ -17,8 +17,9 @@ All data queries used can be found in MaxEnt/trunk/data:
            
 """
 
-#TODO integrate lookup dictionary more broadly so that rerunning the analysis
-#     avoids the time consuming numerical solutions.
+#TODO 1. integrate lookup dictionary more broadly so that rerunning the analysis
+#        avoids the time consuming numerical solutions.
+#     2. update notation terminology to match Harte's 2011 book
 
 from __future__ import division
 import macroeco_distributions as md
@@ -446,7 +447,8 @@ def compare_null(obs, pred, Niter):
     r2_obs = macroeco.obs_pred_rsquare(obs, pred)
     return r2_sim_avg, r2_obs
 
-def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
+def create_null_dataset(input_filename, output_filename, Niter,
+                        dic_filename='lambda_library.pck'):
     """Create list of R^2 values for simulated observed vs. predicted 
     abundance relationships for a dataset.
     
@@ -455,30 +457,28 @@ def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
     output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
-                          names = ['site', 'year', 'S', 'N', 'p', 'weight',
-                                   'p_untrunc', 'weight_untrunc'], delimiter = ",")
-    sites = ifile['site']
-    result = open(output_filename, 'ab')
-    out = csv.writer(result, dialect = 'excel')
+    dist_test_results = np.genfromtxt(input_filename, usecols=(0, 2, 3),
+                                      dtype="S15,i8,i8",
+                                      names=['sites','Svals','Nvals'],
+                                      delimiter=",")
+    resultfile = open(output_filename, 'ab')
+    out = csv.writer(resultfile, dialect = 'excel')
     dic_lambda = mete.get_lambda_dict(dic_filename)    
     for i in range(Niter):
         sim_obs = []
         sim_pred = []
-        for site in sites:
-            idata = ifile[ifile['site'] == site]
-            iS = idata['S']
-            iN = idata['N']
-            ires = sim_null(iS, iN, dic_lambda)
-            sim_obs.extend((ires[0]))
-            sim_pred.extend((ires[1]))
-        r2 = macroeco.obs_pred_rsquare(np.array(sim_obs), np.array(sim_pred))
+        for site, S, N in dist_test_results:
+            site_sim_results = sim_null(S, N, dic_lambda)
+            sim_obs.extend((site_sim_results[0]))
+            sim_pred.extend((site_sim_results[1]))
+        r2 = macroeco.obs_pred_rsquare(np.array(np.log10(sim_obs)),
+                                       np.array(np.log10(sim_pred)))
         results = ((np.column_stack((i, r2))))
         out.writerows(results)
     dic_output = open(dic_filename, 'w')
     cPickle.dump(dic_lambda, dic_output)
     dic_output.close()
-    result.close()
+    resultfile.close()
     
 def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
     """Plot Preston SADs for both observed and predicted SADs for a subset of sites (num_sites)"""
