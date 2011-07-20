@@ -643,6 +643,6 @@ if __name__ == '__main__':
             match = re.search('/([a-z]*)_', current_file)
             data_id = match.group(1)
             create_null_dataset(current_file, workdir + data_id + '_sim_r2.csv',
-                                1)
+                                10)
     else:
         print "The second argument should be either empir or sim. See the docs"
