@@ -447,13 +447,14 @@ def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
     """Create list of R^2 values for simulated observed vs. predicted 
     abundance relationships for a dataset.
     
-    iter: number of simulations
+    Niter: number of simulations
     input_filename: same format as output_filename2 from run_test
     output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
-                       names = ['site','S','N'], delimiter = ",")  
+    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
+                          names = ['site', 'year', 'S', 'N', 'p', 'weight',
+                                   'p_untrunc', 'weight_untrunc'], delimiter = ",")
     site = sorted(list(set(ifile['site'])))
     result = open(output_filename, 'ab')
     out = csv.writer(result, dialect = 'excel')
@@ -633,6 +634,13 @@ if __name__ == '__main__':
             run_test(current_file, workdir + data_id + '_obs_pred.csv',
                  workdir + data_id + '_dist_test.csv')
     elif sys.argv[2] == 'sim':
+        input_filenames = (workdir + 'bbs_dist_test.csv',
+                       workdir + 'cbc_dist_test.csv',
+                       workdir + 'fia_dist_test.csv',
+                       workdir + 'gentry_dist_test.csv',
+                       workdir + 'mcdb_dist_test.csv',
+                       workdir + 'naba_dist_test.csv')
+        
         print "Soon this will conduct simulations, but now I have get River up"
     else:
         print "The second argument should be either empir or sim. See the docs"
