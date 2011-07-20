@@ -17,6 +17,9 @@ All data queries used can be found in MaxEnt/trunk/data:
            
 """
 
+#TODO integrate lookup dictionary more broadly so that rerunning the analysis
+#     avoids the time consuming numerical solutions.
+
 from __future__ import division
 import macroeco_distributions as md
 import mete
@@ -420,7 +423,7 @@ def SN_diff_plot(input_filenames):
             plt.xlabel('S/N')
         plt.title(titles[i])
         
-    plt.show() 
+    plt.show()
     
 def sim_null(S0, N0, dic_lambda):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
@@ -455,18 +458,15 @@ def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
     ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
                           names = ['site', 'year', 'S', 'N', 'p', 'weight',
                                    'p_untrunc', 'weight_untrunc'], delimiter = ",")
-    site = sorted(list(set(ifile['site'])))
+    sites = ifile['site']
     result = open(output_filename, 'ab')
     out = csv.writer(result, dialect = 'excel')
-    dic_file = open(dic_filename, 'r')
-    dic_lambda = cPickle.load(dic_file)
-    dic_file.close()
-    i = 0
-    while i < Niter:
-        sim_obs = list()
-        sim_pred = list()        
-        for isite in site:
-            idata = ifile[ifile['site'] == isite]
+    dic_lambda = mete.get_lambda_dict(dic_filename)    
+    for i in range(Niter):
+        sim_obs = []
+        sim_pred = []
+        for site in sites:
+            idata = ifile[ifile['site'] == site]
             iS = idata['S']
             iN = idata['N']
             ires = sim_null(iS, iN, dic_lambda)
@@ -475,7 +475,6 @@ def create_null_dataset(input_filename, output_filename, dic_filename, Niter):
         r2 = macroeco.obs_pred_rsquare(np.array(sim_obs), np.array(sim_pred))
         results = ((np.column_stack((i, r2))))
         out.writerows(results)
-        i += 1
     dic_output = open(dic_filename, 'w')
     cPickle.dump(dic_lambda, dic_output)
     dic_output.close()
