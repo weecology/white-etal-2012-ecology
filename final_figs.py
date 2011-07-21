@@ -178,10 +178,11 @@ def cross_taxa_weight_plot (input_filenames):
     for i, input_filename in enumerate(input_filenames):
         width = round(1.0/(3 + n * 3), 2)
         left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 9))]
-        ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8", 
-                              names = ['site', 'year', 'S', 'N', 'p', 'weight'],
+        ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
+                              names = ['site', 'year', 'S', 'N', 'p', 'weight',
+                                       'p_untrunc', 'weight_untrunc'],
                               delimiter = ",")
-        weights = ((ifile["weight"]))
+        weights = ((ifile["weight_untrunc"]))
         bins = [0, 0.33333, 0.66667, 1]
         cts = np.histogram(weights, bins = bins)
         height = cts[0] * 100 / sum(cts[0])
@@ -242,3 +243,19 @@ plt.ylabel('Deviation (% of site richness)', fontsize=22)
 plt.axis([0.1, 17, -8, 3.5])
 plt.legend(('BBS','CBC','FIA','Gentry','MCDB','NABC'), 'lower right')
 plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)
+
+#Supplementary Figure 2
+inputfile = '/home/ethan/Dropbox/Research/MaxEnt/Code/data/mcdb_dist_test.csv'
+sim_obs, sim_pred = mete_sads.create_null_dataset(inputfile,
+                                                  '/home/ethan/test.csv', 1,
+                                                  dic_filename='/home/ethan/lambda_library.pck',
+                                                  return_obs_pred=1)
+sim_obs = np.array(sim_obs)
+sim_pred = np.array(sim_pred)
+axis_min = 0.5 * min(sim_obs)
+axis_max = 2 * max(sim_obs)
+axis_scale = 1
+macroeco.plot_color_by_pt_dens(sim_pred, sim_obs, 3, loglog=1)        
+plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
+plt.xlim(axis_min, axis_max)
+plt.ylim(axis_min, axis_max)
