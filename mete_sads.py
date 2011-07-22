@@ -167,7 +167,7 @@ def cross_taxa_weight_plot (input_filenames):
     plt.legend(('CBC', 'BBS', 'MCDB', 'FIA', 'Gentry'), loc = 'upper left')
     plt.show()
     
-def kde_mete_r2(sites, obs, pred):
+def hist_mete_r2(sites, obs, pred):
     """Generate a kernel density estimate of the r^2 values for obs-pred plots"""
     r2s = []
     for site in sites:
@@ -175,9 +175,14 @@ def kde_mete_r2(sites, obs, pred):
         pred_site = pred[sites==site]
         r2 = macroeco.obs_pred_rsquare(obs_site, pred_site)
         r2s.append(r2)
-    density_estimate = stats.kde.gaussian_kde(r2s)
-    xvals = np.arange(0, 1, 0.01)
-    yvals = density_estimate.evaluate(xvals)
+
+    #density_estimate = stats.kde.gaussian_kde(r2s)
+    #xvals = np.arange(0, 1, 0.01)
+    #yvals = density_estimate.evaluate(xvals)
+    hist_r2 = np.histogram(r2s, range=(0, 1))
+    xvals = hist_r2[1] + (hist_r2[1][1] - hist_r2[1][0])
+    xvals = xvals[0:len(xvals)-1]
+    yvals = hist_r2[0]
     plt.plot(xvals, yvals, 'k-', linewidth=2)
     plt.axis([0, 1, 0, 1.1 * max(yvals)])
     

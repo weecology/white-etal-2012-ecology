@@ -149,7 +149,7 @@ def var_plot(input_filenames, radius=2):
         
         # Create inset for histogram of site level r^2 values
         axins = inset_axes(ax, width="30%", height="30%", loc=4)
-        mete_sads.kde_mete_r2(site, np.log10(obs), np.log10(pred))
+        mete_sads.hist_mete_r2(site, np.log10(obs), np.log10(pred))
         plt.setp(axins, xticks=[], yticks=[])
         
     plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0) 
