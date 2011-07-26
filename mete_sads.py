@@ -441,17 +441,6 @@ def sim_null(S0, N0, dic_lambda):
     np.random.seed()
     return N_sim, N_pred
 
-def compare_null(obs, pred, Niter):
-    """Compare R^2 of observed and simulated abundances"""
-    r2_sim = []
-    i = 0
-    while i < Niter:
-        r2_sim.append(sim_null(len(obs), sum(obs)))
-        i += 1
-    r2_sim_avg = sum(r2_sim) / len(r2_sim)
-    r2_obs = macroeco.obs_pred_rsquare(obs, pred)
-    return r2_sim_avg, r2_obs
-
 def create_null_dataset(input_filename, output_filename, Niter,
                         dic_filename='lambda_library.pck', return_obs_pred=0):
     """Create list of R^2 values for simulated observed vs. predicted 
