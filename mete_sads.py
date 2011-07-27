@@ -624,9 +624,9 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
     plt.show()
     
 if __name__ == '__main__':
-    assert len(sys.argv) == 3, """You must provide two arguments, a path to the
-    where the data is or will be stored, and an argument for the type of 
-    analysis to be conducted"""
+    assert len(sys.argv) >= 3, """You must provide at least two arguments,
+    a path to the where the data is or will be stored, and an argument for the
+    type of analysis to be conducted"""
     workdir = sys.argv[1]
     if sys.argv[2] == 'empir':
         input_filenames = (workdir + 'bbs_too_2009.csv',
@@ -641,6 +641,10 @@ if __name__ == '__main__':
             run_test(current_file, workdir + data_id + '_obs_pred.csv',
                  workdir + data_id + '_dist_test.csv')
     elif sys.argv[2] == 'sim':
+        if len(sys.argv) == 4:
+            Niter = int(sys.argv[3])
+        else:
+            Niter = 10
         input_filenames = (workdir + 'bbs_dist_test.csv',
                        workdir + 'cbc_dist_test.csv',
                        workdir + 'fia_dist_test.csv',
@@ -651,6 +655,6 @@ if __name__ == '__main__':
             match = re.search('/([a-z]*)_', current_file)
             data_id = match.group(1)
             create_null_dataset(current_file, workdir + data_id + '_sim_r2.csv',
-                                10)
+                                Niter)
     else:
         print "The second argument should be either empir or sim. See the docs"
