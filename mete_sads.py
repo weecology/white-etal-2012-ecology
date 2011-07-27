@@ -461,7 +461,7 @@ def create_null_dataset(input_filename, output_filename, Niter,
                                       dtype="i8,i8",
                                       names=['Svals','Nvals'],
                                       delimiter=",")
-    resultfile = open(output_filename, 'ab')
+    resultfile = open(output_filename, 'wb')
     out = csv.writer(resultfile, dialect = 'excel')
     dic_lambda = mete.get_lambda_dict(dic_filename)    
     for i in range(Niter):
