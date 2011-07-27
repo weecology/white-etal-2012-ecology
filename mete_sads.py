@@ -33,6 +33,8 @@ import weestats
 import cPickle
 import re
 import sys
+import multiprocessing
+import itertools
 from math import log, exp
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
@@ -431,6 +433,10 @@ def SN_diff_plot(input_filenames):
         
     plt.show()
     
+def sim_null_curry(tup):
+    """Wrapping function to allow sim_null to work with multiprocessing"""
+    return sim_null(*tup)
+    
 def sim_null(S0, N0, dic_lambda):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, (2 * N0 - S0) / S0, S0), reverse = True)
@@ -451,20 +457,26 @@ def create_null_dataset(input_filename, output_filename, Niter,
     output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
-    dist_test_results = np.genfromtxt(input_filename, usecols=(0, 2, 3),
-                                      dtype="S15,i8,i8",
-                                      names=['sites','Svals','Nvals'],
+    dist_test_results = np.genfromtxt(input_filename, usecols=(2, 3),
+                                      dtype="i8,i8",
+                                      names=['Svals','Nvals'],
                                       delimiter=",")
     resultfile = open(output_filename, 'ab')
     out = csv.writer(resultfile, dialect = 'excel')
     dic_lambda = mete.get_lambda_dict(dic_filename)    
     for i in range(Niter):
+        pool = multiprocessing.Pool()
+        curried_args = itertools.izip(dist_test_results['Svals'],
+                                      dist_test_results['Nvals'],
+                                      itertools.repeat(dic_lambda))
+        site_sim_results = pool.map(sim_null_curry, curried_args)
+        pool.close()
+        
         sim_obs = []
         sim_pred = []
-        for site, S, N in dist_test_results:
-            site_sim_results = sim_null(S, N, dic_lambda)
-            sim_obs.extend((site_sim_results[0]))
-            sim_pred.extend((site_sim_results[1]))
+        for site in site_sim_results:
+            sim_obs.extend((site[0]))
+            sim_pred.extend((site[1]))
         r2 = macroeco.obs_pred_rsquare(np.array(np.log10(sim_obs)),
                                        np.array(np.log10(sim_pred)))
         results = ((np.column_stack((i, r2))))
