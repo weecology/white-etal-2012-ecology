@@ -440,7 +440,7 @@ def sim_null_curry(tup):
 def sim_null(S0, N0, dic_lambda):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, (2 * N0 - S0) / S0, S0), reverse = True)
-    NS_ratio = round(sum(N_sim) / S0, 4) 
+    NS_ratio = sum(N_sim) / S0
     if NS_ratio not in dic_lambda:
         dic_lambda[NS_ratio] = mete.get_lambda_sad(S0, sum(N_sim))
     N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_lambda[NS_ratio])[0] 
