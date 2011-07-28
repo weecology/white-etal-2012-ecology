@@ -637,12 +637,12 @@ if __name__ == '__main__':
     type of analysis to be conducted"""
     workdir = sys.argv[1]
     if sys.argv[2] == 'empir':
-        input_filenames = (workdir + 'bbs_too_2009.csv',
-                           workdir + 'cbc_too_109.csv',
+        input_filenames = (workdir + 'bbs_spab.csv',
+                           workdir + 'cbc_spab.csv',
                            workdir + 'fia_spab.csv',
                            workdir + 'gentry_spab.csv',
                            workdir + 'mcdb_spab.csv',
-                           workdir + 'naba_sp_ab_2009.csv')
+                           workdir + 'naba_spab.csv')
         for current_file in input_filenames:
             match = re.search('/([a-z]*)_', current_file)
             data_id = match.group(1)

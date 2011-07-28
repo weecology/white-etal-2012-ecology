@@ -74,7 +74,7 @@ cursor.execute("""
                 FROM queries.counts_too INNER JOIN queries.weather_subquery
                 ON counts_too.SiteID = weather_subquery.SiteID 
                 AND counts_too.Year = weather_subquery.Year
-                INTO OUTFILE '/tmp/bbs_too_2009.csv'
+                INTO OUTFILE '/tmp/bbs_spab.csv'
                 FIELDS TERMINATED BY ',' 
                 LINES TERMINATED BY '\n';
                 """)
@@ -162,7 +162,7 @@ cursor.execute("""
 cursor.execute("""             
                 SELECT * FROM queries.obs_5 
                 WHERE obs_5.AB > 0
-                INTO OUTFILE '/tmp/cbc_too_109.csv'
+                INTO OUTFILE '/tmp/cbc_spab.csv'
                 FIELDS TERMINATED BY ',' 
                 LINES TERMINATED BY '\n';
                 """)
@@ -367,16 +367,16 @@ cursor.execute("""
                 SELECT nabc_sp_ab_2009.* FROM queries.nabc_sp_ab_2009
                 WHERE nabc_sp_ab_2009.SiteID != "TX_NABA _ Park" AND 
                 nabc_sp_ab_2009.SiteID != "MN_Bear _ction"
-                INTO OUTFILE '/tmp/nabc_spab.csv'
+                INTO OUTFILE '/tmp/naba_spab.csv'
                 FIELDS TERMINATED BY ',' 
                 LINES TERMINATED BY '\n';
                 """)
 
 connection.commit()
 
-shutil.copy('/tmp/bbs_too_2009.csv', '/home/kate/data/bbs_too_2009.csv')
-shutil.copy('/tmp/cbc_too_109.csv', '/home/kate/data/cbc_too_109.csv')
+shutil.copy('/tmp/bbs_spab.csv', '/home/kate/data/bbs_spab.csv')
+shutil.copy('/tmp/cbc_spab.csv', '/home/kate/data/cbc_spab.csv')
 shutil.copy('/tmp/fia_spab.csv', '/home/kate/data/fia_spab.csv')
 shutil.copy('/tmp/gentry_spab.csv', '/home/kate/data/gentry_spab.csv')
 shutil.copy('/tmp/mcdb_spab.csv', '/home/kate/data/mcdb_spab.csv')
-shutil.copy('/tmp/nabc_spab.csv', '/home/kate/data/nabc_spab.csv')
+shutil.copy('/tmp/naba_spab.csv', '/home/kate/data/naba_spab.csv')
