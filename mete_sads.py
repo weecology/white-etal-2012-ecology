@@ -440,7 +440,15 @@ def sim_null_curry(tup):
 def sim_null(S0, N0, dic_lambda):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, (2 * N0 - S0) / S0, S0), reverse = True)
-    NS_ratio = sum(N_sim) / S0
+    N_tot = sum(N_sim)
+    NS_ratio = N_tot / S0
+    
+    #In cases where N and S are nearly equal it is possible for random draws to
+    #yield all singletons which breaks the numerical solutions. If this is the
+    #case make one species a doubleton
+    if N_tot == S0:
+        N_sim[0] = 2
+        
     if NS_ratio not in dic_lambda:
         dic_lambda[NS_ratio] = mete.get_lambda_sad(S0, sum(N_sim))
     N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_lambda[NS_ratio])[0] 
@@ -630,11 +638,11 @@ if __name__ == '__main__':
     workdir = sys.argv[1]
     if sys.argv[2] == 'empir':
         input_filenames = (workdir + 'bbs_too_2009.csv',
-                       workdir + 'cbc_too_109.csv',
-                       workdir + 'fia_spab.csv',
-                       workdir + 'gentry_spab.csv',
-                       workdir + 'mcdb_spab.csv',
-                       workdir + 'naba_sp_ab_2009.csv')
+                           workdir + 'cbc_too_109.csv',
+                           workdir + 'fia_spab.csv',
+                           workdir + 'gentry_spab.csv',
+                           workdir + 'mcdb_spab.csv',
+                           workdir + 'naba_sp_ab_2009.csv')
         for current_file in input_filenames:
             match = re.search('/([a-z]*)_', current_file)
             data_id = match.group(1)
@@ -646,11 +654,11 @@ if __name__ == '__main__':
         else:
             Niter = 10
         input_filenames = (workdir + 'bbs_dist_test.csv',
-                       workdir + 'cbc_dist_test.csv',
-                       workdir + 'fia_dist_test.csv',
-                       workdir + 'gentry_dist_test.csv',
-                       workdir + 'mcdb_dist_test.csv',
-                       workdir + 'naba_dist_test.csv')
+                           workdir + 'cbc_dist_test.csv',
+                           workdir + 'fia_dist_test.csv',
+                           workdir + 'gentry_dist_test.csv',
+                           workdir + 'mcdb_dist_test.csv',
+                           workdir + 'naba_dist_test.csv')
         for current_file in input_filenames:
             match = re.search('/([a-z]*)_', current_file)
             data_id = match.group(1)
