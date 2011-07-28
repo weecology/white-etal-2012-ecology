@@ -31,10 +31,10 @@ import numpy as np
 from scipy import stats
 import weestats
 import cPickle
-import re
 import sys
 import multiprocessing
 import itertools
+import os
 from math import log, exp
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
@@ -636,33 +636,25 @@ if __name__ == '__main__':
     a path to the where the data is or will be stored, and an argument for the
     type of analysis to be conducted"""
     workdir = sys.argv[1]
+    if os.path.exists(workdir + 'dataset_config.txt'):
+        dataset_config_file = open(workdir + 'dataset_config.txt', 'r')
+        datasets = []
+        for line in dataset_config_file:
+            datasets.append(line.strip())
+    else:
+        datasets = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
     if sys.argv[2] == 'empir':
-        input_filenames = (workdir + 'bbs_spab.csv',
-                           workdir + 'cbc_spab.csv',
-                           workdir + 'fia_spab.csv',
-                           workdir + 'gentry_spab.csv',
-                           workdir + 'mcdb_spab.csv',
-                           workdir + 'naba_spab.csv')
-        for current_file in input_filenames:
-            match = re.search('/([a-z]*)_', current_file)
-            data_id = match.group(1)
-            run_test(current_file, workdir + data_id + '_obs_pred.csv',
-                 workdir + data_id + '_dist_test.csv')
+        for dataset in datasets:
+            run_test(workdir + dataset + '_spab.csv',
+                     workdir + dataset + '_obs_pred.csv',
+                     workdir + dataset + '_dist_test.csv')
     elif sys.argv[2] == 'sim':
         if len(sys.argv) == 4:
             Niter = int(sys.argv[3])
         else:
             Niter = 10
-        input_filenames = (workdir + 'bbs_dist_test.csv',
-                           workdir + 'cbc_dist_test.csv',
-                           workdir + 'fia_dist_test.csv',
-                           workdir + 'gentry_dist_test.csv',
-                           workdir + 'mcdb_dist_test.csv',
-                           workdir + 'naba_dist_test.csv')
-        for current_file in input_filenames:
-            match = re.search('/([a-z]*)_', current_file)
-            data_id = match.group(1)
-            create_null_dataset(current_file, workdir + data_id + '_sim_r2.csv',
-                                Niter)
+        for dataset in datasets:
+            create_null_dataset(workdir + dataset + '_dist_test.csv',
+                                workdir + dataset + '_sim_r2.csv', Niter)
     else:
         print "The second argument should be either empir or sim. See the docs"
