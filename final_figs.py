@@ -5,6 +5,7 @@ import mete_sads
 import macroeco
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import stats
 from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
 #workdir = raw_input('Enter the directory where the data files are located:\n')
@@ -245,17 +246,27 @@ plt.legend(('BBS','CBC','FIA','Gentry','MCDB','NABC'), 'lower right')
 plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)
 
 #Supplementary Figure 2
-inputfile = '/home/ethan/Dropbox/Research/MaxEnt/Code/data/mcdb_dist_test.csv'
-sim_obs, sim_pred = mete_sads.create_null_dataset(inputfile,
-                                                  '/home/ethan/test.csv', 1,
-                                                  dic_filename='/home/ethan/lambda_library.pck',
-                                                  return_obs_pred=1)
-sim_obs = np.array(sim_obs)
-sim_pred = np.array(sim_pred)
-axis_min = 0.5 * min(sim_obs)
-axis_max = 2 * max(sim_obs)
-axis_scale = 1
-macroeco.plot_color_by_pt_dens(sim_pred, sim_obs, 3, loglog=1)        
-plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
-plt.xlim(axis_min, axis_max)
-plt.ylim(axis_min, axis_max)
+sim_data_files = ['bbs_sim_r2.csv', 'cbc_sim_r2.csv', 'fia_sim_r2.csv',
+                  'gentry_sim_r2.csv', 'mcdb_sim_r2.csv', 'naba_sim_r2.csv']
+lowerbounds = [-0.7, -2.3, 0, 0, -0.75, -0.5]
+fig = plt.figure()
+for i, data_file in enumerate(sim_data_files):
+    sim_data = np.genfromtxt(workdir + data_file, dtype= "f8, f8",
+                             names=['simulation', 'r2'], delimiter=",")
+    obs_pred_data = np.genfromtxt(input_filenames[i],
+                                  usecols=(2, 3), dtype = "f8,f8",
+                                  names = ['obs','pred'], delimiter = ",")
+    obs_r2 = macroeco.obs_pred_rsquare(np.log10(obs_pred_data['obs']),
+                                       np.log10(obs_pred_data['pred']))
+    print obs_r2
+    sim_kde = stats.kde.gaussian_kde(sim_data['r2'])
+    xvals = np.arange(lowerbounds[i], 1, 0.01)
+    yvals = sim_kde.evaluate(xvals)
+    xvals = xvals[yvals > 0.000001]
+    yvals = yvals[yvals > 0.000001]
+    ax = fig.add_subplot(3,2,i+1)
+    longdashes = [10,5]
+    plot_obj, = plt.plot(xvals, yvals, 'k--', linewidth=2, color=colors[i])
+    plot_obj.set_dashes(longdashes)
+    plt.plot([obs_r2, obs_r2], [0, max(yvals)], color=colors[i], linewidth=2)
+    plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
