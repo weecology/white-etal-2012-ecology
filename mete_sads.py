@@ -465,6 +465,9 @@ def create_null_dataset(input_filename, output_filename, Niter,
     output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
+    #TODO: We are currently not actually updating the lookup table. This is not
+    #      trivial to do in parallel. Here is a starting point:
+    #http://stackoverflow.com/questions/2545961/how-to-synchronize-a-python-dict-with-multiprocessing
     dist_test_results = np.genfromtxt(input_filename, usecols=(2, 3),
                                       dtype="i8,i8",
                                       names=['Svals','Nvals'],
