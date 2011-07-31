@@ -465,7 +465,7 @@ def create_null_dataset(input_filename, output_filename, Niter,
     output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
-    #TODO: We are currently not actually updating the lookup table. This is not
+    #TODO: We are currently not updating the lookup table. This is not
     #      trivial to do in parallel. Here is a starting point:
     #http://stackoverflow.com/questions/2545961/how-to-synchronize-a-python-dict-with-multiprocessing
     dist_test_results = np.genfromtxt(input_filename, usecols=(2, 3),
@@ -492,9 +492,6 @@ def create_null_dataset(input_filename, output_filename, Niter,
                                        np.array(np.log10(sim_pred)))
         results = ((np.column_stack((i, r2))))
         out.writerows(results)
-    dic_output = open(dic_filename, 'w')
-    cPickle.dump(dic_lambda, dic_output)
-    dic_output.close()
     resultfile.close()
     if return_obs_pred == 1:
         return sim_obs, sim_pred
