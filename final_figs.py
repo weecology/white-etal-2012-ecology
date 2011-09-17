@@ -157,6 +157,35 @@ def var_plot(input_filenames, radius=2):
     
 var_plot(input_filenames, radius = 3)
 
+def single_var_plot(input_filenames, radius=2):
+    """Plot all obs-predicted data together in a single density colored plot
+    
+    WARNING: this takes quit some time to run given the cost of determining 
+             neighbors for such a large number of points.
+    
+    """
+    fig = plt.figure()
+    site = np.array([])
+    obs = np.array([])
+    pred = np.array([])
+    for i in range(0,len(input_filenames)):
+        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,f8,f8", 
+                           names = ['site','year', 'obs','pred'], delimiter = ",")
+        site = np.concatenate([site, ifile["site"]])
+        obs = np.concatenate([obs, ifile["obs"]])   
+        pred = np.concatenate([pred, ifile["pred"]]) 
+    axis_min = 0.5 * min(obs)
+    axis_max = 2 * max(obs)
+    axis_scale = 1
+    macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
+                                   plot_obj=plt.subplot(3,2,i+1))        
+    plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
+    plt.xlim(axis_min, axis_max)
+    plt.ylim(axis_min, axis_max)
+    plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0) 
+    
+single_var_plot(input_filenames, radius = 3)
+
 #figure 3
 input_filenames = (workdir + 'bbs_dist_test.csv',
                    workdir + 'cbc_dist_test.csv',
