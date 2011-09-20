@@ -299,3 +299,9 @@ for i, data_file in enumerate(sim_data_files):
     plot_obj.set_dashes(longdashes)
     plt.plot([obs_r2, obs_r2], [0, max(yvals)], color=colors[i], linewidth=2)
     plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
+    
+#Rare species prediction plot
+
+obs_pred_data = mete_sads.get_combined_obs_pred_data(input_filenames)
+mete_sads.plot_numsp_obs_pred(obs_pred_data['site'], obs_pred_data['obs'],
+                              1, 10)
