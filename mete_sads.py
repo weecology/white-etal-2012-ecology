@@ -36,6 +36,7 @@ import multiprocessing
 import itertools
 import os
 from math import log, exp
+import itertools
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
@@ -50,7 +51,6 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     cutoff      --  minimum number of species required to run - 1.
     
     """
-    
     ifile = np.genfromtxt(input_filename, dtype = "S15,i8,S10,i8", 
                        names = ['site','year','sp','ab'], delimiter = ",")
     
@@ -72,7 +72,7 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
             S = len(subsubsites)
             if S > cutoff:
                 # Generate predicted values and p (e ** -lambda_sad) based on METE:
-                mete_pred = mete.get_mete_rad(int(S),int(N))
+                mete_pred = mete.get_mete_rad(int(S), int(N))
                 pred = np.array(mete_pred[0])
                 p = mete_pred[1]
                 p_untruncated = exp(-mete.get_lambda_sad(S, N, version='2008'))
@@ -226,6 +226,26 @@ def rare_sp_count (input_filename, abundance_class):
         
     return(pred_class, obs_class)
 
+def plot_numsp_obs_pred (sites, obs_ab, min_abundance, max_abundance):
+    """Observed vs. predicted plot of the number of species in an abundance range"""
+    sites = np.array(sites)
+    usites = np.unique(sites)
+    obs_ab = np.array(obs_ab)
+    pred = []
+    obs = []
+    for site in usites:
+        site_abs = obs_ab[sites==site]
+        site_range_abundances = site_abs[(site_abs >= min_abundance) &
+                                            (site_abs <= max_abundance)]
+        obs_richness = len(site_range_abundances)
+        pred_richness = mete.get_mete_sad(len(site_abs), sum(site_abs),
+                                          bin_edges=[min_abundance,
+                                                     max_abundance + 1])
+        obs.append(obs_richness)
+        pred.append(pred_richness)
+    pred = list(itertools.chain.from_iterable(pred))
+    macroeco.plot_color_by_pt_dens(pred, obs, 3, loglog=1)
+    
 def multi_taxa_rare_sp_plot(input_filenames):
     """Generate 2 x 2 paneled figure of pred vs obs numbers of rare species 
     for all 5 databases
@@ -631,6 +651,19 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
             a += 1
     plt.show()
     
+def get_combined_obs_pred_data(inputfilenames):
+    """Combine all obs-pred data from a list of run_test files"""
+    for i, filename in enumerate(inputfilenames):
+        file_data = np.genfromtxt(filename, dtype = "S15,i8,i8,i8",
+                                  names = ['site','year','obs','pred'],
+                                  delimiter = ",")
+        #file_data = np.column_stack([i * np.ones(len(file_data)), file_data])
+        if i == 0:
+            data = file_data
+        else:
+            data = np.concatenate([data, file_data])
+    return data
+
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments,
     a path to the where the data is or will be stored, and an argument for the
