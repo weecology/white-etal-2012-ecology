@@ -227,7 +227,13 @@ def rare_sp_count (input_filename, abundance_class):
     return(pred_class, obs_class)
 
 def plot_numsp_obs_pred (sites, obs_ab, min_abundance, max_abundance):
-    """Observed vs. predicted plot of the number of species in an abundance range"""
+    """Observed vs. predicted plot of the number of species in an abundance range
+
+    Drops communities where there are 0 species that occur within the range so
+    that the results can be displayed on log-scaled axes. Prints the number of
+    dropped communities to the screen.
+    
+    """
     sites = np.array(sites)
     usites = np.unique(sites)
     obs_ab = np.array(obs_ab)
@@ -243,7 +249,15 @@ def plot_numsp_obs_pred (sites, obs_ab, min_abundance, max_abundance):
                                                      max_abundance + 1])
         obs.append(obs_richness)
         pred.append(pred_richness)
-    pred = list(itertools.chain.from_iterable(pred))
+    pred = np.array(list(itertools.chain.from_iterable(pred)))
+    obs = np.array(obs)
+    obs_pred_data = np.column_stack((obs, pred))
+    np.savetxt('temp_sp_obs_pred_data', obs_pred_data)
+    num_dropped_communities = len(obs[obs==0])
+    pred = pred[obs > 0]
+    obs = obs[obs > 0]
+    print("%s communities out of a total of %s communities were dropped because no species were observed in the given abundance range"
+          % (num_dropped_communities, num_dropped_communities + len(obs)))
     macroeco.plot_color_by_pt_dens(pred, obs, 3, loglog=1)
     
 def multi_taxa_rare_sp_plot(input_filenames):
