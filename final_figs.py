@@ -305,3 +305,10 @@ for i, data_file in enumerate(sim_data_files):
 obs_pred_data = mete_sads.get_combined_obs_pred_data(input_filenames)
 mete_sads.plot_numsp_obs_pred(obs_pred_data['site'], obs_pred_data['obs'],
                               1, 10)
+plt.loglog([0.8, 300], [0.8, 300], 'k-', linewidth=2)
+plt.axis([0.8, 300, 0.8, 300])
+plt.xlabel('Predicted Number of Rare Species', fontsize=22)
+plt.ylabel('Observed Number of Rare Species', fontsize=22)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)
