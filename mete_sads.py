@@ -36,7 +36,6 @@ import multiprocessing
 import itertools
 import os
 from math import log, exp
-import itertools
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
