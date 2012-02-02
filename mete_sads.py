@@ -660,7 +660,6 @@ def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln',
             else:
                 tk = 1
             plot_obj.set_yticks(range(tk,max(max(height_obs),max(height_pred)) + 1,tk))     
-            print a
             a += 1
     plt.show()
     
@@ -703,4 +702,4 @@ if __name__ == '__main__':
             create_null_dataset(workdir + dataset + '_dist_test.csv',
                                 workdir + dataset + '_sim_r2.csv', Niter)
     else:
-        print "The second argument should be either empir or sim. See the docs"
+        print("The second argument should be either empir or sim. See the docs")
