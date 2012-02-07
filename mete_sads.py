@@ -70,11 +70,11 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
             N = sum(subsubab)
             S = len(subsubsites)
             if S > cutoff:
-                # Generate predicted values and p (e ** -lambda_sad) based on METE:
+                # Generate predicted values and p (e ** -beta) based on METE:
                 mete_pred = mete.get_mete_rad(int(S), int(N))
                 pred = np.array(mete_pred[0])
                 p = mete_pred[1]
-                p_untruncated = exp(-mete.get_lambda_sad(S, N, version='untruncated'))
+                p_untruncated = exp(-mete.get_beta(S, N, version='untruncated'))
                 subab3 = np.sort(subsubab)[::-1]
                 # Calculate Akaike weight of log-series:
                 L_logser = md.logser_ll(subab3, p)
@@ -470,7 +470,7 @@ def sim_null_curry(tup):
     """Wrapping function to allow sim_null to work with multiprocessing"""
     return sim_null(*tup)
     
-def sim_null(S0, N0, dic_lambda):
+def sim_null(S0, N0, dic_beta):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, (2 * N0 - S0) / S0, S0), reverse = True)
     N_tot = sum(N_sim)
@@ -482,14 +482,14 @@ def sim_null(S0, N0, dic_lambda):
     if N_tot == S0:
         N_sim[0] = 2
         
-    if NS_ratio not in dic_lambda:
-        dic_lambda[NS_ratio] = mete.get_lambda_sad(S0, sum(N_sim))
-    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_lambda[NS_ratio])[0] 
+    if NS_ratio not in dic_beta:
+        dic_beta[NS_ratio] = mete.get_beta(S0, sum(N_sim))
+    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_beta[NS_ratio])[0] 
     np.random.seed()
     return N_sim, N_pred
 
 def create_null_dataset(input_filename, output_filename, Niter,
-                        dic_filename='lambda_library.pck', return_obs_pred=0):
+                        dic_filename='beta_library.pck', return_obs_pred=0):
     """Create list of R^2 values for simulated observed vs. predicted 
     abundance relationships for a dataset.
     
@@ -507,12 +507,12 @@ def create_null_dataset(input_filename, output_filename, Niter,
                                       delimiter=",")
     resultfile = open(output_filename, 'wb')
     out = csv.writer(resultfile, dialect = 'excel')
-    dic_lambda = mete.get_lambda_dict(dic_filename)    
+    dic_beta = mete.get_beta_dict(dic_filename)    
     for i in range(Niter):
         pool = multiprocessing.Pool()
         curried_args = itertools.izip(dist_test_results['Svals'],
                                       dist_test_results['Nvals'],
-                                      itertools.repeat(dic_lambda))
+                                      itertools.repeat(dic_beta))
         site_sim_results = pool.map(sim_null_curry, curried_args)
         pool.close()
         
@@ -586,8 +586,8 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         if p==None:
             pred_sad = mete.get_mete_sad(S, N, bin_edges=bin_edges)
         else:
-            lambda_sad = -log(p[sites_for_p==site])
-            pred_sad = mete.get_mete_sad(S, N, lambda_sad=lambda_sad,
+            beta = -log(p[sites_for_p==site])
+            pred_sad = mete.get_mete_sad(S, N, beta=beta,
                                          bin_edges=bin_edges)
         deviation_from_predicted = (obs_sad[0] - pred_sad) / S * 100
         deviations[i,:] = deviation_from_predicted
