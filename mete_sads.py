@@ -319,7 +319,7 @@ def sim_null(S0, N0, dic_beta):
     return N_sim, N_pred
 
 def create_null_dataset(input_filename, output_filename, Niter,
-                        dic_filename='beta_library.pck', return_obs_pred=0):
+                        dic_filename='beta_lookup_table.pck', return_obs_pred=0):
     """Create list of R^2 values for simulated observed vs. predicted 
     abundance relationships for a dataset.
     
