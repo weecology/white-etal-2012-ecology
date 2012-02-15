@@ -29,7 +29,6 @@ from scipy import stats
 
 import mete
 import macroeco
-import weestats
 import macroeco_distributions as md
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
@@ -78,11 +77,11 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                 L_pln = md.pln_ll(mu,sigma,subab3)        
                 k1 = 1
                 k2 = 2    
-                AICc_logser = weestats.AICc(k1, L_logser, S)
-                AICc_logser_untruncated = weestats.AICc(k1, L_logser_untruncated, S)
-                AICc_pln = weestats.AICc(k2, L_pln, S)
-                weight = weestats.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
-                weight_untruncated = weestats.aic_weight(AICc_logser_untruncated,
+                AICc_logser = macroeco.AICc(k1, L_logser, S)
+                AICc_logser_untruncated = macroeco.AICc(k1, L_logser_untruncated, S)
+                AICc_pln = macroeco.AICc(k2, L_pln, S)
+                weight = macroeco.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
+                weight_untruncated = macroeco.aic_weight(AICc_logser_untruncated,
                                                          AICc_pln, S, cutoff = 4)
                 #save results to a csv file:
                 results = ((np.column_stack((subsubsites, subsubyr, subab3, pred))))
