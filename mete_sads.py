@@ -304,7 +304,6 @@ def sim_null(S0, N0, dic_beta):
     """Abundances simulated from a discrete uniform and associated METE predictions"""
     N_sim = sorted(np.random.random_integers(1, (2 * N0 - S0) / S0, S0), reverse = True)
     N_tot = sum(N_sim)
-    NS_ratio = N_tot / S0
     
     #In cases where N and S are nearly equal it is possible for random draws to
     #yield all singletons which breaks the numerical solutions for Beta.
@@ -312,9 +311,9 @@ def sim_null(S0, N0, dic_beta):
     if N_tot == S0:
         N_sim[0] = 2
         
-    if NS_ratio not in dic_beta:
-        dic_beta[NS_ratio] = mete.get_beta(S0, sum(N_sim))
-    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_beta[NS_ratio])[0] 
+    if (S, N) not in dic_beta:
+        dic_beta[(S, N)] = mete.get_beta(S0, sum(N_sim))
+    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_beta[(S, N)])[0] 
     np.random.seed()
     return N_sim, N_pred
 
