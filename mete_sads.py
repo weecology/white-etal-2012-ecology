@@ -170,10 +170,6 @@ def hist_mete_r2(sites, obs, pred):
         pred_site = pred[sites==site]
         r2 = macroeco.obs_pred_rsquare(obs_site, pred_site)
         r2s.append(r2)
-
-    #density_estimate = stats.kde.gaussian_kde(r2s)
-    #xvals = np.arange(0, 1, 0.01)
-    #yvals = density_estimate.evaluate(xvals)
     hist_r2 = np.histogram(r2s, range=(0, 1))
     xvals = hist_r2[1] + (hist_r2[1][1] - hist_r2[1][0])
     xvals = xvals[0:len(xvals)-1]
@@ -193,10 +189,8 @@ def rare_sp_count (input_filename, abundance_class):
     
     ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
                        names = ['site','obs','pred'], delimiter = ",")
-    
     site = ((ifile["site"]))    
     usites = list(set(site))  
-    
     pred_class = []
     obs_class = []
     for i in range (0, len(usites)):
@@ -219,7 +213,7 @@ def rare_sp_count (input_filename, abundance_class):
         
     return(pred_class, obs_class)
 
-def plot_numsp_obs_pred (sites, obs_ab, min_abundance, max_abundance):
+def plot_numsp_obs_pred(sites, obs_ab, min_abundance, max_abundance):
     """Observed vs. predicted plot of the number of species in an abundance range
 
     Drops communities where there are 0 species that occur within the range so
@@ -252,108 +246,6 @@ def plot_numsp_obs_pred (sites, obs_ab, min_abundance, max_abundance):
     print("%s communities out of a total of %s communities were dropped because no species were observed in the given abundance range"
           % (num_dropped_communities, num_dropped_communities + len(obs)))
     macroeco.plot_color_by_pt_dens(pred, obs, 3, loglog=1)
-    
-def multi_taxa_rare_sp_plot(input_filenames):
-    """Generate 2 x 2 paneled figure of pred vs obs numbers of rare species 
-    for all 5 databases
-    
-    """
-    titles = ('BBS', 'CBC','Mammals','Trees')
-    for i, filename in enumerate(input_filenames):
-        results = rare_sp_count (input_filenames[i], 'rare')
-        pred = results[0]
-        obs = results[1]      
-        plot_obj = plt.subplot(2,2,i+1)
-        macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 2, 0, plot_obj)
-        plotmax = max(max(pred),max(obs)) + 5;
-        plt.plot([0, plotmax], [0, plotmax], 'k-')
-        plt.xlim(0, plotmax)
-        plt.ylim(0, plotmax)
-        plt.title(titles[i])
-        if i == 0:
-            plt.ylabel('Observed number of species')            
-        elif i == 2:
-            plt.xlabel('Predicted number of species')
-            plt.ylabel('Observed number of species')  
-        elif i == 3:
-            plt.xlabel('Predicted number of species')            
-
-    plt.show()
-
-def ab_class_test_plot(input_filename):
-    """Regress number of species predicted vs. observed in a given abundance class
-    
-    Keyword arguments:
-    input_filename -- name of file containing observed and predicted abundances 
-    in the format ['site', 'obs', 'pred'], as output from run_test
-    
-    """
-    abundance_classes = ['singleton', 'doubleton', 'rare', 'dominant']
-
-    regr_results = []
-    for i in range (0, len(abundance_classes)):
-        results = rare_sp_count (input_filename, abundance_classes[i])
-        pred = results[0]
-        obs = results[1] 
-        slope, intercept, r_value, p_value, std_err = stats.linregress(pred, obs)
-        results2 = ((np.column_stack((slope, intercept, r_value, p_value, std_err))))
-        regr_results.append(results2)
-        # had to change macroeco.py to accept plot_obj to generate subplots   
-        plot_obj = plt.subplot(2,2,i+1)
-        if i < 3:
-            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, 0, plot_obj)
-            plt.plot([0,max(max(pred),max(obs))+ 1], 
-                     [0,max(max(pred),max(obs)) + 1], 'k-')
-            plt.xlim(0, max(max(pred),max(obs)) + 1)
-            plt.ylim(0, max(max(pred),max(obs)) + 1)
-            plt.title(abundance_classes[i])
-            plt.xlabel('Predicted number of species')
-            plt.ylabel('Observed number of species')
-        else:
-            macroeco.plot_color_by_pt_dens(np.array(pred), np.array(obs), 1, 1, plot_obj)
-            plt.loglog([1, (max(pred)) * 2], [1, (max(pred)) * 2], 'k-')
-            plt.xlim(1, max(max(pred),max(obs)) * 2)
-            plt.ylim(1, max(max(pred),max(obs)) * 2)
-            plt.title(abundance_classes[i])
-            plt.xlabel('Predicted abundance')
-            plt.ylabel('Observed abundance')
-        r2 = ('r2 = ' + str(round(r_value**2, 2)))
-        b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
-        plt.annotate(b, xy=(-10, 10), xycoords='axes points',
-                horizontalalignment='right', verticalalignment='bottom',
-                fontsize=14)
-        plt.annotate(r2, xy=(-10, 30), xycoords='axes points',
-                horizontalalignment='right', verticalalignment='bottom',
-                fontsize=14)
-
-    plt.show()   
-    return(regr_results)
-
-def evar_pred_obs(input_filenames, output_filenames):
-    """Calculate Evar for observed and predicted SADs and save to file
-    
-    Keyword arguments:
-    input_filename -- use file output from run_test (db_obs_pred.csv)
-    output_filename -- name of file in which to store Evar results for all sites
-    
-    """
-    
-    for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8", 
-                           names = ['site','obs','pred'], delimiter = ",")
-        
-        site = ((ifile["site"]))    
-        usites = list(set(site))  
-        
-        f1 = csv.writer(open(output_filenames[i],'ab'))
-    
-        for i in range (0, len(usites)):
-            pred = ifile["pred"][ifile["site"] == usites[i]]
-            obs = ifile["obs"][ifile["site"] == usites[i]]
-            evar_obs = macroeco.e_var(obs)
-            evar_pred = macroeco.e_var(pred)
-            results = (usites[i], evar_obs, evar_pred)
-            f1.writerow(results)  
             
 def var_plot(input_filenames, radius=2, transform='no'):
     """Multiple obs-predicted plotter"""
@@ -387,8 +279,6 @@ def var_plot(input_filenames, radius=2, transform='no'):
             axis_min = 0 #min(obs) - 1
             axis_max = 1 #max(obs) + 1
             axis_scale = 0
-        #slope, intercept, r_value, p_value, std_err = stats.linregress(pred_trans,
-        #                                                               obs_trans)
         #r_squared = macroeco.obs_pred_rsquare(obs_trans, pred_trans)
             
         plt.subplot(3,2,i+1)
@@ -404,61 +294,7 @@ def var_plot(input_filenames, radius=2, transform='no'):
         elif i == 5:        
             plt.xlabel('Predicted Evar')
         plt.title(titles[i])
-        #r2 = ('r2 = ' + str(round(r_squared, 2)))
-        #b = ('y = ' + str(round(slope, 2)) + 'x + ' + str(round(intercept)))
-        #plt.annotate(b, xy=(-10, 10), xycoords='axes points',
-                #horizontalalignment='right', verticalalignment='bottom',
-                #fontsize=14)
-        #plt.annotate(r2, xy=(-10, 30), xycoords='axes points',
-                #horizontalalignment='right', verticalalignment='bottom',
-                #fontsize=14)
-        
     plt.show() 
-    
-def SN_diff_plot(input_filenames):
-
-    titles = ('CBC', 'BBS', 'Gentry', 'MCDB', 'FIA')
-    
-    for i in range(0,len(input_filenames)/2):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
-                           names = ['site','obs','pred'], delimiter = ",")
-        
-        ifile2 = np.genfromtxt(input_filenames[i + len(input_filenames)/2], 
-                               dtype = "S15,i8,i8,f8,f8", 
-                               names = ['site','S','N','p','weight'], delimiter = ",")
-        
-        usites = ((ifile["site"]))
-        
-        diffs=[]
-        xvar=[]
-        for a in range(0, len(usites)):
-            pred = ifile["pred"][ifile["site"] == usites[a]]
-            obs = ifile["obs"][ifile["site"] == usites[a]]
-            S = ifile2["S"][ifile2["site"] == usites[a]]
-            N = ifile2["N"][ifile2["site"] == usites[a]]
-            if len(S) > 0:
-                var_diff = pred - obs
-                S_over_N = float(S) / float(N)
-                diffs.append(var_diff)
-                xvar.append(S_over_N)
-        
-        plt.subplot(2,2,i+1)
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.scatter(xvar, diffs)        
-        plt.plot([0, 1],[0, 1], 'k-')
-        plt.xlim(min(xvar),10 ** -0.1)
-        plt.ylim(min(diffs),max(diffs))
-        if i == 0:
-            plt.ylabel('Predicted - Observed')
-        elif i == 2:
-            plt.xlabel('S/N')
-            plt.ylabel('Predicted - Observed')
-        elif i == 3:        
-            plt.xlabel('S/N')
-        plt.title(titles[i])
-        
-    plt.show()
     
 def sim_null_curry(tup):
     """Wrapping function to allow sim_null to work with multiprocessing"""
@@ -471,8 +307,8 @@ def sim_null(S0, N0, dic_beta):
     NS_ratio = N_tot / S0
     
     #In cases where N and S are nearly equal it is possible for random draws to
-    #yield all singletons which breaks the numerical solutions. If this is the
-    #case make one species a doubleton
+    #yield all singletons which breaks the numerical solutions for Beta.
+    #If this is the case make one species a doubleton.
     if N_tot == S0:
         N_sim[0] = 2
         
@@ -492,9 +328,6 @@ def create_null_dataset(input_filename, output_filename, Niter,
     output_filename: 1 column - R^2 for simulated data, one value per iteration
     
     """
-    #TODO: We are currently not updating the lookup table. This is not
-    #      trivial to do in parallel. Here is a starting point:
-    #http://stackoverflow.com/questions/2545961/how-to-synchronize-a-python-dict-with-multiprocessing
     dist_test_results = np.genfromtxt(input_filename, usecols=(2, 3),
                                       dtype="i8,i8",
                                       names=['Svals','Nvals'],
@@ -522,37 +355,6 @@ def create_null_dataset(input_filename, output_filename, Niter,
     resultfile.close()
     if return_obs_pred == 1:
         return sim_obs, sim_pred
-    
-def plot_sads(sites, obs_ab, pred_ab, num_sites = 25):
-    """Plot Preston SADs for both observed and predicted SADs for a subset of sites (num_sites)"""
-    
-    usites = sorted(list(set(sites)))
-    step = len(usites)/(num_sites)
-    a = 1
-    for i in range (0, len(usites), step):
-        if a <= num_sites:
-            iobs = obs_ab[sites == usites[i]]
-            ipred = pred_ab[sites == usites[i]]
-            sad_obs = macroeco.preston_sad(iobs, normalized = 'yes')
-            sad_pred = macroeco.preston_sad(ipred, normalized = 'yes')
-            
-            plot_obj = plt.subplot(5,5,a)
-            height_obs = sad_obs[0]
-            height_pred = sad_pred[0]
-            left_obs = range(1,len(height_obs)+ 1)  
-            left_pred = range(1,len(height_pred)+ 1)
-            plt.bar(left_obs, height_obs, width = 0.4, color = 'b')
-            plt.bar((np.array(left_pred) + 0.4), height_pred, width = 0.4, color = 'r')
-            
-            plot_obj.set_title(usites[i])
-            plot_obj.set_ylabel('Number of species') 
-            plot_obj.set_xlim(0.5, max(max(left_obs),max(left_pred)) + 1)
-            plot_obj.set_xticks(np.array(left_obs) + 0.4)
-            plot_obj.set_xticklabels(np.array(sad_obs[1][0:len(height_obs)], dtype = int))
-            plot_obj.set_ylim(0, (max(max(height_obs),max(height_pred)) + 1))
-            
-            a += 1
-    plt.show()
     
 def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
                                       error_bars=0, color='b'):
@@ -592,69 +394,6 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         plt.errorbar(bin_numbers, mean_deviations, yerr=std_deviations, fmt='b-')
     else:
         plt.plot(bin_numbers, mean_deviations, color=color, linewidth=3)
-    plt.show()
-        
-def plot_sad_fit(sites, obs_ab, pred_ab, sites2, pr, dist = 'pln', 
-                 normalized = 'yes', num_sites = 25):
-    """Plot pmfs of fits of observed abundances"""
-    
-    usites = sorted(list(set(sites)))
-    step = len(usites)/(num_sites)
-    a = 1
-    for i in range (1, len(usites), step):
-        if a <= num_sites:
-            iobs = obs_ab[sites == usites[i]]
-            ipred = pred_ab[sites == usites[i]]
-            sad_obs = macroeco.preston_sad(iobs, normalized = 'yes')
-            sad_pred = macroeco.preston_sad(ipred, normalized = normalized)
-            
-            ipr = pr[sites2 == usites[i]]
-            
-            plot_obj = plt.subplot(5,5,a)
-            plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, 
-                                wspace=0.55, hspace=0.33)
-            height_obs = sad_obs[0]
-            height_pred = sad_pred[0]
-            left_obs = range(1,len(height_obs)+ 1)  
-            left_pred = range(1,len(height_pred)+ 1)
-            plt.bar(left_obs, height_obs, width = 0.3, color = 'b')
-            plt.bar((np.array(left_pred) + 0.3), height_pred, width = 0.3, color = 'r')
-            
-            if dist == 'logser':                
-                L = stats.logser.pmf(range(1, max(iobs)+1),ipr)
-            if dist == 'pln':
-                mu = np.mean(np.log(iobs))
-                sigma = np.std(np.log(iobs))
-                L = md.pln_lik(mu,sigma,np.sort(iobs),approx_cut = 10)  
-                L = md.pln_lik(mu,sigma,range(1, max(iobs)+1),approx_cut = 10)
-            L_scaled = L * len(iobs)
-            q = np.exp2(list(range(0, 25)))    
-            b = q [(q <= max(iobs)*2)]
-            height_dist=[]
-            for c in range(0,len(b)-1):
-                count = float(sum(L_scaled[b[c]-1:b[c+1]-1]))
-                binwidth = b[c+1]-b[c]
-                height_dist.append(count/binwidth)                
-            left_dist = range(1,len(height_dist)+ 1)            
-            plt.bar((np.array(left_dist) + 0.6), height_dist, width = 0.3, color = 'k')
-                        
-            plot_obj.set_title(usites[i]) 
-            plot_obj.set_xlim(0.5, max(max(left_obs),max(left_pred), max(left_dist)) + 1)
-            plot_obj.set_xticks(np.array(left_obs) + 0.4)
-            plot_obj.set_xticklabels(np.array(sad_obs[1][0:len(height_obs)], dtype = int))
-            plot_obj.set_ylim(0, (max(max(height_obs),max(height_pred), max(height_dist)) + 0.5))
-            if a == 1 or a == 6 or a == 11 or a == 16 or a == 21:
-                plot_obj.set_ylabel('Number of species')
-            if max(max(height_obs), max(height_pred), max(height_dist)) > 59:
-                tk = 20
-            elif max(max(height_obs), max(height_pred), max(height_dist)) > 19:
-                tk = 5
-            elif max(max(height_obs), max(height_pred), max(height_dist)) > 10:
-                tk = 2
-            else:
-                tk = 1
-            plot_obj.set_yticks(range(tk,max(max(height_obs),max(height_pred)) + 1,tk))     
-            a += 1
     plt.show()
     
 def get_combined_obs_pred_data(inputfilenames):
