@@ -10,32 +10,27 @@ sims - generate simulated datasets and compare to empirical results
 The main data required is abundances of each species at each site for one 
 sampling period
     
-All data queries used can be found in MaxEnt/trunk/data:
-    BBS_data_query
-    CBC_data_query
-    Gentry_data_query
+All data queries used can be found in MaxEnt/trunk/projects/mete_sads_data_export.py
            
 """
 
-#TODO 1. integrate lookup dictionary more broadly so that rerunning the analysis
-#        avoids the time consuming numerical solutions.
-#     2. update notation terminology to match Harte's 2011 book
-
 from __future__ import division
-import macroeco_distributions as md
-import mete
+
 import csv
-import macroeco
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy import stats
-import weestats
 import cPickle
 import sys
 import multiprocessing
 import itertools
 import os
+import matplotlib.pyplot as plt
+import numpy as np
 from math import log, exp
+from scipy import stats
+
+import mete
+import macroeco
+import weestats
+import macroeco_distributions as md
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
