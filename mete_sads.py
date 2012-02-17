@@ -311,9 +311,9 @@ def sim_null(S0, N0, dic_beta):
     if N_tot == S0:
         N_sim[0] = 2
         
-    if (S, N) not in dic_beta:
-        dic_beta[(S, N)] = mete.get_beta(S0, sum(N_sim))
-    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_beta[(S, N)])[0] 
+    if (S0, N0) not in dic_beta:
+        dic_beta[(S0, N0)] = mete.get_beta(S0, sum(N_sim))
+    N_pred = mete.get_mete_rad(S0, sum(N_sim), dic_beta[(S0, N0)])[0] 
     np.random.seed()
     return N_sim, N_pred
 
