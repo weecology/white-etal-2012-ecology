@@ -1,8 +1,10 @@
+"""Reproduce the published results for the METE SADs project"""
+
 from mpl_toolkits.basemap import Basemap
 import macroeco_distributions as md
 import mete
 import mete_sads
-import macroeco
+import macroecotools
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
@@ -101,8 +103,8 @@ def example_plot(workdir, dataset_code, site_id, color, axis_limits):
     pred = obs_pred_data["pred"]
     site_obs_ab = obs[site==site_id]
     site_pred_ab = pred[site==site_id]
-    rank_obs, relab_obs = macroeco.get_rad_data(site_obs_ab)
-    rank_pred, relab_pred = macroeco.get_rad_data(site_pred_ab)
+    rank_obs, relab_obs = macroecotools.get_rad_data(site_obs_ab)
+    rank_pred, relab_pred = macroecotools.get_rad_data(site_pred_ab)
     plt.figure(figsize=(2,2))
     plt.semilogy(rank_obs, relab_obs, 'o', markerfacecolor='none', markersize=8, 
              markeredgecolor=color, markeredgewidth=1.5)
@@ -140,7 +142,7 @@ def var_plot(input_filenames, radius=2):
         axis_max = 2 * max(obs)
         axis_scale = 1
         ax = fig.add_subplot(3,2,i+1)
-        macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
+        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
                                        plot_obj=plt.subplot(3,2,i+1))        
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
@@ -177,7 +179,7 @@ def single_var_plot(input_filenames, radius=2):
     axis_min = 0.5 * min(obs)
     axis_max = 2 * max(obs)
     axis_scale = 1
-    macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
+    macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
                                    plot_obj=plt.subplot(3,2,i+1))        
     plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
     plt.xlim(axis_min, axis_max)
@@ -285,7 +287,7 @@ for i, data_file in enumerate(sim_data_files):
     obs_pred_data = np.genfromtxt(input_filenames[i],
                                   usecols=(2, 3), dtype = "f8,f8",
                                   names = ['obs','pred'], delimiter = ",")
-    obs_r2 = macroeco.obs_pred_rsquare(np.log10(obs_pred_data['obs']),
+    obs_r2 = macroecotools.obs_pred_rsquare(np.log10(obs_pred_data['obs']),
                                        np.log10(obs_pred_data['pred']))
     print obs_r2
     sim_kde = stats.kde.gaussian_kde(sim_data['r2'])

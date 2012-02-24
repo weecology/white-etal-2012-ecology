@@ -28,7 +28,7 @@ from math import log, exp
 from scipy import stats
 
 import mete
-import macroeco
+import macroecotools
 import macroeco_distributions as md
 
 def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
@@ -77,11 +77,11 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
                 L_pln = md.pln_ll(mu,sigma,subab3)        
                 k1 = 1
                 k2 = 2    
-                AICc_logser = macroeco.AICc(k1, L_logser, S)
-                AICc_logser_untruncated = macroeco.AICc(k1, L_logser_untruncated, S)
-                AICc_pln = macroeco.AICc(k2, L_pln, S)
-                weight = macroeco.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
-                weight_untruncated = macroeco.aic_weight(AICc_logser_untruncated,
+                AICc_logser = macroecotools.AICc(k1, L_logser, S)
+                AICc_logser_untruncated = macroecotools.AICc(k1, L_logser_untruncated, S)
+                AICc_pln = macroecotools.AICc(k2, L_pln, S)
+                weight = macroecotools.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
+                weight_untruncated = macroecotools.aic_weight(AICc_logser_untruncated,
                                                          AICc_pln, S, cutoff = 4)
                 #save results to a csv file:
                 results = ((np.column_stack((subsubsites, subsubyr, subab3, pred))))
@@ -102,7 +102,7 @@ def plot_pred_obs(input_filename, title = ''):
     obs = ((ifile["obs"]))
     
     plt.figure()
-    macroeco.plot_color_by_pt_dens(pred, obs, 5, loglog=1)
+    macroecotools.plot_color_by_pt_dens(pred, obs, 5, loglog=1)
     plt.title(title)
     plt.xlabel('Predicted abundances')
     plt.ylabel('Observed abundances')
@@ -168,7 +168,7 @@ def hist_mete_r2(sites, obs, pred):
     for site in sites:
         obs_site = obs[sites==site]
         pred_site = pred[sites==site]
-        r2 = macroeco.obs_pred_rsquare(obs_site, pred_site)
+        r2 = macroecotools.obs_pred_rsquare(obs_site, pred_site)
         r2s.append(r2)
     hist_r2 = np.histogram(r2s, range=(0, 1))
     xvals = hist_r2[1] + (hist_r2[1][1] - hist_r2[1][0])
@@ -245,7 +245,7 @@ def plot_numsp_obs_pred(sites, obs_ab, min_abundance, max_abundance):
     obs = obs[obs > 0]
     print("%s communities out of a total of %s communities were dropped because no species were observed in the given abundance range"
           % (num_dropped_communities, num_dropped_communities + len(obs)))
-    macroeco.plot_color_by_pt_dens(pred, obs, 3, loglog=1)
+    macroecotools.plot_color_by_pt_dens(pred, obs, 3, loglog=1)
             
 def var_plot(input_filenames, radius=2, transform='no'):
     """Multiple obs-predicted plotter"""
@@ -279,10 +279,10 @@ def var_plot(input_filenames, radius=2, transform='no'):
             axis_min = 0 #min(obs) - 1
             axis_max = 1 #max(obs) + 1
             axis_scale = 0
-        #r_squared = macroeco.obs_pred_rsquare(obs_trans, pred_trans)
+        #r_squared = macroecotools.obs_pred_rsquare(obs_trans, pred_trans)
             
         plt.subplot(3,2,i+1)
-        macroeco.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
+        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
                                        plot_obj=plt.subplot(3,2,i+1))        
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
@@ -347,7 +347,7 @@ def create_null_dataset(input_filename, output_filename, Niter,
         for site in site_sim_results:
             sim_obs.extend((site[0]))
             sim_pred.extend((site[1]))
-        r2 = macroeco.obs_pred_rsquare(np.array(np.log10(sim_obs)),
+        r2 = macroecotools.obs_pred_rsquare(np.array(np.log10(sim_obs)),
                                        np.array(np.log10(sim_pred)))
         results = ((np.column_stack((i, r2))))
         out.writerows(results)
@@ -377,7 +377,7 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         site_abundances = obs_ab[sites == site]
         S = len(site_abundances)
         N = sum(site_abundances)
-        obs_sad = macroeco.preston_sad(site_abundances, b=bin_edges)
+        obs_sad = macroecotools.preston_sad(site_abundances, b=bin_edges)
         if p==None:
             pred_sad = mete.get_mete_sad(S, N, bin_edges=bin_edges)
         else:
