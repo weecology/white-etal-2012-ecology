@@ -141,55 +141,6 @@ def plot_numsp_obs_pred(sites, obs_ab, min_abundance, max_abundance):
     print("%s communities out of a total of %s communities were dropped because no species were observed in the given abundance range"
           % (num_dropped_communities, num_dropped_communities + len(obs)))
     macroecotools.plot_color_by_pt_dens(pred, obs, 3, loglog=1)
-            
-def var_plot(input_filenames, radius=2, transform='no'):
-    """Multiple obs-predicted plotter"""
-    #TODO Cleanup transformations using dictionary based approach and error
-    #     checking for cases where a provided transformation is undefined
-    #TODO Generalize to different numbers of subplots
-    titles = ('BBS', 'CBC','FIA','Gentry','MCDB','NABC')
-    
-    for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,f8,f8", 
-                           names = ['site','obs','pred'], delimiter = ",")
-    
-        obs = ((ifile["obs"]))    
-        pred = ((ifile["pred"])) 
-        
-        if transform == 'arcsin':
-            obs_trans = np.arcsin(np.sqrt(obs))
-            pred_trans = np.arcsin(np.sqrt(pred))
-            axis_min = 0
-            axis_max = 1
-            axis_scale = 0
-        elif transform == 'log10':
-            obs_trans = np.log10(obs)
-            pred_trans = np.log10(pred)
-            axis_min = 0.5 * min(obs)
-            axis_max = 2 * max(obs)
-            axis_scale = 1
-        else:
-            obs_trans = obs
-            pred_trans = pred
-            axis_min = 0 #min(obs) - 1
-            axis_max = 1 #max(obs) + 1
-            axis_scale = 0
-        #r_squared = macroecotools.obs_pred_rsquare(obs_trans, pred_trans)
-            
-        plt.subplot(3,2,i+1)
-        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
-                                       plot_obj=plt.subplot(3,2,i+1))        
-        plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
-        plt.xlim(axis_min, axis_max)
-        plt.ylim(axis_min, axis_max)
-        if i == 2:
-            plt.ylabel('Observed Abundance')
-        elif i == 4:
-            plt.xlabel('Predicted Abundance')
-        elif i == 5:        
-            plt.xlabel('Predicted Evar')
-        plt.title(titles[i])
-    plt.show() 
     
 def sim_null_curry(tup):
     """Wrapping function to allow sim_null to work with multiprocessing"""
