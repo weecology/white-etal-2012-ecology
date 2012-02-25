@@ -93,22 +93,6 @@ def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
                                                        weight_untruncated))))
                 f1.writerows(results)
                 f2.writerows(results2)
-            
-def plot_pred_obs(input_filename, title = ''): 
-    """use output from run_test to plot observed vs. predicted abundances"""
-    
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
-                       names = ['site','obs','pred'], delimiter = ",")
-    
-    pred = ((ifile["pred"]))
-    obs = ((ifile["obs"]))
-    
-    plt.figure()
-    macroecotools.plot_color_by_pt_dens(pred, obs, 5, loglog=1)
-    plt.title(title)
-    plt.xlabel('Predicted abundances')
-    plt.ylabel('Observed abundances')
-    plt.show()    
     
 def plot_weights(input_filename, data = 'raw', left = [0, 0.4, 0.8], 
                  width = 0.2, color = 'b', title = ''): 
@@ -178,42 +162,6 @@ def hist_mete_r2(sites, obs, pred):
     yvals = hist_r2[0]
     plt.plot(xvals, yvals, 'k-', linewidth=2)
     plt.axis([0, 1, 0, 1.1 * max(yvals)])
-    
-def rare_sp_count (input_filename, abundance_class):
-    """Count and plot number of species observed and predicted in a given abundance class
-    
-    Keyword arguments:
-    input_filename -- name of file containing observed and predicted abundances 
-    in the format ['site', 'obs', 'pred'], as output from run_test
-    abundance_class -- singleton, doubleton, rare(n <=10), or dominant
-    
-    """
-    
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8", 
-                       names = ['site','obs','pred'], delimiter = ",")
-    site = ((ifile["site"]))    
-    usites = list(set(site))  
-    pred_class = []
-    obs_class = []
-    for i in range (0, len(usites)):
-        pred = ifile["pred"][ifile["site"] == usites[i]]
-        obs = ifile["obs"][ifile["site"] == usites[i]]
-        if abundance_class == 'singleton':
-            subpred = len(pred[pred == 1])
-            subobs = len(obs[obs == 1])
-        elif abundance_class == 'doubleton':
-            subpred = len(pred[pred == 2])
-            subobs = len(obs[obs == 2])
-        elif abundance_class == 'dominant':
-            subpred = max(pred)
-            subobs = max(obs)
-        elif abundance_class == 'rare':
-            subpred = len(pred[pred <= 10])
-            subobs = len(obs[obs <= 10])
-        pred_class.append(subpred)
-        obs_class.append(subobs)
-        
-    return(pred_class, obs_class)
 
 def plot_numsp_obs_pred(sites, obs_ab, min_abundance, max_abundance):
     """Observed vs. predicted plot of the number of species in an abundance range
