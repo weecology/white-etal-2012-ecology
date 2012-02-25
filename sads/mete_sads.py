@@ -41,12 +41,11 @@ def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
     
     Keyword arguments:
-    raw_data -- numpy structured array with 4 columns: 'site','year','sp','ab'
-    output_filename1 -- file that will store the pred and observed species-level 
-                        abundances for each site in the input file
-    output_filename2 -- file that will store the p-values and weights from 
-                        dist_test for each site in the input file
-    cutoff      --  minimum number of species required to run - 1.
+    raw_data : numpy structured array with 4 columns: 'site','year','sp','ab'
+    dataset_name : short code that will indicate the name of the dataset in
+                    the output file names
+    data_dir : directory in which to store output
+    cutoff : minimum number of species required to run - 1.
     
     """
     
