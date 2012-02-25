@@ -31,12 +31,17 @@ import mete
 import macroecotools
 import macroeco_distributions as md
 
-def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
+def import_raw_data(input_filename):
+    """Import csv data of the form: Site, Year, Species, Abundance"""
+    raw_data = np.genfromtxt(input_filename, dtype = "S15,i8,S10,i8",
+                          names = ['site','year','sp','ab'], delimiter = ",")   
+    return raw_data
+
+def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
     
     Keyword arguments:
-    input_filename -- path to file that has raw data in the format: 
-                        'site','year','sp','ab'
+    raw_data -- numpy structured array with 4 columns: 'site','year','sp','ab'
     output_filename1 -- file that will store the pred and observed species-level 
                         abundances for each site in the input file
     output_filename2 -- file that will store the p-values and weights from 
@@ -44,18 +49,15 @@ def run_test(input_filename, output_filename1, output_filename2, cutoff = 9):
     cutoff      --  minimum number of species required to run - 1.
     
     """
-    ifile = np.genfromtxt(input_filename, dtype = "S15,i8,S10,i8", 
-                       names = ['site','year','sp','ab'], delimiter = ",")
     
-    usites = np.sort(list(set(ifile["site"])))
-    
-    f1 = csv.writer(open(output_filename1,'wb'))
-    f2 = csv.writer(open(output_filename2,'wb'))
+    usites = np.sort(list(set(raw_data["site"])))
+    f1 = csv.writer(open(data_dir + dataset_name + '_obs_pred.csv','wb'))
+    f2 = csv.writer(open(data_dir + dataset_name + '_dist_test.csv','wb'))
     
     for i in range(0, len(usites)):
-        subsites = ifile["site"][ifile["site"] == usites[i]]        
-        subab = ifile["ab"][ifile["site"] == usites[i]]
-        subyr = ifile["year"][ifile["site"] == usites[i]]
+        subsites = raw_data["site"][raw_data["site"] == usites[i]]        
+        subab = raw_data["ab"][raw_data["site"] == usites[i]]
+        subyr = raw_data["year"][raw_data["site"] == usites[i]]
         uyr = np.sort(list(set(subyr)))
         for a in range(0, len(uyr)):
             subsubsites = subsites[subyr == uyr[a]]
@@ -422,9 +424,8 @@ if __name__ == '__main__':
         datasets = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
     if sys.argv[2] == 'empir':
         for dataset in datasets:
-            run_test(workdir + dataset + '_spab.csv',
-                     workdir + dataset + '_obs_pred.csv',
-                     workdir + dataset + '_dist_test.csv')
+            raw_data = import_raw_data(workdir + dataset + '_spab.csv')
+            run_test(raw_data, dataset, data_dir=workdir)
     elif sys.argv[2] == 'sim':
         if len(sys.argv) == 4:
             Niter = int(sys.argv[3])
