@@ -11,7 +11,9 @@ from scipy import stats
 from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
 #workdir = raw_input('Enter the directory where the data files are located:\n')
-workdir = '/home/ethan/Dropbox/Research/MaxEnt/Code/data/'
+workdir = '/home/ethan/Dropbox/Research/MaxEnt/src/projects/sads/data/'
+
+datasets=['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
 
 input_filenames = (workdir + 'bbs_obs_pred.csv',
                    workdir + 'cbc_obs_pred.csv',
@@ -126,10 +128,6 @@ for i, dataset in enumerate(dataset_codes):
 #figure 2
 def var_plot(input_filenames, radius=2):
     """Multiple obs-predicted plotter"""
-    #TODO Cleanup transformations using dictionary based approach and error
-    #     checking for cases where a provided transformation is undefined
-    #TODO Generalize to different numbers of subplots
-    titles = ('BBS', 'CBC','FIA','Gentry','MCDB','NABA')
     fig = plt.figure()
     for i in range(0,len(input_filenames)):
         ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,f8,f8", 
@@ -303,7 +301,7 @@ for i, data_file in enumerate(sim_data_files):
     plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
     
 #Rare species prediction plot
-datasets=['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
+
 obs_pred_data = mete_sads.get_combined_obs_pred_data(datasets)
 mete_sads.plot_numsp_obs_pred(obs_pred_data['site'], obs_pred_data['obs'],
                               1, 10)
