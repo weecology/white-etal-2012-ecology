@@ -42,6 +42,14 @@ def import_raw_data(input_filename):
                           names = ['site','year','sp','ab'], delimiter = ",")   
     return raw_data
 
+def import_obs_SN_data(input_filename):
+    """Import csv data with the richness and abundance data for each site"""
+    rich_abund_data = np.genfromtxt(input_filename, usecols=(2, 3),
+                                    dtype="i8,i8",
+                                    names=['Svals','Nvals'],
+                                    delimiter=",")
+    return rich_abund_data
+
 def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
     
@@ -168,28 +176,33 @@ def sim_null(S0, N0, dic_beta):
     np.random.seed()
     return N_sim, N_pred
 
-def create_null_dataset(input_filename, output_filename, Niter,
+def create_null_dataset(Svals, Nvals, Niter, dataset_name, data_dir='./data/',
                         dic_filename='beta_lookup_table.pck', return_obs_pred=0):
-    """Create list of R^2 values for simulated observed vs. predicted 
-    abundance relationships for a dataset.
+    """Create simulated fits to uniform abundance distribution data
     
+    Create list of coefficients of determination for simulated observed vs.
+    predicted abundance relationships for a dataset. If these values are
+    similar to those observed then the constraints alone largely determine the
+    fit to the data. If they are weaker than the observed then the application
+    of maximum entropy is also important.
+    
+    Svals : a list of values of observed species richnesses to match. Each row
+            is a community (e.g., a site, year, etc.)
+    Nvals : a list of values of observed community abundances to match. The
+            ordering of rows should match that of Svals so that each row
+            represents the S and N values for a single community.
     Niter: number of simulations
-    input_filename: same format as output_filename2 from run_test
-    output_filename: 1 column - R^2 for simulated data, one value per iteration
+    dataset_name : short code that will indicate the name of the dataset in
+                    the output file names
+    data_dir : directory in which to store output    
     
     """
-    dist_test_results = np.genfromtxt(input_filename, usecols=(2, 3),
-                                      dtype="i8,i8",
-                                      names=['Svals','Nvals'],
-                                      delimiter=",")
-    resultfile = open(output_filename, 'wb')
+    resultfile = open(data_dir + dataset_name + '_sim_r2.csv', 'wb')
     out = csv.writer(resultfile, dialect = 'excel')
     dic_beta = mete.get_beta_dict(dic_filename)    
     for i in range(Niter):
         pool = multiprocessing.Pool()
-        curried_args = itertools.izip(dist_test_results['Svals'],
-                                      dist_test_results['Nvals'],
-                                      itertools.repeat(dic_beta))
+        curried_args = itertools.izip(Svals, Nvals, itertools.repeat(dic_beta))
         site_sim_results = pool.map(sim_null_curry, curried_args)
         pool.close()
         
@@ -281,7 +294,9 @@ if __name__ == '__main__':
         else:
             Niter = 10
         for dataset in datasets:
-            create_null_dataset(workdir + dataset + '_dist_test.csv',
-                                workdir + dataset + '_sim_r2.csv', Niter)
+            obs_SN_data = import_obs_SN_data(workdir + dataset +
+                                             '_dist_test.csv')
+            create_null_dataset(obs_SN_data['Svals'], obs_SN_data['Nvals'],
+                                Niter, dataset, data_dir=workdir)
     else:
         print("The second argument should be either empir or sim. See the docs")
