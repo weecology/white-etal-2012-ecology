@@ -259,10 +259,11 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         plt.plot(bin_numbers, mean_deviations, color=color, linewidth=3)
     plt.show()
     
-def get_combined_obs_pred_data(inputfilenames):
-    """Combine all obs-pred data from a list of run_test files"""
-    for i, filename in enumerate(inputfilenames):
-        file_data = np.genfromtxt(filename, dtype = "S15,i8,i8,i8",
+def get_combined_obs_pred_data(datasets, data_dir='./data/'):
+    """Combine obs-pred data from multiple datasets"""
+    for i, dataset in enumerate(datasets):
+        file_data = np.genfromtxt(data_dir + dataset + '_obs_pred.csv',
+                                  dtype = "S15,i8,i8,i8",
                                   names = ['site','year','obs','pred'],
                                   delimiter = ",")
         #file_data = np.column_stack([i * np.ones(len(file_data)), file_data])

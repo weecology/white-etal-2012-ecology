@@ -303,8 +303,8 @@ for i, data_file in enumerate(sim_data_files):
     plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
     
 #Rare species prediction plot
-
-obs_pred_data = mete_sads.get_combined_obs_pred_data(input_filenames)
+datasets=['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
+obs_pred_data = mete_sads.get_combined_obs_pred_data(datasets)
 mete_sads.plot_numsp_obs_pred(obs_pred_data['site'], obs_pred_data['obs'],
                               1, 10)
 plt.loglog([0.8, 300], [0.8, 300], 'k-', linewidth=2)
