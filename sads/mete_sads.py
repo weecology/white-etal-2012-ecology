@@ -273,31 +273,56 @@ def get_combined_obs_pred_data(datasets, data_dir='./data/'):
             data = np.concatenate([data, file_data])
     return data
 
+def run_empir_analysis(datasets, data_dir='./data/'):
+    for dataset in datasets:
+        raw_data = import_raw_data(workdir + dataset + '_spab.csv')
+        run_test(raw_data, dataset, data_dir=workdir)
+
+def run_sim_analysis(datasets, workdir, Niter):
+    for dataset in datasets:
+        obs_SN_data = import_obs_SN_data(workdir + dataset +
+                                         '_dist_test.csv')
+        create_null_dataset(obs_SN_data['Svals'], obs_SN_data['Nvals'],
+                            Niter, dataset, data_dir=workdir)
+    
+
 if __name__ == '__main__':
-    assert len(sys.argv) >= 3, """You must provide at least two arguments,
-    a path to the where the data is or will be stored, and an argument for the
-    type of analysis to be conducted"""
+    assert len(sys.argv) >= 3, """You must provide at least two arguments:
+    1. a path to the where the data is or will be stored
+    2. argument for the type of analysis to be conducted"""
     workdir = sys.argv[1]
+    
+    #Determine which analyses to run
+    analysis = sys.argv[2]
+    if analysis not in ('empir', 'sim', 'figs', 'all'):
+        print("The second argument should be empir, sim, figs, or all. See the docs")    
+    if analysis == 'all':
+        analyses = ('empir', 'sim', 'figs')
+    else:
+        analyses = (analysis)
+        
+    #Determine which datasets to use
     if os.path.exists(workdir + 'dataset_config.txt'):
         dataset_config_file = open(workdir + 'dataset_config.txt', 'r')
         datasets = []
         for line in dataset_config_file:
             datasets.append(line.strip())
     else:
-        datasets = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
-    if sys.argv[2] == 'empir':
-        for dataset in datasets:
-            raw_data = import_raw_data(workdir + dataset + '_spab.csv')
-            run_test(raw_data, dataset, data_dir=workdir)
-    elif sys.argv[2] == 'sim':
-        if len(sys.argv) == 4:
-            Niter = int(sys.argv[3])
-        else:
-            Niter = 10
-        for dataset in datasets:
-            obs_SN_data = import_obs_SN_data(workdir + dataset +
-                                             '_dist_test.csv')
-            create_null_dataset(obs_SN_data['Svals'], obs_SN_data['Nvals'],
-                                Niter, dataset, data_dir=workdir)
-    else:
-        print("The second argument should be either empir or sim. See the docs")
+        datasets = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']  
+    
+    #Run selected analysss
+    if 'empir' in analyses:
+        run_empir_analysis(datasets, workdir)
+    if 'sim' in analyses:
+        assert len(sys.argv) == 4, """Running simulation analyses requires a
+        third argument specifying the number of iterations"""
+        iterations = int(sys.argv[3])
+        run_sim_analysis(datasets, workdir, iterations)
+    if 'figs' in analyses:
+        #Figure 1 (Map & Example Fits)
+        #Figure 2 (Observed-predicted plots for each dataset)
+        #Figure 3 ()
+        #Figure 4 ()
+        #Supplemental Figure X ()
+        pass
+    
