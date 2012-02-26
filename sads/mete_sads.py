@@ -1,5 +1,10 @@
 """Project-specific Code for Testing METE's SAD Predictions
 
+This code allows the replication of analyses performed in the paper:
+White, Ethan P., Katherine M. Thibault and Xiao Xiao. In review. Characterizing
+species-abundance distributions across taxa and ecosystems using a simple
+maximum entropy model.
+
 Command line usage:
 python mete_sads.py /path/to/data/ args
 
