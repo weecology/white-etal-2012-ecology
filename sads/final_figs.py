@@ -1,6 +1,5 @@
 """Reproduce the published results for the METE SADs project"""
 
-from mpl_toolkits.basemap import Basemap
 import macroeco_distributions as md
 import mete
 import mete_sads
@@ -44,6 +43,7 @@ def map_sites(input_filenames, markers = ['o'], colors = ['b', 'r', 'g', 'y', 'c
               markersizes=3):
     """Generate a world map with sites color-coded by database"""
     
+    from mpl_toolkits.basemap import Basemap
     map = Basemap(projection='merc',llcrnrlat=-57,urcrnrlat=71,\
                 llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='l')
     
@@ -70,6 +70,7 @@ def map_sites_inset(input_filenames, markers = ['o'],
                     colors = ['b', 'r', 'g', 'y', 'c'], markersizes=4):
     """Generate a US map with sites color-coded by database"""
     
+    from mpl_toolkits.basemap import Basemap
     map = Basemap(projection='merc',llcrnrlat=24.5,urcrnrlat=49,\
                 llcrnrlon=-125,urcrnrlon=-69,lat_ts=50,resolution='l')
     
