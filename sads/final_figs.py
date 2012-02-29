@@ -28,18 +28,20 @@ input_filenames1 = (workdir + 'bbs_dist_test.csv',
                    workdir + 'mcdb_dist_test.csv',
                    workdir + 'naba_dist_test.csv')
 
-input_filenames2 = (workdir + 'bbs_lat_long.csv',
-                   workdir + 'cbc_lat_long.csv',
-                   workdir + 'fia_lat_long.csv',
-                   workdir + 'gentry_lat_long.csv',
-                   workdir + 'mcdb_lat_long.csv',
-                   workdir + 'naba_lat_long.csv')
-
 colors = [ '#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
 
-#figure 1a
-##aea383 - brown - cdaa7d - 7c5e4e - #d5a76b - #325582 - dark blue
-def map_sites(input_filenames, markers = ['o'],
+def import_latlong_data(input_filename):
+    data = np.genfromtxt(input_filename, dtype = "f8,f8", 
+                         names = ['lat','long'], delimiter = ",")
+    return data
+
+def import_obs_pred_data(input_filename):
+    data = np.genfromtxt(input_filename, dtype = "S15,i8,f8,f8",
+                                  names = ['site','year','obs','pred'],
+                                  delimiter = ",")
+    return data
+    
+def map_sites(datasets, data_dir='./data/', markers = ['o'],
               colors = ['b', 'r', 'g', 'y', 'c'], markersizes=3):
     """Generate a world map with sites color-coded by database"""
     
@@ -49,11 +51,10 @@ def map_sites(input_filenames, markers = ['o'],
                 llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='l')
     map.drawcoastlines(linewidth = 1.25)
 
-    for i in range(0, len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
-                                   names = ['lat','long'], delimiter = ",")
-        lats = ifile["lat"]
-        longs = ifile["long"]
+    for i, dataset in enumerate(datasets):
+        latlong_data = import_latlong_data(data_dir + dataset + '_lat_long.csv')
+        lats = latlong_data["lat"]
+        longs = latlong_data["long"]
         x,y = map(longs,lats)
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
@@ -61,7 +62,7 @@ def map_sites(input_filenames, markers = ['o'],
     plt.savefig('map.png', dpi=400, facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
     
-def map_sites_inset(input_filenames, markers = ['o'],
+def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
                     colors=['b', 'r', 'g', 'y', 'c'], markersizes=4):
     """Generate a US map with sites color-coded by database"""
     
@@ -74,11 +75,10 @@ def map_sites_inset(input_filenames, markers = ['o'],
     map.drawcountries(linewidth=1.5)
     map.drawmapboundary()     
     
-    for i in range(0, len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "f8,f8", 
-                                   names = ['lat','long'], delimiter = ",")
-        lats = ifile["lat"]
-        longs = ifile["long"]  
+    for i, dataset in enumerate(datasets):
+        latlong_data = import_latlong_data(data_dir + dataset + '_lat_long.csv')
+        lats = latlong_data["lat"]
+        longs = latlong_data["long"]  
     
         x,y = map(longs,lats)
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
@@ -87,11 +87,9 @@ def map_sites_inset(input_filenames, markers = ['o'],
     plt.savefig('map_inset.png', dpi=400, facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
 
-def example_sad_plot(workdir, dataset_code, site_id, color, axis_limits):
+def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
     """Generate an example SAD plot for the map figure"""    
-    obs_pred_data = np.genfromtxt(workdir + dataset_code + '_obs_pred.csv',
-                          dtype = "S15,i8,f8,f8",
-                          names = ['site','year','obs','pred'], delimiter = ",")    
+    obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv')    
     site = obs_pred_data["site"]
     obs = obs_pred_data["obs"]   
     pred = obs_pred_data["pred"]
@@ -106,24 +104,24 @@ def example_sad_plot(workdir, dataset_code, site_id, color, axis_limits):
     plt.axis(axis_limits)
     plt.xticks(fontsize = '10')
     plt.yticks(fontsize = '10')
-    plt.savefig(dataset_code + '_example.png', dpi=400, facecolor='w',
-                edgecolor='w', bbox_inches = 'tight', pad_inches=0.2)
+    plt.savefig(dataset + '_example_' + str(site_id) + '.png', dpi=400,
+                facecolor='w', edgecolor='w', bbox_inches = 'tight',
+                pad_inches=0.2)
 
 #figure 1a
-map_sites(input_filenames2, markers = ['o','o','s','s','D','v'], colors=colors,
+map_sites(datasets, markers = ['o','o','s','s','D','v'], colors=colors,
           markersizes=4)
 #figure 1b
 plt.figure()
-map_sites_inset(input_filenames2, markers=['o','o','s','s','D','v'],
+map_sites_inset(datasets, markers=['o','o','s','s','D','v'],
                 colors=colors, markersizes=5)
 #figure 1c
-dataset_codes = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']
 site_ids = ['17220', 'L13428', '211131000022', '84', '1353', 'TX_Still_ollow']
 axis_limits = [[0, 16, 10 ** -4, 1], [-5, 115, 10 ** -5, 1],
                [0, 15, 10 ** -2, 1], [-10, 225, 10 ** -3, 1], 
                [0, 11, 10 ** -2, 1], [-2, 44, 10 ** -3, 1]]
-for i, dataset in enumerate(dataset_codes):
-    example_sad_plot(workdir, dataset, site_ids[i], colors[i], axis_limits[i])
+for i, dataset in enumerate(datasets):
+    example_sad_plot(dataset, site_ids[i], colors[i], axis_limits[i])
 
 #figure 2
 def var_plot(input_filenames, radius=2):
