@@ -314,7 +314,7 @@ def map_sites(datasets, data_dir='./data/', markers = ['o'],
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
     
-    plt.savefig('map.png', dpi=400, facecolor='w', edgecolor='w', 
+    plt.savefig('map.png', facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
     
 def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
@@ -339,7 +339,7 @@ def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
     
-    plt.savefig('map_inset.png', dpi=400, facecolor='w', edgecolor='w', 
+    plt.savefig('map_inset.png', facecolor='w', edgecolor='w', 
                 bbox_inches = 'tight', pad_inches=0)
 
 def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
