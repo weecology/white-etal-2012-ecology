@@ -314,8 +314,7 @@ def map_sites(datasets, data_dir='./data/', markers = ['o'],
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
     
-    plt.savefig('map.png', facecolor='w', edgecolor='w', 
-                bbox_inches = 'tight', pad_inches=0)
+    plt.savefig('map.png', dpi=160, bbox_inches = 'tight', pad_inches=0)
     
 def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
                     colors=['b', 'r', 'g', 'y', 'c'], markersizes=4):
@@ -339,8 +338,7 @@ def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
     
-    plt.savefig('map_inset.png', facecolor='w', edgecolor='w', 
-                bbox_inches = 'tight', pad_inches=0)
+    plt.savefig('map_inset.png', dpi=320, bbox_inches = 'tight', pad_inches=0)
 
 def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
     """Generate an example SAD plot for the map figure"""    
@@ -359,7 +357,7 @@ def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
     plt.axis(axis_limits)
     plt.xticks(fontsize = '10')
     plt.yticks(fontsize = '10')
-    plt.savefig(dataset + '_example_' + str(site_id) + '.png', dpi=400,
+    plt.savefig(dataset + '_example_' + str(site_id) + '.png', dpi=320,
                 facecolor='w', edgecolor='w', bbox_inches = 'tight',
                 pad_inches=0.2)
     
