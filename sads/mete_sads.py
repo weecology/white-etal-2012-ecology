@@ -36,6 +36,17 @@ import mete
 import macroecotools
 import macroeco_distributions as md
 
+def import_latlong_data(input_filename):
+    data = np.genfromtxt(input_filename, dtype = "f8,f8", 
+                         names = ['lat','long'], delimiter = ",")
+    return data
+
+def import_obs_pred_data(input_filename):
+    data = np.genfromtxt(input_filename, dtype = "S15,i8,f8,f8",
+                                  names = ['site','year','obs','pred'],
+                                  delimiter = ",")
+    return data
+
 def import_raw_data(input_filename):
     """Import csv data of the form: Site, Year, Species, Abundance"""
     raw_data = np.genfromtxt(input_filename, dtype = "S15,i8,S10,i8",
@@ -285,7 +296,73 @@ def run_sim_analysis(datasets, workdir, Niter):
         create_null_dataset(obs_SN_data['Svals'], obs_SN_data['Nvals'],
                             Niter, dataset, data_dir=workdir)
     
+def map_sites(datasets, data_dir='./data/', markers = ['o'],
+              colors = ['b', 'r', 'g', 'y', 'c'], markersizes=3):
+    """Generate a world map with sites color-coded by database"""
+    
+    from mpl_toolkits.basemap import Basemap
+    
+    map = Basemap(projection='merc',llcrnrlat=-57,urcrnrlat=71,\
+                llcrnrlon=-180,urcrnrlon=180,lat_ts=20,resolution='l')
+    map.drawcoastlines(linewidth = 1.25)
 
+    for i, dataset in enumerate(datasets):
+        latlong_data = import_latlong_data(data_dir + dataset + '_lat_long.csv')
+        lats = latlong_data["lat"]
+        longs = latlong_data["long"]
+        x,y = map(longs,lats)
+        map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
+                 markeredgewidth = 0.25, markersize = markersizes)
+    
+    plt.savefig('map.png', dpi=400, facecolor='w', edgecolor='w', 
+                bbox_inches = 'tight', pad_inches=0)
+    
+def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
+                    colors=['b', 'r', 'g', 'y', 'c'], markersizes=4):
+    """Generate a US map with sites color-coded by database"""
+    
+    from mpl_toolkits.basemap import Basemap
+    
+    map = Basemap(projection='merc',llcrnrlat=24.5,urcrnrlat=49,\
+                llcrnrlon=-125,urcrnrlon=-69,lat_ts=50,resolution='l')
+    
+    map.drawcoastlines(linewidth=1.5)
+    map.drawcountries(linewidth=1.5)
+    map.drawmapboundary()     
+    
+    for i, dataset in enumerate(datasets):
+        latlong_data = import_latlong_data(data_dir + dataset + '_lat_long.csv')
+        lats = latlong_data["lat"]
+        longs = latlong_data["long"]  
+    
+        x,y = map(longs,lats)
+        map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
+                 markeredgewidth = 0.25, markersize = markersizes)
+    
+    plt.savefig('map_inset.png', dpi=400, facecolor='w', edgecolor='w', 
+                bbox_inches = 'tight', pad_inches=0)
+
+def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
+    """Generate an example SAD plot for the map figure"""    
+    obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv')    
+    site = obs_pred_data["site"]
+    obs = obs_pred_data["obs"]   
+    pred = obs_pred_data["pred"]
+    site_obs_ab = obs[site==site_id]
+    site_pred_ab = pred[site==site_id]
+    rank_obs, relab_obs = macroecotools.get_rad_data(site_obs_ab)
+    rank_pred, relab_pred = macroecotools.get_rad_data(site_pred_ab)
+    plt.figure(figsize=(2,2))
+    plt.semilogy(rank_obs, relab_obs, 'o', markerfacecolor='none', markersize=8, 
+             markeredgecolor=color, markeredgewidth=1.5)
+    plt.semilogy(rank_pred, relab_pred, '-', color='black', linewidth=2)
+    plt.axis(axis_limits)
+    plt.xticks(fontsize = '10')
+    plt.yticks(fontsize = '10')
+    plt.savefig(dataset + '_example_' + str(site_id) + '.png', dpi=400,
+                facecolor='w', edgecolor='w', bbox_inches = 'tight',
+                pad_inches=0.2)
+    
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
     1. a path to the where the data is or will be stored
@@ -319,10 +396,26 @@ if __name__ == '__main__':
         iterations = int(sys.argv[3])
         run_sim_analysis(datasets, workdir, iterations)
     if 'figs' in analyses:
+        colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
+        
         #Figure 1 (Map & Example Fits)
+        #Global Map
+        map_sites(datasets, markers = ['o','o','s','s','D','v'], colors=colors,
+                  markersizes=4)
+        #US Map
+        plt.figure()
+        map_sites_inset(datasets, markers=['o','o','s','s','D','v'],
+                        colors=colors, markersizes=5)
+        #Example SADs
+        site_ids = ['17220', 'L13428', '211131000022', '84', '1353', 'TX_Still_ollow']
+        axis_limits = [[0, 16, 10 ** -4, 1], [-5, 115, 10 ** -5, 1],
+                       [0, 15, 10 ** -2, 1], [-10, 225, 10 ** -3, 1], 
+                       [0, 11, 10 ** -2, 1], [-2, 44, 10 ** -3, 1]]
+        for i, dataset in enumerate(datasets):
+            example_sad_plot(dataset, site_ids[i], colors[i], axis_limits[i])        
+
         #Figure 2 (Observed-predicted plots for each dataset)
         #Figure 3 ()
         #Figure 4 ()
         #Supplemental Figure X ()
-        pass
-    
+    plt.show()    
