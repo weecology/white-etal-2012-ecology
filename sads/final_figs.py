@@ -30,28 +30,27 @@ input_filenames1 = (workdir + 'bbs_dist_test.csv',
 
 colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
 
+
 #figure 2
-def var_plot(input_filenames, radius=2):
+def var_plot(datasets, data_dir='./data/', radius=2):
     """Multiple obs-predicted plotter"""
     fig = plt.figure()
-    for i in range(0,len(input_filenames)):
-        ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,f8,f8", 
-                           names = ['site','year', 'obs','pred'], delimiter = ",")
-        site = ((ifile["site"]))
-        obs = ((ifile["obs"]))    
-        pred = ((ifile["pred"])) 
+    for i, dataset in enumerate(datasets):
+        obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv') 
+        site = ((obs_pred_data["site"]))
+        obs = ((obs_pred_data["obs"]))    
+        pred = ((obs_pred_data["pred"])) 
         
         axis_min = 0.5 * min(obs)
         axis_max = 2 * max(obs)
-        axis_scale = 1
         ax = fig.add_subplot(3,2,i+1)
-        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=axis_scale, 
-                                       plot_obj=plt.subplot(3,2,i+1))        
+        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=1, 
+                                            plot_obj=plt.subplot(3,2,i+1))      
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
         plt.ylim(axis_min, axis_max)
         plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, top=0.92, 
-                                wspace=0.29, hspace=0.21)  
+                            wspace=0.29, hspace=0.21)  
         
         # Create inset for histogram of site level r^2 values
         axins = inset_axes(ax, width="30%", height="30%", loc=4)
@@ -60,7 +59,7 @@ def var_plot(input_filenames, radius=2):
         
     plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0) 
     
-var_plot(input_filenames, radius = 3)
+var_plot(datasets, radius = 3)
 
 def single_var_plot(input_filenames, radius=2):
     """Plot all obs-predicted data together in a single density colored plot
