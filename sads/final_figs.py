@@ -59,42 +59,6 @@ def single_var_plot(input_filenames, radius=2):
     
 single_var_plot(input_filenames, radius = 3)
 
-#figure 3
-def cross_taxa_weight_plot (datasets, data_dir='./data/'):
-    """Plot histogram of log-series vs. log-normal AIC weights across taxa
-    
-    Keyword arguments:
-    input_filenames -- list of file names to be processed
-    
-    """
-    n = len(datasets)
-    indiv_dataset_bars = []
-    fig = plt.figure()
-    plot_obj = fig.add_subplot(111)
-    for i, dataset in enumerate(datasets):
-        width = round(1.0/(3 + n * 3), 2)
-        left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 9))]
-        weight_data = import_dist_test_data(data_dir + dataset +
-                                            '_dist_test.csv')
-        weights = weight_data["weight_untrunc"]
-        bins = [0, 0.33333, 0.66667, 1]
-        cts = np.histogram(weights, bins = bins)
-        height = cts[0] * 100 / sum(cts[0])
-        indiv_dataset_bars.append(plot_obj.bar(left, height, width,
-                                               color=colors[i]))
-    plt.ylabel('Percentage of sites')
-    plt.xlim((width/2), (width*(3.5 + n * 3)))
-    plt.xticks((((n/2 + 1) * width), (11 * width),(18 * width)), 
-               ('Log-normal', 'Indeterminate', 'Log-series'))
-    legend_labels = (dataset.upper() for dataset in datasets)
-    plt.legend((indiv_dataset_bars[0][0], indiv_dataset_bars[1][0], 
-                indiv_dataset_bars[2][0], indiv_dataset_bars[3][0], 
-                indiv_dataset_bars[4][0], indiv_dataset_bars[5][0]),
-                legend_labels, loc = 'upper left')
-    plt.show()
-    
-cross_taxa_weight_plot (datasets)
-
 #Text results associated with Figure 3
 total_logser_count_onethird = 0
 total_logser_count_twothird = 0

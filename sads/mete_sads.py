@@ -390,6 +390,39 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
         
     plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
     
+def cross_taxa_weight_plot (datasets, data_dir='./data/'):
+    """Plot histogram of log-series vs. log-normal AIC weights across taxa
+    
+    Keyword arguments:
+    input_filenames -- list of file names to be processed
+    
+    """
+    n = len(datasets)
+    indiv_dataset_bars = []
+    fig = plt.figure()
+    plot_obj = fig.add_subplot(111)
+    for i, dataset in enumerate(datasets):
+        width = round(1.0/(3 + n * 3), 2)
+        left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 9))]
+        weight_data = import_dist_test_data(data_dir + dataset +
+                                            '_dist_test.csv')
+        weights = weight_data["weight_untrunc"]
+        bins = [0, 0.33333, 0.66667, 1]
+        cts = np.histogram(weights, bins = bins)
+        height = cts[0] * 100 / sum(cts[0])
+        indiv_dataset_bars.append(plot_obj.bar(left, height, width,
+                                               color=colors[i]))
+    plt.ylabel('Percentage of sites')
+    plt.xlim((width/2), (width*(3.5 + n * 3)))
+    plt.xticks((((n/2 + 1) * width), (11 * width),(18 * width)), 
+               ('Log-normal', 'Indeterminate', 'Log-series'))
+    legend_labels = (dataset.upper() for dataset in datasets)
+    plt.legend((indiv_dataset_bars[0][0], indiv_dataset_bars[1][0], 
+                indiv_dataset_bars[2][0], indiv_dataset_bars[3][0], 
+                indiv_dataset_bars[4][0], indiv_dataset_bars[5][0]),
+                legend_labels, loc = 'upper left')
+    plt.show()
+    
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
     1. a path to the where the data is or will be stored
@@ -445,6 +478,7 @@ if __name__ == '__main__':
         plot_obs_pred_sad(datasets, radius = 3)
         
         #Figure 3 ()
+        cross_taxa_weight_plot(datasets)
         #Figure 4 ()
         #Supplemental Figure X ()
     plt.show()    
