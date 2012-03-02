@@ -361,6 +361,33 @@ def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
                 facecolor='w', edgecolor='w', bbox_inches = 'tight',
                 pad_inches=0.2)
     
+def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
+    """Multiple obs-predicted plotter"""
+    fig = plt.figure()
+    for i, dataset in enumerate(datasets):
+        obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv') 
+        site = ((obs_pred_data["site"]))
+        obs = ((obs_pred_data["obs"]))    
+        pred = ((obs_pred_data["pred"])) 
+        
+        axis_min = 0.5 * min(obs)
+        axis_max = 2 * max(obs)
+        ax = fig.add_subplot(3,2,i+1)
+        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=1, 
+                                            plot_obj=plt.subplot(3,2,i+1))      
+        plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
+        plt.xlim(axis_min, axis_max)
+        plt.ylim(axis_min, axis_max)
+        plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, top=0.92, 
+                            wspace=0.29, hspace=0.21)  
+        
+        # Create inset for histogram of site level r^2 values
+        axins = inset_axes(ax, width="30%", height="30%", loc=4)
+        mete_sads.hist_mete_r2(site, np.log10(obs), np.log10(pred))
+        plt.setp(axins, xticks=[], yticks=[])
+        
+    plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
+    
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
     1. a path to the where the data is or will be stored
@@ -413,6 +440,8 @@ if __name__ == '__main__':
             example_sad_plot(dataset, site_ids[i], colors[i], axis_limits[i])        
 
         #Figure 2 (Observed-predicted plots for each dataset)
+        plot_obs_pred_sad(datasets, radius = 3)
+        
         #Figure 3 ()
         #Figure 4 ()
         #Supplemental Figure X ()
