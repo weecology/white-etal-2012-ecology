@@ -272,6 +272,34 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         plt.plot(bin_numbers, mean_deviations, color=color, linewidth=3)
     plt.show()
     
+def plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir='./data/'):
+    for i, dataset in enumerate(datasets):
+        obs_pred_data = import_obs_pred_data(data_dir + dataset +
+                                             '_obs_pred.csv')
+        dist_test_data = import_dist_test_data(data_dir + dataset +
+                                               '_dist_test.csv')
+        pr = dist_test_data["p"]
+        S = dist_test_data["S"]
+        usites = list(set(obs_pred_data["site"]))
+        sites = obs_pred_data["site"]
+        sites_for_p = dist_test_data["site"]
+        obs_ab = obs_pred_data["obs"]
+        plot_avg_deviation_from_logseries(obs_pred_data['site'],
+                                          obs_pred_data['obs'], pr, sites_for_p,
+                                          color=colors[i])
+    plt.xlabel('Abundance (binned)', fontsize=22)
+    plt.xticks(np.arange(1,16), ['1', '2-3', '4-7', '8-15', '16-31', '32-63',
+                                 '64-127', '128-255', '256-511', '512-1023',
+                                 '1024-2047', '2048-4095', '4096-8191',
+                                 '8192-16383', '16384-32767'],
+               rotation=45, fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.ylabel('Deviation (% of site richness)', fontsize=22)
+    plt.axis([0.1, 17, -8, 3.5])
+    legend_labels = (dataset.upper() for dataset in datasets)
+    plt.legend(legend_labels, 'lower right')
+    plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)    
+    
 def get_combined_obs_pred_data(datasets, data_dir='./data/'):
     """Combine obs-pred data from multiple datasets"""
     for i, dataset in enumerate(datasets):
@@ -486,6 +514,8 @@ if __name__ == '__main__':
         #Figure 3 - Model selection histogram plots across datasets
         cross_taxa_weight_plot(datasets)
         
-        #Figure 4 ()
+        #Figure 4 - Deviations from log-series
+        plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir=workdir)
+        
         #Supplemental Figure X ()
     plt.show()    

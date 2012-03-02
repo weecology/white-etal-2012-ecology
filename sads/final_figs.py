@@ -30,33 +30,6 @@ input_filenames1 = (workdir + 'bbs_dist_test.csv',
 
 colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
 
-#figure 4
-for i in range(0,6):
-    ifile = np.genfromtxt(input_filenames[i], dtype = "S15,i8,i8,i8", 
-                       names = ['site', 'year', 'obs','pred'], delimiter = ",")
-    ifile2 = np.genfromtxt(input_filenames1[i], dtype = "S15,i8,i8,i8,f8,f8", 
-                           names = ['site','year','S','N','p','weight'],
-                           delimiter = ",")
-    pr = ifile2["p"]
-    S = ifile2["S"]
-    usites = list(set(ifile["site"]))
-    sites = ifile["site"]
-    sites_for_p = ifile2["site"]
-    obs_ab = ifile["obs"]
-    mete_sads.plot_avg_deviation_from_logseries(ifile['site'], ifile['obs'],
-                                                pr, sites_for_p, color=colors[i])
-plt.xlabel('Abundance (binned)', fontsize=22)
-plt.xticks(np.arange(1,16), ['1', '2-3', '4-7', '8-15', '16-31', '32-63',
-                             '64-127', '128-255', '256-511', '512-1023',
-                             '1024-2047', '2048-4095', '4096-8191',
-                             '8192-16383', '16384-32767'],
-           rotation=45, fontsize=16)
-plt.yticks(fontsize=16)
-plt.ylabel('Deviation (% of site richness)', fontsize=22)
-plt.axis([0.1, 17, -8, 3.5])
-plt.legend(('BBS','CBC','FIA','Gentry','MCDB','NABC'), 'lower right')
-plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)
-
 #Supplementary Figure 2
 sim_data_files = ['bbs_sim_r2.csv', 'cbc_sim_r2.csv', 'fia_sim_r2.csv',
                   'gentry_sim_r2.csv', 'mcdb_sim_r2.csv', 'naba_sim_r2.csv']
