@@ -32,7 +32,7 @@ colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
 
 
 #figure 2
-def var_plot(datasets, data_dir='./data/', radius=2):
+def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
     """Multiple obs-predicted plotter"""
     fig = plt.figure()
     for i, dataset in enumerate(datasets):
@@ -59,7 +59,7 @@ def var_plot(datasets, data_dir='./data/', radius=2):
         
     plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0) 
     
-var_plot(datasets, radius = 3)
+plot_obs_pred_sad(datasets, radius = 3)
 
 def single_var_plot(input_filenames, radius=2):
     """Plot all obs-predicted data together in a single density colored plot
