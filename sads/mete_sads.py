@@ -390,7 +390,7 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
         
     plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
     
-def cross_taxa_weight_plot (datasets, data_dir='./data/'):
+def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
     """Plot histogram of log-series vs. log-normal AIC weights across taxa
     
     Keyword arguments:
@@ -401,6 +401,7 @@ def cross_taxa_weight_plot (datasets, data_dir='./data/'):
     indiv_dataset_bars = []
     fig = plt.figure()
     plot_obj = fig.add_subplot(111)
+    all_weights = []
     for i, dataset in enumerate(datasets):
         width = round(1.0/(3 + n * 3), 2)
         left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 9))]
@@ -412,6 +413,7 @@ def cross_taxa_weight_plot (datasets, data_dir='./data/'):
         height = cts[0] * 100 / sum(cts[0])
         indiv_dataset_bars.append(plot_obj.bar(left, height, width,
                                                color=colors[i]))
+        all_weights.extend(weights)
     plt.ylabel('Percentage of sites')
     plt.xlim((width/2), (width*(3.5 + n * 3)))
     plt.xticks((((n/2 + 1) * width), (11 * width),(18 * width)), 
@@ -421,7 +423,11 @@ def cross_taxa_weight_plot (datasets, data_dir='./data/'):
                 indiv_dataset_bars[2][0], indiv_dataset_bars[3][0], 
                 indiv_dataset_bars[4][0], indiv_dataset_bars[5][0]),
                 legend_labels, loc = 'upper left')
-    plt.show()
+    all_weights = np.array(all_weights)
+    print("For %s%% of all sites the log-series was a better fit than the log-normal" %
+          (len(all_weights[all_weights >= 2/3]) / len(all_weights) * 100))
+    print("For %s%% of all sites the log-series was equivalent or better than the log-normal" %
+          (len(all_weights[all_weights >= 1/3]) / len(all_weights) * 100))
     
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
@@ -458,7 +464,7 @@ if __name__ == '__main__':
     if 'figs' in analyses:
         colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
         
-        #Figure 1 (Map & Example Fits)
+        #Figure 1 - Map & Example Fits
         #Global Map
         map_sites(datasets, markers = ['o','o','s','s','D','v'], colors=colors,
                   markersizes=4)
@@ -474,11 +480,12 @@ if __name__ == '__main__':
         for i, dataset in enumerate(datasets):
             example_sad_plot(dataset, site_ids[i], colors[i], axis_limits[i])        
 
-        #Figure 2 (Observed-predicted plots for each dataset)
+        #Figure 2 -Observed-predicted plots for each dataset
         plot_obs_pred_sad(datasets, radius = 3)
         
-        #Figure 3 ()
+        #Figure 3 - Model selection histogram plots across datasets
         cross_taxa_weight_plot(datasets)
+        
         #Figure 4 ()
         #Supplemental Figure X ()
     plt.show()    
