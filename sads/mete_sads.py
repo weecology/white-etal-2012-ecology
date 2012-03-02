@@ -304,7 +304,7 @@ def plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir='./data/'):
     plt.axis([0.1, 17, -8, 3.5])
     legend_labels = (dataset.upper() for dataset in datasets)
     plt.legend(legend_labels, 'lower right')
-    plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)    
+    plt.savefig('avg_dev_from_logseries.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)    
     
 def get_combined_obs_pred_data(datasets, data_dir='./data/'):
     """Combine obs-pred data from multiple datasets"""
@@ -350,7 +350,7 @@ def map_sites(datasets, data_dir='./data/', markers = ['o'],
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
     
-    plt.savefig('map.png', dpi=160, bbox_inches = 'tight', pad_inches=0)
+    plt.savefig('map_of_sites.png', dpi=160, bbox_inches = 'tight', pad_inches=0)
     
 def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
                     colors=['b', 'r', 'g', 'y', 'c'], markersizes=4):
@@ -374,7 +374,7 @@ def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
     
-    plt.savefig('map_inset.png', dpi=320, bbox_inches = 'tight', pad_inches=0)
+    plt.savefig('map_of_sites_US.png', dpi=320, bbox_inches = 'tight', pad_inches=0)
 
 def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
     """Generate an example SAD plot for the map figure"""    
@@ -422,7 +422,7 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
         mete_sads.hist_mete_r2(site, np.log10(obs), np.log10(pred))
         plt.setp(axins, xticks=[], yticks=[])
         
-    plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
+    plt.savefig('obs_pred_plots.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
     
 def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
     """Plot histogram of log-series vs. log-normal AIC weights across taxa
@@ -462,6 +462,7 @@ def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
           (len(all_weights[all_weights >= 2/3]) / len(all_weights) * 100))
     print("For %s%% of all sites the log-series was equivalent or better than the log-normal" %
           (len(all_weights[all_weights >= 1/3]) / len(all_weights) * 100))
+    plt.savefig('model_selection.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
     
 def plot_sim_results(datasets, colors, data_dir='./data/'):
     lowerbounds = [-0.7, -2.3, 0, 0, -0.75, -0.5]
@@ -483,6 +484,7 @@ def plot_sim_results(datasets, colors, data_dir='./data/'):
         plot_obj.set_dashes(longdashes)
         plt.plot([obs_r2, obs_r2], [0, max(yvals)], color=colors[i], linewidth=2)
         plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
+    plt.savefig('sim_results.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
         
 def plot_rare_sp_prediction_alldata(datasets, data_dir='./data'):
     obs_pred_data = get_combined_obs_pred_data(datasets, data_dir)
@@ -493,7 +495,8 @@ def plot_rare_sp_prediction_alldata(datasets, data_dir='./data'):
     plt.ylabel('Observed Number of Rare Species', fontsize=22)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
-    plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)    
+    plt.savefig('rare_sp_prediction.png', dpi=400, bbox_inches = 'tight',
+                pad_inches=0.1)    
     
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
