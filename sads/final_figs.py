@@ -30,37 +30,6 @@ input_filenames1 = (workdir + 'bbs_dist_test.csv',
 
 colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
 
-
-#figure 2
-def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
-    """Multiple obs-predicted plotter"""
-    fig = plt.figure()
-    for i, dataset in enumerate(datasets):
-        obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv') 
-        site = ((obs_pred_data["site"]))
-        obs = ((obs_pred_data["obs"]))    
-        pred = ((obs_pred_data["pred"])) 
-        
-        axis_min = 0.5 * min(obs)
-        axis_max = 2 * max(obs)
-        ax = fig.add_subplot(3,2,i+1)
-        macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=1, 
-                                            plot_obj=plt.subplot(3,2,i+1))      
-        plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
-        plt.xlim(axis_min, axis_max)
-        plt.ylim(axis_min, axis_max)
-        plt.subplots_adjust(left=0.2, bottom=0.12, right=0.8, top=0.92, 
-                            wspace=0.29, hspace=0.21)  
-        
-        # Create inset for histogram of site level r^2 values
-        axins = inset_axes(ax, width="30%", height="30%", loc=4)
-        mete_sads.hist_mete_r2(site, np.log10(obs), np.log10(pred))
-        plt.setp(axins, xticks=[], yticks=[])
-        
-    plt.savefig('fig2.png', dpi=400, bbox_inches = 'tight', pad_inches=0) 
-    
-plot_obs_pred_sad(datasets, radius = 3)
-
 def single_var_plot(input_filenames, radius=2):
     """Plot all obs-predicted data together in a single density colored plot
     
@@ -91,32 +60,23 @@ def single_var_plot(input_filenames, radius=2):
 single_var_plot(input_filenames, radius = 3)
 
 #figure 3
-input_filenames = (workdir + 'bbs_dist_test.csv',
-                   workdir + 'cbc_dist_test.csv',
-                   workdir + 'fia_dist_test.csv',
-                   workdir + 'gentry_dist_test.csv',
-                   workdir + 'mcdb_dist_test.csv',
-                   workdir + 'naba_dist_test.csv')
-
-def cross_taxa_weight_plot (input_filenames):
-    """Plot histogram of weights across taxa
+def cross_taxa_weight_plot (datasets, data_dir='./data/'):
+    """Plot histogram of log-series vs. log-normal AIC weights across taxa
     
     Keyword arguments:
     input_filenames -- list of file names to be processed
     
     """
-    n = len(input_filenames)
+    n = len(datasets)
     indiv_dataset_bars = []
     fig = plt.figure()
     plot_obj = fig.add_subplot(111)
-    for i, input_filename in enumerate(input_filenames):
+    for i, dataset in enumerate(datasets):
         width = round(1.0/(3 + n * 3), 2)
         left = [(width * (i + 1)), (width * (i + n + 2)), (width * (i + n + 9))]
-        ifile = np.genfromtxt(input_filename, dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
-                              names = ['site', 'year', 'S', 'N', 'p', 'weight',
-                                       'p_untrunc', 'weight_untrunc'],
-                              delimiter = ",")
-        weights = ((ifile["weight_untrunc"]))
+        weight_data = import_dist_test_data(data_dir + dataset +
+                                            '_dist_test.csv')
+        weights = weight_data["weight_untrunc"]
         bins = [0, 0.33333, 0.66667, 1]
         cts = np.histogram(weights, bins = bins)
         height = cts[0] * 100 / sum(cts[0])
@@ -126,14 +86,14 @@ def cross_taxa_weight_plot (input_filenames):
     plt.xlim((width/2), (width*(3.5 + n * 3)))
     plt.xticks((((n/2 + 1) * width), (11 * width),(18 * width)), 
                ('Log-normal', 'Indeterminate', 'Log-series'))
+    legend_labels = (dataset.upper() for dataset in datasets)
     plt.legend((indiv_dataset_bars[0][0], indiv_dataset_bars[1][0], 
                 indiv_dataset_bars[2][0], indiv_dataset_bars[3][0], 
                 indiv_dataset_bars[4][0], indiv_dataset_bars[5][0]),
-                ('BBS', 'CBC', 'FIA', 'Gentry', 'MCDB', 'NABC'),
-                loc = 'upper left')
+                legend_labels, loc = 'upper left')
     plt.show()
     
-cross_taxa_weight_plot (input_filenames)
+cross_taxa_weight_plot (datasets)
 
 #Text results associated with Figure 3
 total_logser_count_onethird = 0
