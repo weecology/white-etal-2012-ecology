@@ -53,13 +53,15 @@ def import_raw_data(input_filename):
                           names = ['site','year','sp','ab'], delimiter = ",")   
     return raw_data
 
-def import_obs_SN_data(input_filename):
+def import_dist_test_data(input_filename):
     """Import csv data with the richness and abundance data for each site"""
-    rich_abund_data = np.genfromtxt(input_filename, usecols=(2, 3),
-                                    dtype="i8,i8",
-                                    names=['Svals','Nvals'],
-                                    delimiter=",")
-    return rich_abund_data
+    dist_test_data = np.genfromtxt(input_filename,
+                                    dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
+                                    names = ['site', 'year', 'S', 'N', 'p',
+                                             'weight', 'p_untrunc',
+                                             'weight_untrunc'],
+                                    delimiter = ",")
+    return dist_test_data
 
 def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
@@ -291,9 +293,9 @@ def run_empir_analysis(datasets, data_dir='./data/'):
 
 def run_sim_analysis(datasets, workdir, Niter):
     for dataset in datasets:
-        obs_SN_data = import_obs_SN_data(workdir + dataset +
+        obs_SN_data = import_dist_test_data(workdir + dataset +
                                          '_dist_test.csv')
-        create_null_dataset(obs_SN_data['Svals'], obs_SN_data['Nvals'],
+        create_null_dataset(obs_SN_data['S'], obs_SN_data['N'],
                             Niter, dataset, data_dir=workdir)
     
 def map_sites(datasets, data_dir='./data/', markers = ['o'],
