@@ -483,6 +483,17 @@ def plot_sim_results(datasets, colors, data_dir='./data/'):
         plot_obj.set_dashes(longdashes)
         plt.plot([obs_r2, obs_r2], [0, max(yvals)], color=colors[i], linewidth=2)
         plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
+        
+def plot_rare_sp_prediction_alldata(datasets, data_dir='./data'):
+    obs_pred_data = get_combined_obs_pred_data(datasets, data_dir)
+    plot_numsp_obs_pred(obs_pred_data['site'], obs_pred_data['obs'], 1, 10)
+    plt.loglog([0.8, 300], [0.8, 300], 'k-', linewidth=2)
+    plt.axis([0.8, 300, 0.8, 300])
+    plt.xlabel('Predicted Number of Rare Species', fontsize=22)
+    plt.ylabel('Observed Number of Rare Species', fontsize=22)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.savefig('fig4.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)    
     
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
@@ -546,5 +557,8 @@ if __name__ == '__main__':
         
         #Supplemental Figure 1 - Simluation results
         plot_sim_results(datasets, colors, data_dir=workdir)
+        
+        #Supplemental Figure 2 - Rare species prediction
+        plot_rare_sp_prediction_alldata(datasets, data_dir=workdir)
         
     plt.show()    
