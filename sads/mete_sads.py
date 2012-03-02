@@ -63,6 +63,12 @@ def import_dist_test_data(input_filename):
                                     delimiter = ",")
     return dist_test_data
 
+def import_sim_data(input_filename):
+    """Import the csv output from running the uniform SAD simulations"""
+    sim_data = np.genfromtxt(input_filename, dtype= "f8, f8",
+                             names=['simulation', 'r2'], delimiter=",")
+    return sim_data
+
 def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
     """Use data to compare the predicted and empirical SADs and get results in csv files
     
@@ -457,6 +463,27 @@ def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
     print("For %s%% of all sites the log-series was equivalent or better than the log-normal" %
           (len(all_weights[all_weights >= 1/3]) / len(all_weights) * 100))
     
+def plot_sim_results(datasets, colors, data_dir='./data/'):
+    lowerbounds = [-0.7, -2.3, 0, 0, -0.75, -0.5]
+    fig = plt.figure()
+    for i, dataset in enumerate(datasets):
+        sim_data = import_sim_data(data_dir + dataset + '_sim_r2.csv')
+        obs_pred_data = import_obs_pred_data(data_dir + dataset +
+                                             '_obs_pred.csv')
+        obs_r2 = macroecotools.obs_pred_rsquare(np.log10(obs_pred_data['obs']),
+                                                np.log10(obs_pred_data['pred']))
+        sim_kde = stats.kde.gaussian_kde(sim_data['r2'])
+        xvals = np.arange(lowerbounds[i], 1, 0.01)
+        yvals = sim_kde.evaluate(xvals)
+        xvals = xvals[yvals > 0.000001]
+        yvals = yvals[yvals > 0.000001]
+        ax = fig.add_subplot(3,2,i+1)
+        longdashes = [10,5]
+        plot_obj, = plt.plot(xvals, yvals, 'k--', linewidth=2, color=colors[i])
+        plot_obj.set_dashes(longdashes)
+        plt.plot([obs_r2, obs_r2], [0, max(yvals)], color=colors[i], linewidth=2)
+        plt.axis([lowerbounds[i], 1, 0, 1.1 * max(yvals)])
+    
 if __name__ == '__main__':
     assert len(sys.argv) >= 3, """You must provide at least two arguments:
     1. a path to the where the data is or will be stored
@@ -509,13 +536,15 @@ if __name__ == '__main__':
             example_sad_plot(dataset, site_ids[i], colors[i], axis_limits[i])        
 
         #Figure 2 -Observed-predicted plots for each dataset
-        plot_obs_pred_sad(datasets, radius = 3)
+        plot_obs_pred_sad(datasets, data_dir=workdir, radius = 3)
         
         #Figure 3 - Model selection histogram plots across datasets
-        cross_taxa_weight_plot(datasets)
+        cross_taxa_weight_plot(datasets, colors, data_dir=workdir)
         
         #Figure 4 - Deviations from log-series
         plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir=workdir)
         
-        #Supplemental Figure X ()
+        #Supplemental Figure 1 - Simluation results
+        plot_sim_results(datasets, colors, data_dir=workdir)
+        
     plt.show()    
