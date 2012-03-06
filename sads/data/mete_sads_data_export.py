@@ -1,8 +1,37 @@
-"""MySQL Querying of BBS, CBC, FIA, Gentry, MCDB,and NABC for METE analyses"""
+"""Downloads and extracts the raw data for METE SADs analyses
+
+Downloads BBS, FIA, Gentry, and MCDB (NABC and CBC are not public)
+Queries databases to extract the raw data for analysis
+
+WARNING: These databases are large and take a long time to download and a long
+time to query.
+
+"""
 
 import MySQLdb as dbapi
 import getpass
 import shutil
+
+from retriever import VERSION, SCRIPT_LIST, ENGINE_LIST
+from retriever.lib.tools import choose_engine, get_opts
+
+def download_public_data(datasets, data_dir='./data/'):
+    """Download public datasets using the EcoData Retriever"""
+    for dataset in datasets:
+        script_list = SCRIPT_LIST()
+        opts = get_opts(script_list, args=['install', dataset, '-e', 's', '-f',
+                                           'downloaded_data.sqlite'])
+        script = opts["script"]
+        engine = choose_engine(opts)
+        if isinstance(script, list):
+            for dataset in script:
+                print "=> Installing", dataset.name
+                dataset.download(engine, debug=debug)
+        else:
+            script.download(engine)
+    print "Datasets successfully downloaded."
+
+download_public_data(['BBS'])
 
 # enter MySQL password
 p=getpass.getpass()
