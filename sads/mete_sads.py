@@ -403,8 +403,8 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
     for i, dataset in enumerate(datasets):
         obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv') 
         site = ((obs_pred_data["site"]))
-        obs = ((obs_pred_data["obs"]))    
-        pred = ((obs_pred_data["pred"])) 
+        obs = ((obs_pred_data["obs"]))
+        pred = ((obs_pred_data["pred"]))
         
         axis_min = 0.5 * min(obs)
         axis_max = 2 * max(obs)
@@ -423,6 +423,18 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
         plt.setp(axins, xticks=[], yticks=[])
         
     plt.savefig('obs_pred_plots.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
+    
+def obs_pred_r2_analysis(datasets, data_dir='./data/'):
+    """Calculated the coefficients of determination for the METE SAD"""
+    for i, dataset in enumerate(datasets):
+        obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv')
+        obs = ((obs_pred_data["obs"]))
+        pred = ((obs_pred_data["pred"]))
+        linear_R2 = macroecotools.obs_pred_rsquare(obs, pred)
+        loglog_R2 = macroecotools.obs_pred_rsquare(np.log10(obs),
+                                               np.log10(pred))
+        print("%s: log-log R^2 = %s; linear R^2 = %s" %
+              (dataset.upper(), loglog_R2, linear_R2))    
     
 def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
     """Plot histogram of log-series vs. log-normal AIC weights across taxa
@@ -551,6 +563,7 @@ if __name__ == '__main__':
 
         #Figure 2 -Observed-predicted plots for each dataset
         plot_obs_pred_sad(datasets, data_dir=workdir, radius = 3)
+        obs_pred_r2_analysis(datasets, data_dir=workdir)
         
         #Figure 3 - Model selection histogram plots across datasets
         cross_taxa_weight_plot(datasets, colors, data_dir=workdir)
