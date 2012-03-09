@@ -393,6 +393,8 @@ def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
     plt.axis(axis_limits)
     plt.xticks(fontsize = '10')
     plt.yticks(fontsize = '10')
+    plt.xlabel('Rank')
+    plt.ylabel('Abundance')
     plt.savefig(dataset + '_example_' + str(site_id) + '.png', dpi=320,
                 facecolor='w', edgecolor='w', bbox_inches = 'tight',
                 pad_inches=0.2)
