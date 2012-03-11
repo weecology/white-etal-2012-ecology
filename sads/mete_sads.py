@@ -278,7 +278,6 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         plt.errorbar(bin_numbers, mean_deviations, yerr=std_deviations, fmt='b-')
     else:
         plt.plot(bin_numbers, mean_deviations, color=color, linewidth=3)
-    plt.show()
     
 def plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir='./data/'):
     for i, dataset in enumerate(datasets):
@@ -306,7 +305,7 @@ def plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir='./data/'):
     plt.axis([0.1, 17, -8, 3.5])
     legend_labels = (dataset.upper() for dataset in datasets)
     plt.legend(legend_labels, 'lower right')
-    plt.savefig('avg_dev_from_logseries.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)    
+    plt.savefig('avg_dev_from_logseries.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)
     
 def get_combined_obs_pred_data(datasets, data_dir='./data/'):
     """Combine obs-pred data from multiple datasets"""
