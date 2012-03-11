@@ -423,7 +423,7 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
         
         # Create inset for histogram of site level r^2 values
         axins = inset_axes(ax, width="30%", height="30%", loc=4)
-        mete_sads.hist_mete_r2(site, np.log10(obs), np.log10(pred))
+        hist_mete_r2(site, np.log10(obs), np.log10(pred))
         plt.setp(axins, xticks=[], yticks=[])
         
     plt.savefig('obs_pred_plots.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
