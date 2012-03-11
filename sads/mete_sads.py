@@ -32,6 +32,8 @@ import numpy as np
 from math import log, exp
 from scipy import stats
 
+from mpl_toolkits.axes_grid.inset_locator import inset_axes
+
 import mete
 import macroecotools
 import macroeco_distributions as md
