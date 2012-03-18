@@ -44,8 +44,8 @@ def import_latlong_data(input_filename):
     return data
 
 def import_obs_pred_data(input_filename):
-    data = np.genfromtxt(input_filename, dtype = "S15,i8,f8,f8",
-                                  names = ['site','year','obs','pred'],
+    data = np.genfromtxt(input_filename, dtype = "S15,f8,f8",
+                                  names = ['site','obs','pred'],
                                   delimiter = ",")
     return data
 
@@ -58,8 +58,8 @@ def import_raw_data(input_filename):
 def import_dist_test_data(input_filename):
     """Import csv data with the richness and abundance data for each site"""
     dist_test_data = np.genfromtxt(input_filename,
-                                    dtype = "S15,i8,i8,i8,f8,f8,f8,f8", 
-                                    names = ['site', 'year', 'S', 'N', 'p',
+                                    dtype = "S15,i8,i8,f8,f8,f8,f8", 
+                                    names = ['site', 'S', 'N', 'p',
                                              'weight', 'p_untrunc',
                                              'weight_untrunc'],
                                     delimiter = ",")
@@ -90,42 +90,37 @@ def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
     for i in range(0, len(usites)):
         subsites = raw_data["site"][raw_data["site"] == usites[i]]        
         subab = raw_data["ab"][raw_data["site"] == usites[i]]
-        subyr = raw_data["year"][raw_data["site"] == usites[i]]
-        uyr = np.sort(list(set(subyr)))
-        for a in range(0, len(uyr)):
-            subsubsites = subsites[subyr == uyr[a]]
-            subsubab = subab[subyr == uyr[a]]
-            subsubyr = subyr[subyr == uyr[a]]
-            N = sum(subsubab)
-            S = len(subsubsites)
-            if S > cutoff:
-                # Generate predicted values and p (e ** -beta) based on METE:
-                mete_pred = mete.get_mete_rad(int(S), int(N))
-                pred = np.array(mete_pred[0])
-                p = mete_pred[1]
-                p_untruncated = exp(-mete.get_beta(S, N, version='untruncated'))
-                subab3 = np.sort(subsubab)[::-1]
-                # Calculate Akaike weight of log-series:
-                L_logser = md.logser_ll(subab3, p)
-                L_logser_untruncated = md.logser_ll(subab3, p_untruncated)
-                mu, sigma = md.pln_solver(subab3)
-                L_pln = md.pln_ll(mu,sigma,subab3)        
-                k1 = 1
-                k2 = 2    
-                AICc_logser = macroecotools.AICc(k1, L_logser, S)
-                AICc_logser_untruncated = macroecotools.AICc(k1, L_logser_untruncated, S)
-                AICc_pln = macroecotools.AICc(k2, L_pln, S)
-                weight = macroecotools.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
-                weight_untruncated = macroecotools.aic_weight(AICc_logser_untruncated,
-                                                         AICc_pln, S, cutoff = 4)
-                #save results to a csv file:
-                results = ((np.column_stack((subsubsites, subsubyr, subab3, pred))))
-                results2 = ((np.column_stack((np.array(usites[i], dtype='S20'),
-                                                       uyr[a], S, N, p, weight,
-                                                       p_untruncated,
-                                                       weight_untruncated))))
-                f1.writerows(results)
-                f2.writerows(results2)
+        N = sum(subab)
+        S = len(subsites)
+        if S > cutoff:
+            print("%s, Site %s, S=%s, N=%s" % (dataset_name, i, S, N))
+            # Generate predicted values and p (e ** -beta) based on METE:
+            mete_pred = mete.get_mete_rad(int(S), int(N))
+            pred = np.array(mete_pred[0])
+            p = mete_pred[1]
+            p_untruncated = exp(-mete.get_beta(S, N, version='untruncated'))
+            obsab = np.sort(subab)[::-1]
+            # Calculate Akaike weight of log-series:
+            L_logser = md.logser_ll(obsab, p)
+            L_logser_untruncated = md.logser_ll(obsab, p_untruncated)
+            mu, sigma = md.pln_solver(obsab)
+            L_pln = md.pln_ll(mu,sigma,obsab)        
+            k1 = 1
+            k2 = 2    
+            AICc_logser = macroecotools.AICc(k1, L_logser, S)
+            AICc_logser_untruncated = macroecotools.AICc(k1, L_logser_untruncated, S)
+            AICc_pln = macroecotools.AICc(k2, L_pln, S)
+            weight = macroecotools.aic_weight(AICc_logser, AICc_pln, S, cutoff = 4)
+            weight_untruncated = macroecotools.aic_weight(AICc_logser_untruncated,
+                                                     AICc_pln, S, cutoff = 4)
+            #save results to a csv file:
+            results = ((np.column_stack((subsites, obsab, pred))))
+            results2 = ((np.column_stack((np.array(usites[i], dtype='S20'),
+                                                   S, N, p, weight,
+                                                   p_untruncated,
+                                                   weight_untruncated))))
+            f1.writerows(results)
+            f2.writerows(results2)
     
 def hist_mete_r2(sites, obs, pred):
     """Generate a kernel density estimate of the r^2 values for obs-pred plots"""
@@ -311,8 +306,8 @@ def get_combined_obs_pred_data(datasets, data_dir='./data/'):
     """Combine obs-pred data from multiple datasets"""
     for i, dataset in enumerate(datasets):
         file_data = np.genfromtxt(data_dir + dataset + '_obs_pred.csv',
-                                  dtype = "S15,i8,i8,i8",
-                                  names = ['site','year','obs','pred'],
+                                  dtype = "S15,i8,i8",
+                                  names = ['site','obs','pred'],
                                   delimiter = ",")
         #file_data = np.column_stack([i * np.ones(len(file_data)), file_data])
         if i == 0:
