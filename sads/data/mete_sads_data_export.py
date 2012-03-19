@@ -8,7 +8,6 @@ time to query.
 
 """
 
-import MySQLdb as dbapi
 import getpass
 import shutil
 
@@ -33,15 +32,27 @@ def download_public_data(datasets, data_dir='./data/'):
 
 download_public_data(['BBS'])
 
-# enter MySQL password
-p=getpass.getpass()
+def get_raw_data(queries, engine='sqlite', file_name='downloaded_data.sqlite',
+                 host=None, port=3306, user='root'):
+    """Function to connect to database, create query tables, and output to CSV.
+    """
+    assert engine in ('sqlite', 'mysql'), 'Engine must be either sqlite or mysql'
+    if engine == 'sqlite':
+        import sqlite3 as sqlite_dbapi
+        connection = sqlite_dbapi.connect(file_name)
+    elif engine == 'mysql':
+        import MySQLdb as dbapi
+        p=getpass.getpass('Enter MySQL Password')
+        connection = dbapi.connect(host=host, port=port, user=user, passwd=p)
+    
+    cursor = connection.cursor()
+    cursor.execute("""DROP DATABASE IF EXISTS queries;""")
+    cursor.execute("""CREATE DATABASE queries;""")
+    
+    for query in queries:
+        cursor.execute(query)
 
-connection = dbapi.connect(host='129.123.92.244', port=1977, user='kate', 
-                           passwd=p)
-cursor = connection.cursor()
-
-cursor.execute("""DROP DATABASE IF EXISTS queries;""")
-cursor.execute("""CREATE DATABASE queries;""")
+    connection.commit()
 
 # BBS
 # Step 1. TAXONOMY_BIRDS TAXONOMY.AOU_IN linked to BBS counts.Aou
@@ -50,63 +61,43 @@ cursor.execute("""CREATE DATABASE queries;""")
 # Step 2. Group By AOU IN and by TOO WHERE DIURNAL LANDBIRD = 1 - 
     # to yield AOU_TOO
 
-cursor.execute("""
-                CREATE TABLE queries.aous (aou INT(11)) 
-                SELECT counts.Aou FROM BBS.counts 
-                GROUP BY counts.Aou;
-                """) 
-
-cursor.execute("""
-                CREATE TABLE queries.aou_too_1 (aou INT(11)) 
-                SELECT Aou AS AOU, TAXON_ORDER_OUT AS TOO FROM queries.aous 
-                LEFT JOIN TAXONOMY_BIRDS.TAXONOMY 
-                ON aous.Aou = TAXONOMY.AOU_IN 
-                WHERE TAXONOMY.DIURNALLANDBIRD = 1;
-                """) 
-
-cursor.execute("""
-                CREATE TABLE queries.aou_too (aou INT(11)) 
-                SELECT AOU, TOO FROM queries.aou_too_1 
-                GROUP BY AOU, TOO;
-                """) 
-
-# 3. To create table with SiteID - Year - RunType = 1:
-    # from weather table
-    
-cursor.execute("""
-                CREATE TABLE queries.weather_subquery
-                SELECT (weather.statenum*1000+ weather.Route) AS SiteID,
-                weather.Year, weather.RunType
-                FROM BBS.weather
-                WHERE weather.RunType = 1 AND weather.RPID = 101;
-                """)
-                 
-# 4. To create table with SiteID - Year - Sp - abund:
-    # Link together AOU_TOO and BBS Counts by AOU - 
-    # Group By SiteID = state*1000 + route - TOO - Year 
-    # Sum SpeciesTotal
-    
-cursor.execute("""
-                CREATE TABLE queries.counts_too
-                SELECT (counts.statenum * 1000) + counts.Route AS SiteID,
-                counts.Year, aou_too.TOO, counts.RPID,
-                SUM(counts.SpeciesTotal) AS AB 
-                FROM BBS.counts INNER JOIN queries.aou_too ON 
-                counts.Aou = aou_too.AOU
-                GROUP BY SiteID, counts.Year, aou_too.TOO, counts.RPID
-                HAVING (((counts.Year = 2009) AND (counts.RPID = 101)));
-                """)
-                
-cursor.execute("""
-                SELECT counts_too.SiteID, counts_too.Year, counts_too.TOO, 
-                counts_too.AB
-                FROM queries.counts_too INNER JOIN queries.weather_subquery
-                ON counts_too.SiteID = weather_subquery.SiteID 
-                AND counts_too.Year = weather_subquery.Year
-                INTO OUTFILE '/tmp/bbs_spab.csv'
-                FIELDS TERMINATED BY ',' 
-                LINES TERMINATED BY '\n';
-                """)
+bbs_queries = ["""CREATE TABLE queries.aous (aou INT(11)) 
+                  SELECT counts.Aou FROM BBS.counts 
+                  GROUP BY counts.Aou;""",
+               """CREATE TABLE queries.aou_too_1 (aou INT(11)) 
+                  SELECT Aou AS AOU, TAXON_ORDER_OUT AS TOO FROM queries.aous 
+                  LEFT JOIN TAXONOMY_BIRDS.TAXONOMY 
+                  ON aous.Aou = TAXONOMY.AOU_IN 
+                  WHERE TAXONOMY.DIURNALLANDBIRD = 1;""",
+               """CREATE TABLE queries.aou_too (aou INT(11)) 
+                  SELECT AOU, TOO FROM queries.aou_too_1 
+                  GROUP BY AOU, TOO;""",
+               # 3. Create table with SiteID, Year, RunType=1 from weather table
+               """CREATE TABLE queries.weather_subquery
+                  SELECT (weather.statenum*1000+ weather.Route) AS SiteID,
+                  weather.Year, weather.RunType
+                  FROM BBS.weather
+                  WHERE weather.RunType = 1 AND weather.RPID = 101;""",
+               # 4. To create table with SiteID, Year, Sp, abund:
+               # Link together AOU_TOO and BBS Counts by AOU - 
+               # Group By SiteID = state*1000 + route - TOO - Year 
+               # Sum SpeciesTotal
+               """CREATE TABLE queries.counts_too
+                  SELECT (counts.statenum * 1000) + counts.Route AS SiteID,
+                  counts.Year, aou_too.TOO, counts.RPID,
+                  SUM(counts.SpeciesTotal) AS AB 
+                  FROM BBS.counts INNER JOIN queries.aou_too ON 
+                  counts.Aou = aou_too.AOU
+                  GROUP BY SiteID, counts.Year, aou_too.TOO, counts.RPID
+                  HAVING (((counts.Year = 2009) AND (counts.RPID = 101)));""",
+               """SELECT counts_too.SiteID, counts_too.Year, counts_too.TOO, 
+                  counts_too.AB
+                  FROM queries.counts_too INNER JOIN queries.weather_subquery
+                  ON counts_too.SiteID = weather_subquery.SiteID 
+                  AND counts_too.Year = weather_subquery.Year
+                  INTO OUTFILE '/tmp/bbs_spab.csv'
+                  FIELDS TERMINATED BY ',' 
+                  LINES TERMINATED BY '\n';"""]
 
 # CBC
 # Step 1. Group By SPECIES_CODE and by TOO WHERE DIURNAL LANDBIRD = 1 - 
