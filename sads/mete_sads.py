@@ -328,7 +328,7 @@ def run_sim_analysis(datasets, workdir, Niter):
         create_null_dataset(obs_SN_data['S'], obs_SN_data['N'],
                             Niter, dataset, data_dir=workdir)
     
-def map_sites(datasets, data_dir='./data/', markers = ['o'],
+def map_sites(datasets, data_dir='./data/', focal_sites=[], markers = ['o'],
               colors = ['b', 'r', 'g', 'y', 'c'], markersizes=3):
     """Generate a world map with sites color-coded by database"""
     
@@ -343,12 +343,15 @@ def map_sites(datasets, data_dir='./data/', markers = ['o'],
         lats = latlong_data["lat"]
         longs = latlong_data["long"]
         x,y = map(longs,lats)
-        map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
-                 markeredgewidth = 0.25, markersize = markersizes)
-    
+        map.plot(x,y, ls='', marker=markers[i], markerfacecolor=colors[i], 
+                 markeredgewidth=0.25, markersize=markersizes)
+    if len(focal_sites) > 0:
+        focal_x, focal_y = map(focal_sites[1], focal_sites[0])
+        map.plot(focal_x, focal_y, ls = '', marker='o',
+                 markerfacecolor='w', markeredgewidth=4, markersize=50)
     plt.savefig('map_of_sites.png', dpi=160, bbox_inches = 'tight', pad_inches=0)
     
-def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
+def map_sites_inset(datasets, data_dir='./data/', focal_sites=[], markers = ['o'],
                     colors=['b', 'r', 'g', 'y', 'c'], markersizes=4):
     """Generate a US map with sites color-coded by database"""
     
@@ -369,7 +372,10 @@ def map_sites_inset(datasets, data_dir='./data/', markers = ['o'],
         x,y = map(longs,lats)
         map.plot(x,y, ls = '', marker = markers[i], markerfacecolor = colors[i], 
                  markeredgewidth = 0.25, markersize = markersizes)
-    
+    if len(focal_sites) > 0:
+        focal_x, focal_y = map(focal_sites[1], focal_sites[0])
+        map.plot(focal_x, focal_y, ls = '', marker='o', markeredgecolor='k',
+                 markerfacecolor='w', markeredgewidth=4, markersize=50)    
     plt.savefig('map_of_sites_US.png', dpi=320, bbox_inches = 'tight', pad_inches=0)
 
 def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
@@ -543,12 +549,17 @@ if __name__ == '__main__':
         
         #Figure 1 - Map & Example Fits
         #Global Map
-        map_sites(datasets, markers = ['o','o','s','s','D','v'], colors=colors,
-                  markersizes=4)
+        focal_sites = [(-19.3, -25.9666), (-40.97, 31.71666)]
+        map_sites(datasets, data_dir=workdir,
+                  focal_sites=focal_sites, markers=['o','o','s','s','D','v'],
+                  colors=colors, markersizes=4)
         #US Map
         plt.figure()
-        map_sites_inset(datasets, markers=['o','o','s','s','D','v'],
-                        colors=colors, markersizes=5)
+        focal_sites = [(38.172, 37.0359, 34.1167, 30.9667),
+                       (-103.234, -83.3138, -118.0833, -97.6)]        
+        map_sites_inset(datasets, data_dir=workdir, focal_sites=focal_sites,
+                        markers=['o','o','s','s','D','v'], colors=colors,
+                        markersizes=5)
         #Example SADs
         site_ids = ['17220', 'L13428', '211131000022', '84', '1353', 'TX_Still_ollow']
         axis_limits = [[0, 16, 10 ** -4, 1], [-5, 115, 10 ** -5, 1],
