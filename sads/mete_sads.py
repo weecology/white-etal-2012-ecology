@@ -275,6 +275,7 @@ def plot_avg_deviation_from_logseries(sites, obs_ab, p=None, sites_for_p=None,
         plt.plot(bin_numbers, mean_deviations, color=color, linewidth=3)
     
 def plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir='./data/'):
+    plt.figure()
     for i, dataset in enumerate(datasets):
         obs_pred_data = import_obs_pred_data(data_dir + dataset +
                                              '_obs_pred.csv')
