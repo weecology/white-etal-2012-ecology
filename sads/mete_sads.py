@@ -11,6 +11,7 @@ python mete_sads.py /path/to/data/ args
 args:
 empir - generate empirical fits, obs-pred data, and compare to log-normal
 sims - generate simulated datasets and compare to empirical results
+figs - generate the figures
 
 The main data required is abundances of each species at each site for one 
 sampling period
