@@ -299,7 +299,7 @@ def plot_alldata_avg_dev_from_logseries(datasets, colors, data_dir='./data/'):
     plt.yticks(fontsize=16)
     plt.ylabel('Deviation (% of site richness)', fontsize=22)
     plt.axis([0.1, 17, -8, 3.5])
-    legend_labels = (dataset.upper() for dataset in datasets)
+    legend_labels = [dataset.upper() for dataset in datasets]
     plt.legend(legend_labels, 'lower right')
     plt.savefig('avg_dev_from_logseries.png', dpi=400, bbox_inches = 'tight', pad_inches=0.1)
     
@@ -394,10 +394,10 @@ def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
              markeredgecolor=color, markeredgewidth=1.5)
     plt.semilogy(rank_pred, relab_pred, '-', color='black', linewidth=2)
     plt.axis(axis_limits)
-    plt.xticks(fontsize = '10')
-    plt.yticks(fontsize = '10')
-    plt.xlabel('Rank')
-    plt.ylabel('Abundance')
+    plt.xticks(fontsize = '12')
+    plt.yticks(fontsize = '12')
+    plt.xlabel('Rank', fontsize = '14')
+    plt.ylabel('Rel. Abundance', fontsize = '14')
     plt.savefig(dataset + '_example_' + str(site_id) + '.png', dpi=320,
                 facecolor='w', edgecolor='w', bbox_inches = 'tight',
                 pad_inches=0.2)
