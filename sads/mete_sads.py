@@ -538,7 +538,7 @@ if __name__ == '__main__':
     else:
         datasets = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']  
     
-    #Run selected analysss
+    #Run selected analyses
     if 'empir' in analyses:
         run_empir_analysis(datasets, workdir)
     if 'sim' in analyses:
