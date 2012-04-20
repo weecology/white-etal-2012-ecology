@@ -536,7 +536,7 @@ if __name__ == '__main__':
         for line in dataset_config_file:
             datasets.append(line.strip())
     else:
-        datasets = ['bbs', 'cbc', 'fia', 'gentry', 'mcdb', 'naba']  
+        datasets = ['bbs', 'fia', 'gentry', 'mcdb']  
     
     #Run selected analyses
     if 'empir' in analyses:
