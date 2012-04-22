@@ -1,6 +1,6 @@
 Code for replicating the analyses in "Characterizing species-abundance distributions across taxa and ecosystems using a simple maximum entropy model" by Ethan P. White, Katherine M. Thibault, and Xiao Xiao. To be published in Ecology in 2012.
 
-The code and data in this supplement allow the analyses in the paper to be fully replicated for four of the six datasets Breeding Bird Survey, Mammal Community Database, Forest Inventory and Analysis, and Alwyn Gentry's Tree Transects). The other two datasets were obtained under agreements restricting the publication of raw data, but simulation results and figures can still be generated for these datasets.
+The code and data in this repository allow the analyses in the paper to be fully replicated for four of the six datasets Breeding Bird Survey, Mammal Community Database, Forest Inventory and Analysis, and Alwyn Gentry's Tree Transects). The other two datasets were obtained under agreements restricting the publication of raw data, but simulation results and figures can still be generated for these datasets.
 
 Requirements: Python 2.x and the following Python modules: numpy, scipy, matplotlib, mpmath, mete (https://github.com/weecology/METE), macroecotools (https://github.com/weecology/macroecotools). Two additional modules, mpl_toolkits, and mpl_toolkits.basemap, are required for generating the figures.
 
