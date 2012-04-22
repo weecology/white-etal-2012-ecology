@@ -406,6 +406,8 @@ def example_sad_plot(dataset, site_id, color, axis_limits, data_dir='./data/'):
 def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
     """Multiple obs-predicted plotter"""
     fig = plt.figure()
+    num_datasets = len(datasets)
+    rows = (3 if num_datasets in (5, 6) else 2)
     for i, dataset in enumerate(datasets):
         obs_pred_data = import_obs_pred_data(data_dir + dataset + '_obs_pred.csv') 
         site = ((obs_pred_data["site"]))
@@ -414,9 +416,9 @@ def plot_obs_pred_sad(datasets, data_dir='./data/', radius=2):
         
         axis_min = 0.5 * min(obs)
         axis_max = 2 * max(obs)
-        ax = fig.add_subplot(3,2,i+1)
+        ax = fig.add_subplot(rows,2,i+1)
         macroecotools.plot_color_by_pt_dens(pred, obs, radius, loglog=1, 
-                                            plot_obj=plt.subplot(3,2,i+1))      
+                                            plot_obj=plt.subplot(rows,2,i+1))      
         plt.plot([axis_min, axis_max],[axis_min, axis_max], 'k-')
         plt.xlim(axis_min, axis_max)
         plt.ylim(axis_min, axis_max)
@@ -469,10 +471,8 @@ def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
     plt.xticks((((n/2 + 1) * width), (11 * width),(18 * width)), 
                ('Log-normal', 'Indeterminate', 'Log-series'))
     legend_labels = (dataset.upper() for dataset in datasets)
-    plt.legend((indiv_dataset_bars[0][0], indiv_dataset_bars[1][0], 
-                indiv_dataset_bars[2][0], indiv_dataset_bars[3][0], 
-                indiv_dataset_bars[4][0], indiv_dataset_bars[5][0]),
-                legend_labels, loc = 'upper left')
+    legend_values = tuple([bar[0] for bar in indiv_dataset_bars])
+    plt.legend(legend_values, legend_labels, loc = 'upper left')
     all_weights = np.array(all_weights)
     print("For %s%% of all sites the log-series was a better fit than the log-normal" %
           (len(all_weights[all_weights >= 2/3]) / len(all_weights) * 100))
@@ -481,7 +481,8 @@ def cross_taxa_weight_plot (datasets, colors, data_dir='./data/'):
     plt.savefig('model_selection.png', dpi=400, bbox_inches = 'tight', pad_inches=0)
     
 def plot_sim_results(datasets, colors, data_dir='./data/'):
-    lowerbounds = [-0.7, -2.3, 0, 0, -0.75, -0.5]
+    all_lowerbounds = {'bbs': -0.7, 'cbc': -2.3, 'fia': 0, 'gentry': 0, 'mcdb': -0.75, 'nabc': -0.5}
+    lowerbounds = [all_lowerbounds[dataset] for dataset in datasets]
     fig = plt.figure()
     for i, dataset in enumerate(datasets):
         sim_data = import_sim_data(data_dir + dataset + '_sim_r2.csv')
@@ -547,8 +548,9 @@ if __name__ == '__main__':
         iterations = int(sys.argv[3])
         run_sim_analysis(datasets, workdir, iterations)
     if 'figs' in analyses:
-        colors = ['#87a4ef', '#0033cc', '#97ca82', '#339900','#ff6600', '#990000']
-        
+        all_colors = {'bbs': '#87a4ef', 'cbc': '#0033cc', 'fia': '#97ca82',
+                  'gentry': '#339900', 'mcdb': '#ff6600', 'nabc': '#990000'}
+        colors = [all_colors[dataset] for dataset in datasets]
         #Figure 1 - Map & Example Fits
         #Global Map
         focal_sites = [(-19.3, -25.9666), (-40.97, 31.71666)]
@@ -563,12 +565,16 @@ if __name__ == '__main__':
                         markers=['o','o','s','s','D','v'], colors=colors,
                         markersizes=5)
         #Example SADs
-        site_ids = ['17220', 'L13428', '211131000022', '84', '1353', 'TX_Still_ollow']
-        axis_limits = [[0, 16, 10 ** -4, 1], [-5, 115, 10 ** -5, 1],
-                       [0, 15, 10 ** -2, 1], [-10, 225, 10 ** -3, 1], 
-                       [0, 11, 10 ** -2, 1], [-2, 44, 10 ** -3, 1]]
-        for i, dataset in enumerate(datasets):
-            example_sad_plot(dataset, site_ids[i], colors[i], axis_limits[i])        
+        site_ids = {'bbs': '17220', 'cbc': 'L13428', 'fia': '211131000022',
+                    'gentry': '84', 'mcdb': '1353', 'nabc': 'TX_Still_ollow'}
+        axis_limits = {'bbs': [0, 16, 10 ** -4, 1],
+                       'cbc': [-5, 115, 10 ** -5, 1],
+                       'fia': [0, 15, 10 ** -2, 1],
+                       'gentry': [-10, 225, 10 ** -3, 1], 
+                       'mcdb': [0, 11, 10 ** -2, 1],
+                       'nabc': [-2, 44, 10 ** -3, 1]}
+        for dataset in datasets:
+            example_sad_plot(dataset, site_ids[dataset], all_colors[dataset], axis_limits[dataset])        
 
         #Figure 2 -Observed-predicted plots for each dataset
         plot_obs_pred_sad(datasets, data_dir=workdir, radius = 3)
