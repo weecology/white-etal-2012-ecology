@@ -39,7 +39,7 @@ import mete
 import macroecotools
 import macroeco_distributions as md
 
-def import_latlong_data(input_filename):
+def import_latlong_data(input_filename, comments='#'):
     data = np.genfromtxt(input_filename, dtype = "f8,f8", 
                          names = ['lat','long'], delimiter = ",")
     return data
@@ -50,7 +50,7 @@ def import_obs_pred_data(input_filename):
                                   delimiter = ",")
     return data
 
-def import_raw_data(input_filename):
+def import_raw_data(input_filename, comments='#'):
     """Import csv data of the form: Site, Year, Species, Abundance"""
     raw_data = np.genfromtxt(input_filename, dtype = "S15,i8,S10,i8",
                           names = ['site','year','sp','ab'], delimiter = ",")   
