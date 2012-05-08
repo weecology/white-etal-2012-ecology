@@ -134,9 +134,9 @@ def hist_mete_r2(sites, obs, pred):
     hist_r2 = np.histogram(r2s, range=(0, 1))
     xvals = hist_r2[1] + (hist_r2[1][1] - hist_r2[1][0])
     xvals = xvals[0:len(xvals)-1]
-    yvals = hist_r2[0]
+    yvals = hist_r2[0] / len(r2s)
     plt.plot(xvals, yvals, 'k-', linewidth=2)
-    plt.axis([0, 1, 0, 1.1 * max(yvals)])
+    plt.axis([0, 1, 0, 1])
 
 def plot_numsp_obs_pred(sites, obs_ab, min_abundance, max_abundance):
     """Observed vs. predicted plot of the number of species in an abundance range
