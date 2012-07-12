@@ -19,6 +19,8 @@ Please note that these analyses involve both a large amount of data and a lot of
 
 Data Use: Data is provided in this supplement for the purposes of replication and is not presented in such a way as to be generally useful for additional analyses. If you wish to use these datasets for additional research they should be obtained from relevant data providers. For BBS, MCDB, FIA, and Gentry this can be done automatically by using the EcoData Retriever (http://ecologicaldata.org/ecodata-retriever).
 
+The mete_sads_data.py script is intendend to allow for downloading the raw data from the original source, importing it into MySQL and then executing the queries we used to get the data in the ./data folder. However, it is not currently complete. Hopefully, we'll get back to it soon. Sorry for the inconvenience.
+
 MIT License:
 
 Copyright (c) 2012 Weecology
