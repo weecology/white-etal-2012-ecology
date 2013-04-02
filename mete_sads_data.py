@@ -13,11 +13,12 @@ import os
 import getpass
 import shutil
 
-from retriever import VERSION, SCRIPT_LIST, ENGINE_LIST
-from retriever.lib.tools import choose_engine, get_opts
-
 def download_public_data(datasets, data_dir='./data/'):
     """Download public datasets using the EcoData Retriever"""
+    
+    from retriever import VERSION, SCRIPT_LIST, ENGINE_LIST
+    from retriever.lib.tools import choose_engine, get_opts    
+
     for dataset in datasets:
         script_list = SCRIPT_LIST()
         opts = get_opts(script_list, args=['install', dataset, '-e', 's', '-f',
@@ -31,8 +32,6 @@ def download_public_data(datasets, data_dir='./data/'):
         else:
             script.download(engine)
     print "Datasets successfully downloaded."
-
-download_public_data(['BBS'])
 
 def get_raw_data(queries, engine='sqlite', file_name='downloaded_data.sqlite',
                  host=None, port=3306, user='root'):
