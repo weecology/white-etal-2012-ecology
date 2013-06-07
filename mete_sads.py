@@ -126,7 +126,7 @@ def run_test(raw_data, dataset_name, data_dir='./data/', cutoff = 9):
 def hist_mete_r2(sites, obs, pred):
     """Generate a kernel density estimate of the r^2 values for obs-pred plots"""
     r2s = []
-    for site in sites:
+    for site in unique(sites):
         obs_site = obs[sites==site]
         pred_site = pred[sites==site]
         r2 = macroecotools.obs_pred_rsquare(obs_site, pred_site)
