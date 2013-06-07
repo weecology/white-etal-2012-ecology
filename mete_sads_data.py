@@ -165,10 +165,10 @@ fia_queries = ["""CREATE TABLE queries.fia_survey1
                   PLOT.STATECD, PLOT.UNITCD, PLOT.COUNTYCD, PLOT.PLOT, PLOT.LAT, 
                   PLOT.LON, PLOT.ELEV FROM FIA.PLOT 
                   WHERE PLOT.PLOT_STATUS_CD = 1 AND PLOT.KINDCD > 0 AND 
-                  PLOT.KINDCD < 4 AND PLOT.DESIGNCD = 1 OR PLOT.DESIGNCD = 311 
+                  PLOT.KINDCD < 4 AND (PLOT.DESIGNCD = 1 OR PLOT.DESIGNCD = 311 
                   OR PLOT.DESIGNCD = 312 OR PLOT.DESIGNCD = 313 OR 
                   PLOT.DESIGNCD = 314 OR PLOT.DESIGNCD = 328 OR 
-                  PLOT.DESIGNCD = 220 OR PLOT.DESIGNCD = 240 AND 
+                  PLOT.DESIGNCD = 220 OR PLOT.DESIGNCD = 240) AND 
                   PLOT.MANUAL >= 1 AND PLOT.QA_STATUS = 1 AND 
                   PLOT.SAMP_METHOD_CD = 1 AND PLOT.INVYR < 3000;""",
                """CREATE TABLE queries.fia_plot2
