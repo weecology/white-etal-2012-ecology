@@ -135,7 +135,7 @@ def hist_mete_r2(sites, obs, pred):
     xvals = hist_r2[1] + (hist_r2[1][1] - hist_r2[1][0])
     xvals = xvals[0:len(xvals)-1]
     yvals = hist_r2[0] / len(r2s)
-    yvals[0] = 1 - sum(yvals)
+    yvals[0] += 1 - sum(yvals)
     plt.plot(xvals, yvals, 'k-', linewidth=2)
     plt.axis([0, 1, 0, 1])
 
