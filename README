@@ -2,7 +2,15 @@ Code for replicating the analyses in "Characterizing species-abundance distribut
 
 The code and data in this repository allow the analyses in the paper to be fully replicated for four of the six datasets Breeding Bird Survey, Mammal Community Database, Forest Inventory and Analysis, and Alwyn Gentry's Tree Transects). The other two datasets were obtained under agreements restricting the publication of raw data, but simulation results and figures can still be generated for these datasets.
 
-Requirements: Python 2.x and the following Python modules: numpy, scipy, matplotlib, mpmath, mete (https://github.com/weecology/METE), macroecotools (https://github.com/weecology/macroecotools). Two additional modules, mpl_toolkits, and mpl_toolkits.basemap, are required for generating the figures.
+Requirements: Python 2.x and the following Python modules: numpy, scipy, matplotlib, mpmath, mpl_toolkits (for figures), and mpl_toolkits.basemap (for figures). You will also need two of our custom Python modules: METE (https://github.com/weecology/METE) and macroecotools (at the white-etal-2012 tag; https://github.com/weecology/macroecotools). These modules can be installed by running the following commands from the command line (with sufficient permissions):
+
+git clone https://github.com/weecology/METE.git
+cd METE
+python setup.py install
+git clone https://github.com/weecology/macroecotools.git
+cd macroecotools
+git checkout white-etal-2012
+python setup.py install
 
 The analyses can then be replicated by running the following commands from the command line.
 
