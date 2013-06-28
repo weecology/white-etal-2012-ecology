@@ -1,11 +1,12 @@
-# Code for replicating the analyses in White et al. 2012 ((http://dx.doi.org/10.1890/11-2177.1)[http://dx.doi.org/10.1890/11-2177.1])
+# White et al. 2012 Analysis
 
-The code and data in this repository allow the analyses in the paper to be fully
-replicated for four of the six datasets Breeding Bird Survey, Mammal Community
-Database, Forest Inventory and Analysis, and Alwyn Gentry's Tree Transects). The
-other two datasets were obtained under agreements restricting the publication of
-raw data, but simulation results and figures can still be generated for these
-datasets.
+The code and data in this repository allow the analyses in White et al. 2012
+([http://dx.doi.org/10.1890/11-2177.1](http://dx.doi.org/10.1890/11-2177.1)) to
+be fully replicated for four of the six datasets Breeding Bird Survey, Mammal
+Community Database, Forest Inventory and Analysis, and Alwyn Gentry's Tree
+Transects). The other two datasets were obtained under agreements restricting
+the publication of raw data, but simulation results and figures can still be
+generated for these datasets.
 
 ## Setup
 
