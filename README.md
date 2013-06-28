@@ -1,4 +1,4 @@
-# White et al. 2012 Analysis
+## White et al. 2012 Analysis
 
 The code and data in this repository allow the analyses in White et al. 2012
 ([http://dx.doi.org/10.1890/11-2177.1](http://dx.doi.org/10.1890/11-2177.1)) to
@@ -8,7 +8,7 @@ Transects). The other two datasets were obtained under agreements restricting
 the publication of raw data, but simulation results and figures can still be
 generated for these datasets.
 
-## Setup
+### Setup
 
 Requirements: Python 2.x and the following Python modules: numpy, scipy,
 matplotlib, mpmath, mpl_toolkits (for figures), and mpl_toolkits.basemap (for
@@ -28,7 +28,7 @@ git checkout white-etal-2012
 python setup.py install
 ```
 
-## Replicate analyses
+### Replicate analyses
 
 The analyses can be replicated by running the following commands from the
 command line.
@@ -49,7 +49,7 @@ analysis to take up to a day, and simulations to take up to a week on an 8-core
 server. Generating figures takes about one hour due to the neighborhood
 calculations required for the color ramps on the observed-predicted plots.
 
-## Data use
+### Data use
 
 Data is provided in this supplement for the purposes of replication and is not
 presented in such a way as to be generally useful for additional analyses. If
@@ -63,7 +63,7 @@ from the original source, importing it into MySQL and then executing the queries
 we used to get the data in the ./data folder. However, it is not currently
 complete. Hopefully, we'll get back to it soon. Sorry for the inconvenience.
 
-## License (MIT)
+### License (MIT)
 
 Copyright (c) 2012 Weecology
 
@@ -83,4 +83,3 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
