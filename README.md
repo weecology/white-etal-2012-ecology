@@ -33,12 +33,14 @@ python setup.py install
 The analyses can be replicated by running the following commands from the
 command line.
 
-Run all analyses and generate figures: python mete_sads.py ./data/ all
+Run all analyses and generate figures:
+`python mete_sads.py ./data/ all`
 
 Run portions of the analysis pipeline:
-Empirical analyses: `python mete_sads.py ./data/ empir`
-Simulation analyses: `python mete_sads.py ./data/ sims`
-Figures: `python mete_sads.py ./data/ figs`
+
+* Empirical analyses: `python mete_sads.py ./data/ empir`
+* Simulation analyses: `python mete_sads.py ./data/ sims`
+* Figures: `python mete_sads.py ./data/ figs`
 
 On Windows `./data/` should be replaced with `.\data\` to match the relevant
 path conventions.
