@@ -24,7 +24,6 @@ cd METE
 python setup.py install
 git clone https://github.com/weecology/macroecotools.git
 cd macroecotools
-git checkout white-etal-2012
 python setup.py install
 ```
 
