@@ -39,7 +39,7 @@ Run all analyses and generate figures:
 Run portions of the analysis pipeline:
 
 * Empirical analyses: `python mete_sads.py ./data/ empir`
-* Simulation analyses: `python mete_sads.py ./data/ sims`
+* Simulation analyses: `python mete_sads.py ./data/ sim`
 * Figures: `python mete_sads.py ./data/ figs`
 
 On Windows `./data/` should be replaced with `.\data\` to match the relevant
