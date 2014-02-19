@@ -12,16 +12,18 @@ generated for these datasets.
 
 Requirements: Python 2.x and the following Python modules: numpy, scipy,
 matplotlib, mpmath, mpl_toolkits (for figures), and mpl_toolkits.basemap (for
-figures). You will also need two of our custom Python modules: METE
-(https://github.com/weecology/METE) and macroecotools (at the white-etal-2012
-tag; https://github.com/weecology/macroecotools). These modules can be installed
-by running the following commands from the command line (with sufficient
-permissions):
+figures). You will also need two of our custom Python modules: METE (at the
+white-etal-2012 tag; https://github.com/weecology/METE) and macroecotools (at
+the white-etal-2012 tag; https://github.com/weecology/macroecotools). These
+modules can be installed by running the following commands from the command line
+(with sufficient permissions):
 
 ```sh
 git clone https://github.com/weecology/METE.git
 cd METE
+git checkout white-etal-2012
 python setup.py install
+cd ..
 git clone https://github.com/weecology/macroecotools.git
 cd macroecotools
 git checkout white-etal-2012
@@ -33,13 +35,17 @@ python setup.py install
 The analyses can be replicated by running the following commands from the
 command line.
 
-Run all analyses and generate figures:
-`python mete_sads.py ./data/ all`
+Run all analyses and generate figures: `python mete_sads.py ./data/ all 100`
+(where 100 is the number of simulations you wish to conduct and can be replaced
+with any positive integer)
+
 
 Run portions of the analysis pipeline:
 
 * Empirical analyses: `python mete_sads.py ./data/ empir`
-* Simulation analyses: `python mete_sads.py ./data/ sim`
+* Simulation analyses: `python mete_sads.py ./data/ sim 100` (where 100 is the
+  number of simulations you wish to conduct and can be replaced with any
+  positive integer)
 * Figures: `python mete_sads.py ./data/ figs`
 
 On Windows `./data/` should be replaced with `.\data\` to match the relevant
