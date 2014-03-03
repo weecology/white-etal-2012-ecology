@@ -51,6 +51,19 @@ Run portions of the analysis pipeline:
 On Windows `./data/` should be replaced with `.\data\` to match the relevant
 path conventions.
 
+The data included in the repository shows the data, including intermediate
+steps, that were used in the paper, and can be used to reproduce pieces of the
+pipeline. So, if you just want to remake the figures, the code will use the
+provided data. However, we also want to be able to rerun the entire
+pipeline. So, if you start at the beginning and run with the 'all' argument, the
+code will start with just the rawest form of the data and recreate every
+intermediate step including recreating the intermediate data files, exactly as
+was done to create them for the paper in the first place. This will delete the
+existing data files and replace them with the recalculated versions. Due to some
+minor post-publication bug fixes the exact form of the resulting data files will
+differ slightly from those currently in the repository. None of these
+differences influence the results of the paper.
+
 Please note that these analyses involve both a large amount of data and a lot of
 computational work and therefore take a long time to run. Expect the empirical
 analysis to take up to a day, and simulations to take up to a week on an 8-core
